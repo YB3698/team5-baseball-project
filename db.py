@@ -27,7 +27,7 @@ def fetch_teams():
     baseball = []
     for row in cursor:
         team_name, team_mascot, team_stadium, team_created_at = row
-        menu_items.append({
+        baseball.append({
             "team_name": team_name,
             "team_mascot": team_mascot,
             "team_stadium": team_stadium,
@@ -37,3 +37,11 @@ def fetch_teams():
     cursor.close()
     conn.close()
     return baseball
+
+if __name__ == '__main__':
+    teams = fetch_teams()
+    if not teams:
+        print("No data found in TEAMS table.")
+    else:
+        for team in teams:
+            print(team)
