@@ -16,7 +16,7 @@ def get_db_connection():
 
 def fetch_teams():
     """
-    데이터베이스에서 모든 메뉴 항목을 가져오는 함수
+    데이터베이스에서 테이블 항목을 가져오는 함수
     """
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -24,7 +24,7 @@ def fetch_teams():
     query = 'SELECT team_name, team_mascot, team_stadium, team_created_at FROM TEAMS'
     cursor.execute(query)
 
-    menu_items = []
+    baseball = []
     for row in cursor:
         team_name, team_mascot, team_stadium, team_created_at = row
         menu_items.append({
@@ -36,4 +36,4 @@ def fetch_teams():
 
     cursor.close()
     conn.close()
-    return menu_items
+    return baseball
