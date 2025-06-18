@@ -1,13 +1,13 @@
+// Home 컴포넌트: 메인 페이지(홈) 역할, 추후 컨텐츠 추가 가능
 import { Link } from 'react-router-dom';
 
 function Home() {
   return (
     <div>
-      <h1>Spring Boot DB 연결 테스트</h1>
+      <h1>TEST HOMEPAGE</h1>
       <ul>
-        <li>Spring 연결 성공</li>
+        {/* 추후 홈 컨텐츠 추가 */}
       </ul>
-      <Link to="/signup">회원가입 하러 가기</Link>
     </div>
   );
 }
