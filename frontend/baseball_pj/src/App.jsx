@@ -5,6 +5,7 @@ import Signup from './pages/Signup';
 import MyPage from './pages/MyPage';
 import Home from './pages/Home';
 import PlayerList from './pages/PlayerList';
+import TeamList from './pages/TeamList';
 
 
 function App() {
@@ -18,7 +19,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-         <Route path="/playerlist" element={<PlayerList />} />
+        <Route path="/playerlist" element={<PlayerList />} />
+        <Route path="/teamList" element={<TeamList />} />
         
         {/* ✅ 마이페이지는 로그인 상태일 때만 접근 가능, 아니면 로그인 페이지로 이동 */}
         <Route
