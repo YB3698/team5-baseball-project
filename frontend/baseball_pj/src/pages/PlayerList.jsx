@@ -1,20 +1,6 @@
 import { useEffect, useState } from 'react';
 import './PlayerList.css';
 
-const parseCSV = (csvText) => {
-  const lines = csvText.trim().split('\n');
-  const headers = lines[0].split(',').map(h => h.trim());
-  const data = lines.slice(1).map(line => {
-    const values = line.split(',').map(v => v.trim());
-    const entry = {};
-    headers.forEach((header, index) => {
-      entry[header] = values[index];
-    });
-    return entry;
-  });
-  return data;
-};
-
 const ITEMS_PER_PAGE = 10;
 
 const PlayerList = () => {
@@ -24,23 +10,26 @@ const PlayerList = () => {
   const [filtered, setFiltered] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    fetch('/team_players.csv')
-      .then(res => res.text())
-      .then(text => {
-        const parsed = parseCSV(text);
-        setPlayers(parsed);
-        setFiltered(parsed); // 초기엔 전체 표시
-      })
-      .catch(err => {
-        console.error('CSV 로드 오류:', err);
-      });
-  }, []);
+useEffect(() => {
+  fetch('/api/players')
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      setPlayers(data);
+      setFiltered(data);
+    })
+    .catch(err => {
+      console.error('API 요청 오류:', err);
+    });
+}, []);
+
 
   const handleSearch = () => {
     const result = players.filter(player =>
-      (searchName === '' || player.PLAYER_NAME?.includes(searchName)) &&
-      (searchPosition === '' || player.PLAYER_POSITION?.includes(searchPosition))
+      (searchName === '' || player.playerName?.includes(searchName)) &&
+      (searchPosition === '' || player.playerPosition?.includes(searchPosition))
     );
     setFiltered(result);
     setCurrentPage(1);
@@ -87,9 +76,8 @@ const PlayerList = () => {
         <button onClick={handleSearch}>검색</button>
       </div>
 
-      {/* ✅ 검색 결과 표시 (왼쪽 정렬) */}
       <p className="playerlist-count">
-        검색 결과: <strong>{filtered.length || players.length}</strong>건
+        검색 결과: <strong>{filtered.length}</strong>건
       </p>
 
       <div className="playerlist-card">
@@ -107,13 +95,13 @@ const PlayerList = () => {
             </thead>
             <tbody>
               {paginatedPlayers.map((player) => (
-                <tr key={player.PLAYER_ID}>
-                  <td>{player.PLAYER_NAME}</td>
-                  <td>{player.PLAYER_POSITION}</td>
-                  <td>{player.PLAYER_BACK_NUMBER}</td>
-                  <td>{player.PLAYER_BIRTH_DATE}</td>
-                  <td>{player.PLAYER_HEIGHT_WEIGHT}</td>
-                  <td>{player.PLAYER_EDUCATION_PATH}</td>
+                <tr key={player.playerId}>
+                  <td>{player.playerName}</td>
+                  <td>{player.playerPosition}</td>
+                  <td>{player.playerBackNumber}</td>
+                  <td>{player.playerBirthDate}</td>
+                  <td>{player.playerHeightWeight}</td>
+                  <td>{player.playerEducationPath}</td>
                 </tr>
               ))}
             </tbody>

@@ -17,6 +17,7 @@ public class SecurityConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
 
     // Spring Security의 필터 체인을 설정합니다.
     @Bean
@@ -33,7 +34,10 @@ public class SecurityConfig {
                     "/api/users/join",
                     "/api/users/check-email",
                     "/api/users/check-nickname",
-                    "/api/users/login" // 로그인 API 허용
+                    "/api/users/login",
+                    // ✅ 선수 목록 API 전체 인증 없이 허용
+                    "/api/players",
+                    "/api/players/**"
                 ).permitAll()
                 // 그 외 모든 요청은 거부
                 .anyRequest().denyAll()
