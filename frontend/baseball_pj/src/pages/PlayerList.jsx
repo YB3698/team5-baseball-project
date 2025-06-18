@@ -30,6 +30,7 @@ const PlayerList = () => {
       .then(text => {
         const parsed = parseCSV(text);
         setPlayers(parsed);
+        setFiltered(parsed); // 초기엔 전체 표시
       })
       .catch(err => {
         console.error('CSV 로드 오류:', err);
@@ -51,7 +52,6 @@ const PlayerList = () => {
     currentPage * ITEMS_PER_PAGE
   );
 
-  // 페이지 숫자 버튼 5개만 표시
   const getPageNumbers = () => {
     const visibleCount = 5;
     let start = Math.max(1, currentPage - Math.floor(visibleCount / 2));
@@ -87,8 +87,13 @@ const PlayerList = () => {
         <button onClick={handleSearch}>검색</button>
       </div>
 
-      {paginatedPlayers.length > 0 && (
-        <>
+      {/* ✅ 검색 결과 표시 (왼쪽 정렬) */}
+      <p className="playerlist-count">
+        검색 결과: <strong>{filtered.length || players.length}</strong>건
+      </p>
+
+      <div className="playerlist-card">
+        {paginatedPlayers.length > 0 ? (
           <table className="playerlist-table">
             <thead>
               <tr>
@@ -113,26 +118,30 @@ const PlayerList = () => {
               ))}
             </tbody>
           </table>
+        ) : (
+          <p style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>
+            검색 결과가 없습니다.
+          </p>
+        )}
+      </div>
 
-          <div className="pagination">
-            <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>«</button>
-            <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}>‹</button>
+      <div className="pagination">
+        <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>«</button>
+        <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}>‹</button>
 
-            {getPageNumbers().map(num => (
-              <button
-                key={num}
-                onClick={() => setCurrentPage(num)}
-                className={num === currentPage ? 'active' : ''}
-              >
-                {num}
-              </button>
-            ))}
+        {getPageNumbers().map(num => (
+          <button
+            key={num}
+            onClick={() => setCurrentPage(num)}
+            className={num === currentPage ? 'active' : ''}
+          >
+            {num}
+          </button>
+        ))}
 
-            <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>›</button>
-            <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>»</button>
-          </div>
-        </>
-      )}
+        <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>›</button>
+        <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>»</button>
+      </div>
     </div>
   );
 };
