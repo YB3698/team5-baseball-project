@@ -56,6 +56,7 @@ const Header = () => {
               <Link to="/signup" className="menu-link">회원가입</Link> {/* 회원가입 페이지 이동 */}
               <Link to="/playerlist" className="menu-link">선수정보</Link> {/* 선수정보 페이지 이동 */}
               <Link to="/Teamlist" className="menu-link">팀정보</Link> {/* 팀정보 페이지 이동 */}
+              <Link to="/matchschedule" className="menu-link">경기일정 및 결과</Link> {/* 경기일정 및 결과 페이지 이동 */}
             </>
           )}
         </nav>
