@@ -1,0 +1,67 @@
+.header {
+  background-color: #1e1e1e;
+  color: white;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+}
+.header-container {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 90px;
+}
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.baseball-icon {
+  font-size: 2.5rem;
+  color: white;
+}
+.logo-text {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+.logo-link {
+  text-decoration: none;
+  color: white;
+}
+.menu-wrap {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.nickname {
+  margin-right: 10px;
+  font-weight: 400;
+}
+.menu-link {
+  color: white;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 300;
+  margin-left: 8px;
+  transition: color 0.2s;
+}
+.logout-btn {
+  margin-left: 8px;
+  background: #ff5c5c;
+  border: none;
+  color: white;
+  padding: 7px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
