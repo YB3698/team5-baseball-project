@@ -42,10 +42,25 @@
   background-color: #d13b54;
 }
 
+/* ✅ 검색 결과 건수 왼쪽 정렬 */
+.playerlist-count {
+  text-align: left;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* ✅ 카드형 테이블 박스 */
+.playerlist-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+}
+
 .playerlist-table {
   width: 100%;
   border-collapse: collapse;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   font-size: 0.95rem;
   background-color: #fff;
 }
@@ -71,7 +86,7 @@
   transition: background 0.3s ease;
 }
 
-/* 📄 페이징 버튼 */
+/* ✅ 페이징 버튼 */
 .pagination {
   margin-top: 2rem;
   display: flex;
@@ -106,7 +121,7 @@
   cursor: not-allowed;
 }
 
-/* 📱 모바일 대응 */
+/* ✅ 반응형 대응 */
 @media (max-width: 768px) {
   .playerlist-container {
     padding: 1rem;
