@@ -1,0 +1,134 @@
+.playerlist-container {
+  padding: 2rem;
+  max-width: 1100px;
+  margin: auto;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.playerlist-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.playerlist-search-advanced {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.playerlist-search-advanced input,
+.playerlist-search-advanced select {
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.playerlist-search-advanced button {
+  padding: 8px 16px;
+  font-size: 1rem;
+  background-color: #e84c64;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.playerlist-search-advanced button:hover {
+  background-color: #d13b54;
+}
+
+.playerlist-table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-size: 0.95rem;
+  background-color: #fff;
+}
+
+.playerlist-table th,
+.playerlist-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.playerlist-table th {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.playerlist-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.playerlist-table tr:hover {
+  background-color: #f0f8ff;
+  transition: background 0.3s ease;
+}
+
+/* 📄 페이징 버튼 */
+.pagination {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.pagination button:hover {
+  background-color: #f0f0f0;
+}
+
+.pagination button.active {
+  background-color: #e84c64;
+  color: white;
+  border-color: #e84c64;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 📱 모바일 대응 */
+@media (max-width: 768px) {
+  .playerlist-container {
+    padding: 1rem;
+  }
+
+  .playerlist-title {
+    font-size: 1.5rem;
+  }
+
+  .playerlist-search-advanced {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .playerlist-search-advanced input,
+  .playerlist-search-advanced select,
+  .playerlist-search-advanced button {
+    width: 100%;
+  }
+
+  .playerlist-table {
+    font-size: 0.85rem;
+    overflow-x: auto;
+  }
+}
