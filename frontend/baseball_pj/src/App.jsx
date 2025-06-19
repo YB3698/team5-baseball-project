@@ -6,7 +6,8 @@ import MyPage from './pages/Mypage';
 import Home from './pages/Home';
 import PlayerList from './pages/PlayerList';
 import TeamList from './pages/TeamList';
-
+import MatchSchedule from './pages/MatchSchedule';
+import PlayerStats from './pages/PlayerStats';
 
 function App() {
   // 로컬스토리지에 'user'가 존재하면 로그인된 상태로 판단
@@ -21,6 +22,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/playerlist" element={<PlayerList />} />
         <Route path="/teamList" element={<TeamList />} />
+        <Route path="/matchschedule" element={<MatchSchedule />} />
+        <Route path="/playerstats" element={<PlayerStats />} />
         
         {/* ✅ 마이페이지는 로그인 상태일 때만 접근 가능, 아니면 로그인 페이지로 이동 */}
         <Route

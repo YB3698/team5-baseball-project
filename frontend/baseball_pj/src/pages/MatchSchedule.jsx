@@ -8,7 +8,7 @@ function MatchSchedule() {
   const [selectedMonth, setSelectedMonth] = useState('');
 
   useEffect(() => {
-    fetch('/다시')
+    fetch('/oracle_game_data_result2.csv')
       .then((res) => res.text())
       .then((data) => {
         const parsedData = Papa.parse(data, {
@@ -16,9 +16,9 @@ function MatchSchedule() {
           skipEmptyLines: true,
         }).data;
 
-        // 정규 시즌만 필터링 (SERIES_ID가 0, 6, 9)
+        // 날짜 유효성 검증
         const validGames = parsedData.filter(game => {
-          return !isNaN(new Date(game.GAME_DATE)) && !!game.GAME_TIME;
+          return game.GAME_DATE && !isNaN(new Date(game.GAME_DATE));
         });
 
         setGames(validGames);
@@ -42,8 +42,9 @@ function MatchSchedule() {
     return year === filterYear && month === filterMonth;
   });
 
+  // 날짜 기준으로 묶기
   const groupedGames = filteredGames.reduce((acc, game) => {
-    const dateKey = new Date(game.GAME_DATE).toDateString();
+    const dateKey = game.GAME_DATE.split(' ')[0]; // '2001-04-05'
     if (!acc[dateKey]) acc[dateKey] = [];
     acc[dateKey].push(game);
     return acc;
@@ -80,7 +81,6 @@ function MatchSchedule() {
             <th>날짜</th>
             <th>시간</th>
             <th>경기</th>
-            <th>TV</th>
             <th>구장</th>
             <th>비고</th>
           </tr>
@@ -99,9 +99,8 @@ function MatchSchedule() {
                         {displayDate}
                       </td>
                     )}
-                    <td>{game.GAME_TIME.slice(0, 5)}</td>
+                    <td>{game.GAME_DATE.split(' ')[1]?.slice(0, 5) || '-'}</td>
                     <td>{game.HOME_TEAM_NAME} <span className="score">{game.HOME_SCORE} vs {game.AWAY_SCORE}</span> {game.AWAY_TEAM_NAME}</td>
-                    <td className="tv">SPO-T</td>
                     <td>{game.STADIUM}</td>
                     <td>{game.IS_RAINED_OUT === 'Y' ? '우천취소' : ''}</td>
                   </tr>

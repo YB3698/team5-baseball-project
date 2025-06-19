@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:18080',  // Spring Boot가 실행되는 포트
+        target: 'http://210.119.14.73:18080',  // Spring Boot가 실행되는 포트
         changeOrigin: true
       }
     }
