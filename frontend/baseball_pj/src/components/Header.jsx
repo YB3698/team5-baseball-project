@@ -43,7 +43,7 @@ const Header = () => {
             <FaBaseballBall className="baseball-icon" />
             <h1 className="logo-text">
               <Link to="/" className="logo-link">
-                Baseball <span style={{ fontWeight: '300' }}>커뮤니티</span>
+                 <span style={{ fontWeight: '700' }}>Baseball 커뮤니티</span>
               </Link>
             </h1>
           </div>
@@ -53,7 +53,7 @@ const Header = () => {
             <Link to="/playerlist" className="nav-link">선수정보</Link>
             <Link to="/teamlist" className="nav-link">팀정보</Link>
             <Link to="/playerstats" className="nav-link">기록실</Link>
-            <Link to="/mypage" className="menu-link">마이페이지</Link> 
+            <Link to="/mypage" className="nav-link">마이페이지</Link> 
           </nav>
         </div>
       </header>

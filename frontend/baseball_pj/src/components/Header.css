@@ -1,39 +1,47 @@
+/* 헤더 전체 감싸는 래퍼 */
 .header-wrapper {
-  width: 100%;
+  position: fixed;              /* 상단 고정 */
+  top: 0;
+  left: 0;
+  width: 100vw;                 /* 화면 너비 100% */
   background-color: white;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #e4e2e2;
+  z-index: 1000;                /* 다른 요소 위로 올라오게 */
 }
 
+/* 로그인/회원가입 링크 줄 */
 .top-bar {
   display: flex;
   justify-content: flex-end;
   font-size: 0.85rem;
-  padding: 0.3rem 2rem;
-  background-color: #fafafa;
+  padding: 0.5rem 4rem;
+  background-color: #d5e6f1;
   color: #222;
   gap: 1rem;
 }
 
-.top-link {
-  color: #222;
-  text-decoration: none;
-}
-
+/* 헤더 내부 구조 */
 .header {
   display: flex;
-  justify-content: center;
-  background-color: white;
-  padding: 0.8rem 2rem 0.6rem;
+  align-items: center;
+  height: 75px;              
+  padding: 20px;
+  background-color: rgb(255, 255, 255);
+  box-sizing: border-box;
 }
 
+/* 내부 컨테이너 (로고와 메뉴 영역) */
 .header-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1500px;
+  padding: 0 5rem;              
+  box-sizing: border-box;
 }
 
+/* 로고 영역 */
 .logo-wrap {
   display: flex;
   align-items: center;
@@ -41,13 +49,13 @@
 }
 
 .baseball-icon {
-  font-size: 28px;
+  font-size: 30px;
   color: rgb(91, 170, 216);
 }
 
 .logo-text {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 30px;
+  font-weight: 3000;
   margin: 0;
 }
 
@@ -56,23 +64,31 @@
   color: #222;
 }
 
+/* 메뉴 영역 */
 .nav-menu {
   display: flex;
-  gap: 20px;
+  gap: 100px;
 }
 
 .nav-link {
-  color: #222;
+  font-size: 18px;
+  color: #333 ;  
   text-decoration: none;
-  font-size: 0.95rem;
+  font-weight: 700;
 }
-
 .nav-link:hover {
-  color: crimson;
+  color: rgb(0, 0, 0);
 }
-
+.logo-link:hover {
+  color: rgb(0, 0, 0);
+}
+.top-bar a,
+.nav-menu a {
+  color: #333 ;
+  text-decoration: none;
+}
 .logout-btn {
-  background: crimson;
+  background: rgb(0, 0, 0);
   border: none;
   color: white;
   padding: 4px 10px;
