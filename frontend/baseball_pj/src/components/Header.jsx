@@ -54,6 +54,8 @@ const Header = () => {
             <Link to="/playerlist" className="nav-link">선수정보</Link>
             <Link to="/teamlist" className="nav-link">팀정보</Link>
             <Link to="/playerstats" className="nav-link">기록실</Link>
+            <Link to="/postlist" className="nav-link">게시판</Link>
+
           </nav>
         </div>
       </header>
