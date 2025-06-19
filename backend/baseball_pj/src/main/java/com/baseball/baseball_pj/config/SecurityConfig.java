@@ -37,7 +37,9 @@ public class SecurityConfig {
                     "/api/users/login",
                     // ✅ 선수 목록 API 전체 인증 없이 허용
                     "/api/players",
-                    "/api/players/**"
+                    "/api/players/**",
+                    "/api/schedule",
+                    "/api/schedule/**"
                 ).permitAll()
                 // 그 외 모든 요청은 거부
                 .anyRequest().denyAll()
