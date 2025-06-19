@@ -52,7 +52,7 @@ const PostList = () => {
       </div>
 
       <div className="post-actions" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Link to="/postform" className="write-btn small">✏ 글쓰기</Link>
+        <Link to="/postform" className="write-btn small">글쓰기</Link>
         <button className="mypage-link small" onClick={() => setMyPostsOnly(!myPostsOnly)}>
           {myPostsOnly ? '전체 글 보기' : '내가 쓴 글'}
         </button>

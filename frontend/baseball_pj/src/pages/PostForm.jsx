@@ -23,7 +23,7 @@ const PostForm = () => {
 
   return (
     <div className="post-form page-container wider-form">
-      <h2>📄 게시글 작성</h2>
+      <h2>게시글 작성</h2>
       {!submitted ? (
         <form onSubmit={handleSubmit}>
           <label>제목</label>
