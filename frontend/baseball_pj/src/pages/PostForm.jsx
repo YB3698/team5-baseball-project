@@ -1,50 +1,69 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Board.css';
 
-const PostForm = ({ isEdit = false, initialData = {} }) => {
-  const user = JSON.parse(localStorage.getItem('user'));
+const dummyUser = { nickname: '홍길동' };
+const dummyTeams = [
+  { id: 1, name: '두산 베어스' },
+  { id: 2, name: 'LG 트윈스' },
+];
 
-  const [title, setTitle] = useState(initialData.post_title || '');
-  const [content, setContent] = useState(initialData.post_content || '');
+const PostForm = () => {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [teamId, setTeamId] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!user) return alert('로그인이 필요합니다.');
-    const newPost = {
-      user_id: user.user_id,
-      user_nickname: user.nickname,
-      post_title: title,
-      post_content: content,
-      post_created_at: new Date().toISOString(),
-    };
-    console.log('Submit:', newPost);
-    alert(isEdit ? '수정 완료!' : '작성 완료!');
+    console.log('게시글 제출:', { title, content, teamId });
+    setSubmitted(true);
   };
 
   return (
-    <div className="board-form-container">
-      <h2 className="form-title">{isEdit ? '게시글 수정' : '게시글 작성'}</h2>
-      <form className="post-form" onSubmit={handleSubmit}>
-        <label>제목</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="제목을 입력하세요"
-          required
-        />
+    <div className="post-form page-container wider-form">
+      <h2>📄 게시글 작성</h2>
+      {!submitted ? (
+        <form onSubmit={handleSubmit}>
+          <label>제목</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
 
-        <label>내용</label>
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="내용을 작성하세요"
-          rows={10}
-          required
-        ></textarea>
+          <label>내용</label>
+          <textarea
+            rows={10}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            required
+          ></textarea>
 
-        <button type="submit">{isEdit ? '수정' : '작성'}하기</button>
-      </form>
+          <label>관련 팀</label>
+          <select value={teamId} onChange={(e) => setTeamId(e.target.value)} required>
+            <option value="">-- 선택 --</option>
+            {dummyTeams.map((team) => (
+              <option key={team.id} value={team.id}>{team.name}</option>
+            ))}
+          </select>
+
+          <button type="submit">작성 완료</button>
+        </form>
+      ) : (
+        <div className="submitted-view">
+          <h3>{title}</h3>
+          <p className="submitted-content">{content}</p>
+          <p className="meta">
+            작성자: {dummyUser.nickname} | 관련 팀: {dummyTeams.find(t => t.id.toString() === teamId)?.name}
+          </p>
+          <div className="actions align-right">
+            <button onClick={() => navigate('/postlist')}>목록으로</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
