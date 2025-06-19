@@ -13,35 +13,19 @@ const TeamList = () => {
       .catch(err => console.error('팀 정보 로딩 실패:', err));
   }, []);
 
+  // team_id가 1~10번인 팀만 필터링
   const filteredTeams = selectedTeamName
-    ? teams.filter(team => team.teamName === selectedTeamName)
-    : teams;
+    ? teams.filter(team => team.teamName === selectedTeamName && team.teamId >= 1 && team.teamId <= 10)
+    : teams.filter(team => team.teamId >= 1 && team.teamId <= 10);
 
   return (
     <div className="team-list-container">
       <h2>팀 목록</h2>
 
-      <div className="filter-box">
-        <label htmlFor="teamSelect">팀 선택:</label>
-        <select
-          id="teamSelect"
-          value={selectedTeamName}
-          onChange={(e) => setSelectedTeamName(e.target.value)}
-        >
-          <option value="">전체 보기</option>
-          {teams.map(team => (
-            <option key={team.teamId} value={team.teamName}>
-              {team.teamName}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="team-count">검색 결과: {filteredTeams.length}개</div>
-
       <table className="team-table">
         <thead>
           <tr>
+            <th>로고</th>
             <th>팀명</th>
             <th>마스코트</th>
             <th>홈구장</th>
@@ -51,6 +35,11 @@ const TeamList = () => {
         <tbody>
           {filteredTeams.map(team => (
             <tr key={team.teamId}>
+              <td>
+                {team.teamLogo ? (
+                  <img src={team.teamLogo} alt={team.teamName} style={{ width: 50, height: 50, objectFit: 'contain' }}/>
+                ) : ('이미지 없음')}
+              </td>
               <td>{team.teamName}</td>
               <td>{team.teamMascot}</td>
               <td>{team.teamStadium}</td>

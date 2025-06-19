@@ -32,6 +32,9 @@ public class TeamEntity {
 
     @Column(name = "team_created_at")
     private Long teamCreatedAt; // number 타입
+    
+    @Column(name = "team_logo")
+    private String teamLogo; // String 타입
 
     // ✅ Getter/Setter (Lombok 써도 됨)
     // @Getter @Setter 혹은 직접 작성
