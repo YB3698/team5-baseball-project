@@ -7,6 +7,7 @@ const TeamList = () => {
   const [selectedTeamName, setSelectedTeamName] = useState(''); // 선택한 팀명
 
   useEffect(() => {
+    console.log('api 요청 시작...')
     axios.get('/api/teams')
       .then(res => setTeams(res.data))
       .catch(err => console.error('팀 정보 로딩 실패:', err));
@@ -53,7 +54,7 @@ const TeamList = () => {
               <td>{team.teamName}</td>
               <td>{team.teamMascot}</td>
               <td>{team.teamStadium}</td>
-              <td>{new Date(team.teamCreatedAt).toLocaleDateString()}</td>
+              <td>{team.teamCreatedAt}</td>
             </tr>
           ))}
         </tbody>

@@ -39,7 +39,10 @@ public class SecurityConfig {
                     "/api/players",
                     "/api/players/**",
                     "/api/schedule",
-                    "/api/schedule/**"
+                    "/api/schedule/**",
+                    // ✅ 팀 목록 API 전체 인증 없이 허용
+                    "/api/teams",
+                    "/api/teams/**"
                 ).permitAll()
                 // 그 외 모든 요청은 거부
                 .anyRequest().denyAll()
