@@ -56,6 +56,14 @@ const Login = () => {
         <button type="submit" className="login-btn">
           로그인
         </button>
+        <button
+          type="button"
+          className="signup-btn"
+          style={{ marginTop: '10px', width: '100%' }}
+          onClick={() => window.location.href = '/signup'}
+        >
+          회원가입
+        </button>
       </form>
     </div>
   );

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Papa from 'papaparse';
 import './MatchSchedule.css';
 
 function MatchSchedule() {
@@ -8,19 +7,13 @@ function MatchSchedule() {
   const [selectedMonth, setSelectedMonth] = useState('');
 
   useEffect(() => {
-    fetch('/oracle_game_data_result2.csv')
-      .then((res) => res.text())
+    fetch('/api/schedule')
+      .then((res) => res.json())
       .then((data) => {
-        const parsedData = Papa.parse(data, {
-          header: true,
-          skipEmptyLines: true,
-        }).data;
-
-        // 날짜 유효성 검증
-        const validGames = parsedData.filter(game => {
-          return game.GAME_DATE && !isNaN(new Date(game.GAME_DATE));
-        });
-
+        // 날짜 유효성 검증 및 오름차순 정렬
+        const validGames = data.filter(game => {
+          return game.gameDate && !isNaN(new Date(game.gameDate));
+        }).sort((a, b) => new Date(a.gameDate) - new Date(b.gameDate));
         setGames(validGames);
       });
   }, []);
@@ -30,7 +23,7 @@ function MatchSchedule() {
   const defaultMonth = (today.getMonth() + 1).toString().padStart(2, '0');
 
   const filteredGames = games.filter((game) => {
-    const gameDate = new Date(game.GAME_DATE);
+    const gameDate = new Date(game.gameDate);
     if (isNaN(gameDate)) return false;
 
     const year = gameDate.getFullYear().toString();
@@ -44,7 +37,7 @@ function MatchSchedule() {
 
   // 날짜 기준으로 묶기
   const groupedGames = filteredGames.reduce((acc, game) => {
-    const dateKey = game.GAME_DATE.split(' ')[0]; // '2001-04-05'
+    const dateKey = game.gameDate.split('T')[0]; // LocalDateTime ISO 포맷 대응
     if (!acc[dateKey]) acc[dateKey] = [];
     acc[dateKey].push(game);
     return acc;
@@ -99,10 +92,10 @@ function MatchSchedule() {
                         {displayDate}
                       </td>
                     )}
-                    <td>{game.GAME_DATE.split(' ')[1]?.slice(0, 5) || '-'}</td>
-                    <td>{game.HOME_TEAM_NAME} <span className="score">{game.HOME_SCORE} vs {game.AWAY_SCORE}</span> {game.AWAY_TEAM_NAME}</td>
-                    <td>{game.STADIUM}</td>
-                    <td>{game.IS_RAINED_OUT === 'Y' ? '우천취소' : ''}</td>
+                    <td>{game.gameDate.split('T')[1]?.slice(0, 5) || '-'}</td>
+                    <td>{game.homeTeamName} <span className="score">{game.homeScore} vs {game.awayScore}</span> {game.awayTeamName}</td>
+                    <td>{game.stadium}</td>
+                    <td>{game.isRainedOut === 'Y' ? '우천취소' : ''}</td>
                   </tr>
                 ))}
               </React.Fragment>
