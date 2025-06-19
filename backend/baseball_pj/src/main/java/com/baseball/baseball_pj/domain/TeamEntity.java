@@ -18,6 +18,7 @@ public class TeamEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Column(name = "team_id")
     private Long teamId;
 
@@ -32,7 +33,7 @@ public class TeamEntity {
 
     @Column(name = "team_created_at")
     private Long teamCreatedAt; // number 타입
-    
+
     @Column(name = "team_logo")
     private String teamLogo; // String 타입
 
