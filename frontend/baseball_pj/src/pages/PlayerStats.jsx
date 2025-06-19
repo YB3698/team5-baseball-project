@@ -10,6 +10,7 @@ const PlayerStats = () => {
   const fetchData = async () => {
     try {
       const res = await axios.get(`/api/stats?year=${year}&type=${type}`);
+      console.log('받은 데이터:', type, res.data); // 데이터 타입 확인용
       setPlayers(res.data);
     } catch (err) {
       console.error('데이터 불러오기 실패:', err);
@@ -18,7 +19,7 @@ const PlayerStats = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [type, year]);
 
   const handleSearch = () => {
     fetchData();
@@ -50,11 +51,11 @@ const PlayerStats = () => {
           </thead>
           <tbody>
             {players.map((p, idx) => (
-              <tr key={idx}>
-                <td>{idx + 1}</td><td>{p.PLAYER_NAME}</td><td>{p.TEAM_NAME}</td>
-                <td>{p.HITTER_STATS_AVG}</td><td>{p.HITTER_STATS_G}</td><td>{p.HITTER_STATS_PA}</td><td>{p.HITTER_STATS_AB}</td>
-                <td>{p.HITTER_STATS_R}</td><td>{p.HITTER_STATS_H}</td><td>{p.HITTER_STATS_2B}</td><td>{p.HITTER_STATS_3B}</td>
-                <td>{p.HITTER_STATS_HR}</td><td>{p.HITTER_STATS_TB}</td><td>{p.HITTER_STATS_RBI}</td><td>{p.HITTER_STATS_SAC}</td><td>{p.HITTER_STATS_SF}</td>
+              <tr key={p.playerId || idx}>
+                <td>{idx + 1}</td><td>{p.playerName}</td><td>{p.teamId}</td>
+                <td>{p.avg}</td><td>{p.gamesPlayed}</td><td>{p.plateAppearances}</td><td>{p.atBats}</td>
+                <td>{p.runs}</td><td>{p.hits}</td><td>{p.doubles}</td><td>{p.triples}</td>
+                <td>{p.homeRuns}</td><td>{p.totalBases}</td><td>{p.runsBattedIn}</td><td>{p.sacrificeHits}</td><td>{p.sacrificeFlies}</td>
               </tr>
             ))}
           </tbody>
@@ -69,11 +70,20 @@ const PlayerStats = () => {
           </thead>
           <tbody>
             {players.map((p, idx) => (
-              <tr key={idx}>
-                <td>{idx + 1}</td><td>{p.PLAYER_NAME}</td><td>{p.TEAM_NAME}</td>
-                <td>{p.PITCHER_STATS_ERA}</td><td>{p.PITCHER_STATS_G}</td><td>{p.PITCHER_STATS_W}</td><td>{p.PITCHER_STATS_L}</td>
-                <td>{p.PITCHER_STATS_SV}</td><td>{p.PITCHER_STATS_IP}</td><td>{p.PITCHER_STATS_H}</td>
-                <td>{p.PITCHER_STATS_HR}</td><td>{p.PITCHER_STATS_BB}</td><td>{p.PITCHER_STATS_SO}</td>
+              <tr key={p.id || idx}>
+                <td>{idx + 1}</td>
+                <td>{p.playerName}</td>
+                <td>{p.teamId}</td>
+                <td>{p.era}</td>
+                <td>{p.gamesPlayed}</td>
+                <td>{p.wins}</td>
+                <td>{p.losses}</td>
+                <td>{p.saves}</td>
+                <td>{p.inningsPitched}</td>
+                <td>{p.hitsAllowed}</td>
+                <td>{p.homeRunsAllowed}</td>
+                <td>{p.walksAllowed}</td>
+                <td>{p.strikeouts}</td>
               </tr>
             ))}
           </tbody>
