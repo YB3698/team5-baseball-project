@@ -1,24 +1,33 @@
 .schedule-container {
-  padding: 40px 24px;
-  max-width: 900px;
+  padding:40px 24px;
+  max-width: 860px;
   margin: 0 auto;
   font-family: 'Pretendard', sans-serif;
-  background: #f9f9f9;
+  background-color: #f9f9f9;
+}
+
+.schedule-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 30px;
 }
 
 .schedule-title {
   font-size: 28px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   color: #222;
-  font-weight: 600;
-  /* border-bottom: 2px solid #333; */
-  padding-bottom: 8px;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 15px;
 }
 
 .schedule-controls {
   display: flex;
+  justify-content: center;
   gap: 12px;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
 .schedule-controls select {
@@ -32,39 +41,40 @@
   width: 100%;
   border-collapse: collapse;
   background: white;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  margin-top: 3px;
+  font-size: 15px;
+  table-layout: fixed;
 }
 
 .schedule-table th,
 .schedule-table td {
   border: 1px solid #ddd;
   padding: 10px 12px;
-  font-size: 15px;
   text-align: center;
+  white-space: nowrap;
 }
 
 .schedule-table thead {
   background-color: #f1f1f1;
-}
-
-.date-cell {
-  background-color: #f4f6ff;
   font-weight: bold;
-  color: #444;
+}
+
+.schedule-table tr:nth-child(even) {
+  background-color: #fcfcfc;
+}
+.date-row td {
+  border-top: 2px solid #d6d6d6 !important;  
+}
+.date-cell {
+  background-color: #d5e6f1;
+  font-weight: bold;
+  color: #333;
   vertical-align: middle;
+  font-size: 15px;
+  padding: 12px 8px;
 }
-
-/* 마우스 오버 효과 제거 */
-.schedule-table tr:hover,
-.schedule-table td:hover,
-.schedule-table th:hover {
-  background-color: inherit !important;
-  box-shadow: none !important;
-  cursor: default !important;
-}
-
 .score {
-  font-weight: 600;
+  font-weight: 700;
   color: #d84843;
 }
 
