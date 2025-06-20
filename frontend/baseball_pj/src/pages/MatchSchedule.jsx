@@ -67,7 +67,7 @@ function MatchSchedule() {
           ))}
         </select>
       </div>
-
+    <div className="schedule-card">
       <table className="schedule-table">
         <thead>
           <tr>
@@ -103,6 +103,7 @@ function MatchSchedule() {
           })}
         </tbody>
       </table>
+    </div>
     </div>
   );
 }
