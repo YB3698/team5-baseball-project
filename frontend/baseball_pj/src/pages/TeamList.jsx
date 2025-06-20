@@ -7,10 +7,15 @@ const TeamList = () => {
   const [selectedTeamName, setSelectedTeamName] = useState('');
 
   useEffect(() => {
-    axios.get('/api/teams')
-      .then(res => setTeams(res.data))
-      .catch(err => console.error('팀 정보 로딩 실패:', err));
-  }, []);
+  axios.get('/api/teams')
+    .then(res => {
+      // 한글 팀명 오름차순 정렬
+      const sortedTeams = res.data.sort((a, b) => a.teamName.localeCompare(b.teamName, 'ko'));
+      setTeams(sortedTeams);
+    })
+    .catch(err => console.error('팀 정보 로딩 실패:', err));
+}, []);
+
 
   const filteredTeams = selectedTeamName
     ? teams.filter(team => team.teamName === selectedTeamName && team.teamId >= 1 && team.teamId <= 10)
