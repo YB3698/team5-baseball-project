@@ -12,7 +12,7 @@ const dummyPosts = [
 const PostList = () => {
   const [search, setSearch] = useState('');
   const [teamFilter, setTeamFilter] = useState('');
-  const [filterClicked, setFilterClicked] = useState(true); // 초기에도 목록 보이게 설정
+  const [filterClicked, setFilterClicked] = useState(true);
   const [myPostsOnly, setMyPostsOnly] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [posts] = useState(dummyPosts);
@@ -34,13 +34,19 @@ const PostList = () => {
     <div className={`post-list page-container ${selectedPost ? '' : 'show-header'}`}>
       <h2>게시판</h2>
 
+      {/* 🔍 검색 필터 영역 */}
       <div className="post-controls">
-        <select value={teamFilter} onChange={(e) => setTeamFilter(e.target.value)} className="search-input">
+        <select
+          value={teamFilter}
+          onChange={(e) => setTeamFilter(e.target.value)}
+          className="search-select"
+        >
           <option value="">전체 팀</option>
           {teams.map((team) => (
             <option key={team.id} value={team.id}>{team.name}</option>
           ))}
         </select>
+
         <input
           type="text"
           placeholder="제목 검색"
@@ -48,18 +54,21 @@ const PostList = () => {
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"
         />
-        <button className="search-btn no-hover-effect" onClick={handleSearch}>검색</button>
+
+        <button className="search-btn" onClick={handleSearch}>검색</button>
       </div>
 
-      <div className="post-actions" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      {/* 글쓰기 / 내 글 버튼 */}
+      <div className="post-actions">
         <Link to="/postform" className="write-btn small">글쓰기</Link>
         <button className="mypage-link small" onClick={() => setMyPostsOnly(!myPostsOnly)}>
           {myPostsOnly ? '전체 글 보기' : '내가 쓴 글'}
         </button>
       </div>
 
+      {/* 게시글 리스트 */}
       {filterClicked && !selectedPost && (
-        <div className="post-box">
+        <div className="post-box post-box-custom">
           <div className="post-count">총 {filteredPosts.length}건</div>
           <table className="post-table">
             <thead>
@@ -90,11 +99,14 @@ const PostList = () => {
         </div>
       )}
 
+      {/* 상세 보기 */}
       {selectedPost && (
         <div className="post-detail">
           <h3>{selectedPost.title}</h3>
           <p className="post-content">{selectedPost.content}</p>
-          <div className="meta">작성자: {selectedPost.author} | 작성일: {selectedPost.createdAt}</div>
+          <div className="meta">
+            작성자: {selectedPost.author} | 작성일: {selectedPost.createdAt}
+          </div>
           <div className="actions align-right">
             <button>수정</button>
             <button>삭제</button>

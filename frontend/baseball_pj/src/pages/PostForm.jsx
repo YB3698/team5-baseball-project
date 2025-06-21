@@ -1,3 +1,4 @@
+// PostForm.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Board.css';
@@ -13,6 +14,7 @@ const PostForm = () => {
   const [content, setContent] = useState('');
   const [teamId, setTeamId] = useState('');
   const [submitted, setSubmitted] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -21,49 +23,72 @@ const PostForm = () => {
     setSubmitted(true);
   };
 
+  const selectedTeamName = dummyTeams.find((team) => team.id.toString() === teamId)?.name;
+
   return (
-    <div className="post-form page-container wider-form">
+    <div className="page-container">
       <h2>게시글 작성</h2>
-      {!submitted ? (
-        <form onSubmit={handleSubmit}>
-          <label>제목</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+      <div className="post-box" style={{ maxWidth: '900px', margin: '0 auto', padding: '40px' }}>
+        {!submitted ? (
+          <form onSubmit={handleSubmit} className="post-form">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div>
+                <label>제목</label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                  style={{ width: '100%' }}
+                />
+              </div>
 
-          <label>내용</label>
-          <textarea
-            rows={10}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-          ></textarea>
+              <div>
+                <label>내용</label>
+                <textarea
+                  rows={4}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  required
+                  style={{ width: '100%' }}
+                />
+              </div>
 
-          <label>관련 팀</label>
-          <select value={teamId} onChange={(e) => setTeamId(e.target.value)} required>
-            <option value="">-- 선택 --</option>
-            {dummyTeams.map((team) => (
-              <option key={team.id} value={team.id}>{team.name}</option>
-            ))}
-          </select>
+              <div>
+                <label>관련 팀</label>
+                <select
+                  value={teamId}
+                  onChange={(e) => setTeamId(e.target.value)}
+                  required
+                  style={{ width: '100%' }}
+                >
+                  <option value="">-- 선택 --</option>
+                  {dummyTeams.map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          <button type="submit">작성 완료</button>
-        </form>
-      ) : (
-        <div className="submitted-view">
-          <h3>{title}</h3>
-          <p className="submitted-content">{content}</p>
-          <p className="meta">
-            작성자: {dummyUser.nickname} | 관련 팀: {dummyTeams.find(t => t.id.toString() === teamId)?.name}
-          </p>
-          <div className="actions align-right">
-            <button onClick={() => navigate('/postlist')}>목록으로</button>
+              <div className="actions" style={{ justifyContent: 'flex-end' }}>
+                <button type="submit">작성 완료</button>
+              </div>
+            </div>
+          </form>
+        ) : (
+          <div className="submitted-view">
+            <h3>{title}</h3>
+            <p className="submitted-content">{content}</p>
+            <p className="meta">
+              작성자: {dummyUser.nickname} | 관련 팀: {selectedTeamName}
+            </p>
+            <div className="actions">
+              <button onClick={() => navigate('/postlist')}>목록으로</button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
