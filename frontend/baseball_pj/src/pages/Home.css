@@ -1,0 +1,21 @@
+/* Home 페이지 오른쪽 하단 실시간 투표현황 그래프 스타일 */
+.vote-graph-container {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 350px;
+  height: 300px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  padding: 24px 16px 16px 16px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.vote-graph-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
