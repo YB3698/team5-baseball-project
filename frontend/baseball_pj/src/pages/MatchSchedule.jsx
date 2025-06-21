@@ -1,108 +1,109 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import './MatchSchedule.css';
 
 function MatchSchedule() {
-  const [games, setGames] = useState([]);
-  const [selectedYear, setSelectedYear] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState('');
-
-  useEffect(() => {
-    fetch('/api/schedule')
-      .then((res) => res.json())
-      .then((data) => {
-        // 날짜 유효성 검증 및 오름차순 정렬
-        const validGames = data.filter(game => {
-          return game.gameDate && !isNaN(new Date(game.gameDate));
-        }).sort((a, b) => new Date(a.gameDate) - new Date(b.gameDate));
-        setGames(validGames);
-      });
-  }, []);
-
-  const today = new Date();
-  const defaultYear = today.getFullYear();
+  const today = useMemo(() => new Date(), []);
+  const defaultYear = today.getFullYear().toString();
   const defaultMonth = (today.getMonth() + 1).toString().padStart(2, '0');
 
-  const filteredGames = games.filter((game) => {
-    const gameDate = new Date(game.gameDate);
-    if (isNaN(gameDate)) return false;
+  const [selectedYear, setSelectedYear] = useState(defaultYear);
+  const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
+  const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const year = gameDate.getFullYear().toString();
-    const month = (gameDate.getMonth() + 1).toString().padStart(2, '0');
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/schedule?year=${selectedYear}&month=${selectedMonth}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const validGames = data
+          .filter(game => game.gameDate && !isNaN(new Date(game.gameDate)))
+          .sort((a, b) => new Date(a.gameDate) - new Date(b.gameDate));
+        setGames(validGames);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('API 오류:', err);
+        setLoading(false);
+      });
+  }, [selectedYear, selectedMonth]);
 
-    const filterYear = selectedYear || defaultYear.toString();
-    const filterMonth = selectedMonth || defaultMonth;
 
-    return year === filterYear && month === filterMonth;
-  });
+  const groupedGames = useMemo(() => {
+    return games.reduce((acc, game) => {
+      const dateKey = game.gameDate.split('T')[0];
+      if (!acc[dateKey]) acc[dateKey] = [];
+      acc[dateKey].push(game);
+      return acc;
+    }, {});
+  }, [games]);
 
-  // 날짜 기준으로 묶기
-  const groupedGames = filteredGames.reduce((acc, game) => {
-    const dateKey = game.gameDate.split('T')[0]; // LocalDateTime ISO 포맷 대응
-    if (!acc[dateKey]) acc[dateKey] = [];
-    acc[dateKey].push(game);
-    return acc;
-  }, {});
-
-  const handleYearChange = (e) => {
-    setSelectedYear(e.target.value);
-  };
-
-  const handleMonthChange = (e) => {
-    setSelectedMonth(e.target.value);
-  };
+  const handleYearChange = (e) => setSelectedYear(e.target.value);
+  const handleMonthChange = (e) => setSelectedMonth(e.target.value);
 
   return (
     <div className="schedule-container" style={{ paddingTop: '140px' }}>
       <h2 className="schedule-title">경기일정・결과</h2>
 
       <div className="schedule-controls">
-        <select onChange={handleYearChange} value={selectedYear || defaultYear}>
-          {Array.from({ length: 30 }, (_, i) => 2001 + i).map((year) => (
+        <select onChange={handleYearChange} value={selectedYear}>
+          {Array.from({ length: 30 }, (_, i) => (2001 + i).toString()).map((year) => (
             <option key={year} value={year}>{year}년</option>
           ))}
         </select>
-        <select onChange={handleMonthChange} value={selectedMonth || defaultMonth}>
+        <select onChange={handleMonthChange} value={selectedMonth}>
           {Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0')).map((month) => (
             <option key={month} value={month}>{month}월</option>
           ))}
         </select>
       </div>
 
-      <table className="schedule-table">
-        <thead>
-          <tr>
-            <th>날짜</th>
-            <th>시간</th>
-            <th>경기</th>
-            <th>구장</th>
-            <th>비고</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(groupedGames).map(([dateKey, games]) => {
-            const parsedDate = new Date(dateKey);
-            const displayDate = `${(parsedDate.getMonth() + 1).toString().padStart(2, '0')}. ${(parsedDate.getDate()).toString().padStart(2, '0')} (${parsedDate.toLocaleDateString('ko-KR', { weekday: 'short' })})`;
+      {loading ? (
+        <div className="loading">불러오는 중...</div>
+      ) : (
 
-            return (
-              <React.Fragment key={dateKey}>
-                {games.map((game, idx) => (
-                  <tr key={idx}>
-                    {idx === 0 && (
-                      <td rowSpan={games.length} className="date-cell">
-                        {displayDate}
-                      </td>
-                    )}
-                    <td>{game.gameDate.split('T')[1]?.slice(0, 5) || '-'}</td>
-                    <td>{game.homeTeamName} <span className="score">{game.homeScore} vs {game.awayScore}</span> {game.awayTeamName}</td>
-                    <td>{game.stadium}</td>
-                    <td>{game.isRainedOut === 'Y' ? '우천취소' : ''}</td>
-                  </tr>
-                ))}
-              </React.Fragment>
-            );
-          })}
-        </tbody>
-      </table>
+        <table className="schedule-table">
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>시간</th>
+              <th>경기</th>
+              <th>구장</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(groupedGames).map(([dateKey, games]) => {
+              const parsedDate = new Date(dateKey);
+              const displayDate = `${(parsedDate.getMonth() + 1).toString().padStart(2, '0')}. ${(parsedDate.getDate()).toString().padStart(2, '0')} (${parsedDate.toLocaleDateString('ko-KR', { weekday: 'short' })})`;
+
+              return (
+                <React.Fragment key={dateKey}>
+                  {games.map((game, idx) => (
+        
+                    <tr key={idx}>
+
+                      {idx === 0 && (
+                        <td rowSpan={games.length} className="date-cell">
+                          {displayDate}
+                        </td>
+                      )}
+                      <td>{game.gameDate.split('T')[1]?.slice(0, 5) || '-'}</td>
+
+                      <td>{game.homeTeamName} <span className="score">{game.homeScore} vs {game.awayScore}</span> {game.awayTeamName}</td>
+
+                      <td>{game.stadium}</td>
+                      <td>{game.isRainedOut === 'Y' ? '우천취소' : ''}</td>
+                    </tr>
+                  ))}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+
+      )}
+
     </div>
   );
 }

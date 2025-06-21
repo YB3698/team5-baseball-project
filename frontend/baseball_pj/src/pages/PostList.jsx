@@ -59,7 +59,7 @@ const PostList = () => {
       </div>
 
       {filterClicked && !selectedPost && (
-        <>
+        <div className="post-box">
           <div className="post-count">총 {filteredPosts.length}건</div>
           <table className="post-table">
             <thead>
@@ -87,7 +87,7 @@ const PostList = () => {
               ))}
             </tbody>
           </table>
-        </>
+        </div>
       )}
 
       {selectedPost && (
