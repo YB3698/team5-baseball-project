@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.baseball.baseball_pj.DTO.hittersStatsDto;
 import com.baseball.baseball_pj.DTO.pitcherStatsDto;
-import com.baseball.baseball_pj.domain.pitcherstatsentity;
-import com.baseball.baseball_pj.repository.pitcherstatsrepository;
 import com.baseball.baseball_pj.service.HitterStatsService;
 import com.baseball.baseball_pj.service.PitcherStatsService;
 
@@ -29,16 +27,13 @@ public class StatsController {
     @GetMapping("/stats")
     public ResponseEntity<?> getStats(@RequestParam int year, @RequestParam String type) {
         if ("hitter".equals(type)) {
-            System.out.println(type);
             List<hittersStatsDto> hitters = hitterStatsService.getHitterStatsDtos(year);
             return ResponseEntity.ok(hitters);
         } else if ("pitcher".equals(type)) {
-            System.out.println(type);
             List<pitcherStatsDto> pitchers = pitcherStatsService.getPitcherStatsDtos(year);
             return ResponseEntity.ok(pitchers);
         } else {
             return ResponseEntity.badRequest().body(List.of());
         }
     }
-
 }
