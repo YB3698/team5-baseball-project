@@ -28,12 +28,13 @@ const Header = () => {
           <>
             <span>👋 {user.nickname} 님</span>
             <button onClick={handleLogout} className="logout-btn">로그아웃</button>
-            <Link to="/mypage" className="menu-link">마이페이지</Link> 
+            <Link to="/mypage">마이페이지</Link>
           </>
         ) : (
           <>
-            <Link to="/login" className="top-link">로그인</Link>
-            <Link to="/mypage" className="menu-link">마이페이지</Link> 
+            <Link to="/login">로그인</Link>
+            <Link to="/mypage">마이페이지</Link>
+            <Link to="/management">관리자</Link>
           </>
         )}
       </div>

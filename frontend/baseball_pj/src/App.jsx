@@ -10,9 +10,9 @@ import MatchSchedule from './pages/MatchSchedule';
 import PlayerStats from './pages/PlayerStats';
 import PostForm from './pages/PostForm';
 import PostList from './pages/PostList';
+import Management from './pages/Management';
 
 function App() {
-  // 로컬스토리지에 'user'가 존재하면 로그인된 상태로 판단
   const isLoggedIn = !!localStorage.getItem('user');
 
   return (
@@ -28,8 +28,8 @@ function App() {
         <Route path="/playerstats" element={<PlayerStats />} />
         <Route path="/postform" element={<PostForm />} />
         <Route path="/postlist" element={<PostList />} />
-        
-        {/* ✅ 마이페이지는 로그인 상태일 때만 접근 가능, 아니면 로그인 페이지로 이동 */}
+        <Route path="/management" element={<Management />} /> 
+
         <Route
           path="/mypage"
           element={isLoggedIn ? <MyPage /> : <Navigate to="/login" replace />}

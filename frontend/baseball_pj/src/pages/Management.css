@@ -1,0 +1,46 @@
+.management-container {
+  padding: 140px 20px 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+}
+
+.management-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.management-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.management-tabs button {
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  background-color: #f7f7f7;
+  transition: all 0.2s ease-in-out;
+}
+
+.management-tabs button.active {
+  background-color: #2c74d8;
+  color: white;
+  font-weight: bold;
+  border-color: #2c74d8;
+}
+
+.management-content {
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.08);
+}

@@ -1,0 +1,94 @@
+.vote-management-container {
+  max-width: 1000px;
+  margin: 100px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+}
+
+.vote-title {
+  font-size: 26px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.vote-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.vote-table th,
+.vote-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+}
+
+.vote-table tr:hover {
+  background-color: #f1f9ff;
+}
+
+.vote-edit-form {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+}
+
+.vote-edit-form label {
+  display: block;
+  margin: 10px 0;
+}
+
+.vote-edit-form input {
+  padding: 6px;
+  margin-left: 10px;
+  width: 300px;
+}
+
+.vote-buttons {
+  margin-top: 16px;
+}
+
+.save-btn,
+.delete-btn,
+.edit-btn {
+  padding: 8px 14px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.save-btn {
+  background-color: #2c74d8;
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: #1e5cc0;
+}
+
+.edit-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #3e8e41;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
