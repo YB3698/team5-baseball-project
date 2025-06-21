@@ -52,7 +52,7 @@ const PlayerStats = () => {
           <tbody>
             {players.map((p, idx) => (
               <tr key={p.playerId || idx}>
-                <td>{idx + 1}</td><td>{p.playerName}</td><td>{p.teamId}</td>
+                <td>{idx + 1}</td><td>{p.playerName}</td><td>{p.teamName}</td>
                 <td>{p.avg}</td><td>{p.gamesPlayed}</td><td>{p.plateAppearances}</td><td>{p.atBats}</td>
                 <td>{p.runs}</td><td>{p.hits}</td><td>{p.doubles}</td><td>{p.triples}</td>
                 <td>{p.homeRuns}</td><td>{p.totalBases}</td><td>{p.runsBattedIn}</td><td>{p.sacrificeHits}</td><td>{p.sacrificeFlies}</td>
@@ -73,7 +73,7 @@ const PlayerStats = () => {
               <tr key={p.id || idx}>
                 <td>{idx + 1}</td>
                 <td>{p.playerName}</td>
-                <td>{p.teamId}</td>
+                <td>{p.teamName}</td>
                 <td>{p.era}</td>
                 <td>{p.gamesPlayed}</td>
                 <td>{p.wins}</td>

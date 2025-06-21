@@ -69,4 +69,8 @@ public class hitterstatsentity {
 
     @Column(name = "HITTER_STATS_SF")
     private Integer sacrificeFlies;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
+    private TeamEntity team;
 }
