@@ -25,12 +25,11 @@ public class VoteService {
     // 투표내용 엔티티 DB 접근용
     private final PollRepository pollRepository;
 
-    // 투표 여부 확인(사용자가 특정 선수에 대해 투표했는지 확인)
-    public boolean hasUserVoted(Long userId, Long playerId, Long pollId) {
-        UserEntity id = userRepository.findById(userId).orElseThrow();
-        PlayerEntity playerid = playerRepository.findById(playerId).orElseThrow();
-        PollEntity pollid = pollRepository.findById(pollId).orElseThrow();
-        return voteRepository.existsByUserIdAndPlayerIdAndPollId(userId, playerId, pollId); // 이 조합으로 투표한게 있는지 확인(true/false 반환)
+    // 투표 여부 확인(사용자가 해당 poll에 이미 투표했는지 확인)
+    public boolean hasUserVoted(Long userId, Long pollId) {
+        UserEntity user = userRepository.findById(userId).orElseThrow();
+        PollEntity poll = pollRepository.findById(pollId).orElseThrow();
+        return voteRepository.existsByUserIdAndPollId(user, poll); // user+poll 조합으로만 중복 체크
     }
 
     // 투표 저장 로직

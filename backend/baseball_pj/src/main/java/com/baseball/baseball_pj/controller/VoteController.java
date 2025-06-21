@@ -18,31 +18,24 @@ public class VoteController {
 
     // 투표 관련 비즈니스 로직을 처리하는 서비스(중복투표확인, 투표 저장 등)
     private final VoteService voteService;
-
-    /**
-     * 투표 요청을 처리하는 엔드포인트
-     * 
-     * @param userDetails 인증된 사용자 정보(Spring Security, 필요시 사용)
-     * @param voteRequest 프론트에서 전달받은 투표 정보(userId, playerId, poll)
-     * @return 투표 성공/실패 응답
-     */
+    
     @PostMapping("/votes") // POST 요청을 처리하는 엔드포인트, 프론트에서 /api/votes 경로로 요청이 오면 이 메소드가 실행됨
     public ResponseEntity<?> vote( // @AuthenticationPrincipal 어노테이션을 사용하여 현재 인증된 사용자 정보를 가져옴
             @AuthenticationPrincipal UserDetails userDetails,
             // AtuhenticationPrincipal는 현재 로그인한 사용자 정보를 자동으로 주입해주는 스프링 시큐리티의 어노테이션,
             // userDetails는 현재 로그인한 사용자의 정보를 담는 객체 타입
             @RequestBody VoteRequest voteRequest) { // @RequestBody 어노테이션을 사용하여 프론트에서 전달받은 JSON 데이터를 VoteRequest 객체로 변환
-        // userId, playerId, pollId를 프론트에서 전달받음
+        // userId, pollId를 프론트에서 전달받음
         Long userId = voteRequest.getUserId(); // 투표한 회원ID (userId) 추출
-        Long playerId = voteRequest.getPlayerId(); // 투표 대상 선수의 ID (playerId) 추출
         Long pollId = voteRequest.getPollId(); // 투표
+        Long playerId = voteRequest.getPlayerId(); // 투표한 선수ID (playerId) 추출
 
         // 중복 투표 체크: 이미 투표한 경우 409(CONFLICT) 반환
-        if (voteService.hasUserVoted(userId, playerId, pollId)) {
+        if (voteService.hasUserVoted(userId, pollId)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 투표하셨습니다.");
         }
 
-        // 투표 저장
+        // 투표 저장 (userId, playerId, pollId 모두 전달)
         voteService.saveVote(userId, playerId, pollId);
         return ResponseEntity.ok("투표 완료!");
     }
