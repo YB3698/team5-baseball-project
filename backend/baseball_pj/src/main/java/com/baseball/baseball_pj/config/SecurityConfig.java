@@ -44,7 +44,9 @@ public class SecurityConfig {
                     "/api/teams",
                     "/api/teams/**",
                     "/api/stats",
-                    "/api/stats/**"
+                    "/api/stats/**",
+                    "/api/ranks",
+                    "/api/ranks/**"
                 ).permitAll()
                 // 그 외 모든 요청은 거부
                 .anyRequest().denyAll()
