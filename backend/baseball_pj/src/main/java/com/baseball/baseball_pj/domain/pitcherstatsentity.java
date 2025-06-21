@@ -78,4 +78,8 @@ public class pitcherstatsentity {
 
     @Column(name = "PITCHER_STATS_WHIP")
     private Double whip;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
+    private TeamEntity team;
 }
