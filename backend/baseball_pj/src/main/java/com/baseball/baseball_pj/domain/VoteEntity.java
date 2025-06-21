@@ -19,15 +19,18 @@ public class VoteEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    private UserEntity user;
+    private UserEntity userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "player_id", referencedColumnName = "player_id")
-    private PlayerEntity player;
+    private PlayerEntity playerId;
 
-    @Column(name = "poll")
-    private String poll;
+    @Column(name = "poll_id")
+    private PollEntity pollId;
 
     @Column(name = "voted_at")
     private LocalDateTime votedAt;
+
+    @Column(name = "voted_name")
+    private LocalDateTime votedName;
 }

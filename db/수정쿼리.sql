@@ -39,6 +39,7 @@ INSERT INTO TEAMS VALUES (11, '고양', '동글이&턱돌이&돔돔이&슈퍼돔
 
 COMMIT;
 
+-----------------------------------------------------------------------------------------------
 -- 3. PLAYERS 테이블 컬럼 추가
 ALTER TABLE PLAYERS ADD (
 	PALYER_back_number     NUMBER,
@@ -62,5 +63,8 @@ SELECT p.PLAYER_ID,
  FROM PLAYERS p, TEAMS t
 WHERE p.TEAM_ID = t.TEAM_ID;
 
+---------------------------------------------------------------------------------------------------
 
-
+-- 6. VOTE 테이블 컬럼 추가
+ALTER TABLE VOTE ADD (VOTE_NAME VARCHAR2(255));
+COMMIT;
