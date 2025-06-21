@@ -1,4 +1,4 @@
-package com.baseball.baseball_pj.dto;
+package com.baseball.baseball_pj.DTO;
 
 public class PollResponse {
     
