@@ -60,7 +60,7 @@ select.signup-input {
 .signup-input:focus,
 .signup-input-row input:focus,
 .signup-input-row select:focus {
-  border: 1.5px solid #e84c64;
+  border: 1.5px solid  #2c74d8;
   outline: none;
 }
 .signup-check {
@@ -75,7 +75,7 @@ select.signup-input {
 }
 .signup-btn {
   width: 100%;
-  background: #e84c64;
+  background:  #2c74d8;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -87,7 +87,7 @@ select.signup-input {
   transition: background 0.2s;
 }
 .signup-btn:hover {
-  background: #d13b54;
+  background:  #2c74d8;
 }
 .signup-agree-box {
   margin: 12px 0 0 0;
@@ -100,10 +100,10 @@ select.signup-input {
 }
 .signup-agree input[type="checkbox"] {
   margin-right: 8px;
-  accent-color: #e84c64;
+  accent-color:  #2c74d8;
 }
 .signup-agree.essential {
-  color: #e84c64;
+  color:  #2c74d8;
   font-weight: 500;
 }
 .signup-agree .detail-link {
