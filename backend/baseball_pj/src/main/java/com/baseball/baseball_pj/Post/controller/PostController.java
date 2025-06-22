@@ -1,5 +1,7 @@
 package com.baseball.baseball_pj.Post.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,5 +24,11 @@ public class PostController {
             e.printStackTrace(); // 콘솔에 에러 로그 출력
             throw e; // 클라이언트에 에러 전달
         }
+    }
+
+    // 전체 게시글 조회
+    @GetMapping("/posts")
+    public List<PostEntity> getAllPosts() {
+        return postRepository.findAll();
     }
 }

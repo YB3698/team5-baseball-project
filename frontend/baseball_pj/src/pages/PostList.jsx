@@ -1,37 +1,38 @@
-// PostList.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Board.css';
-
-const dummyPosts = [
-  { id: 1, teamId: 2, title: '경기 후기', author: '홍길동', createdAt: '2025-06-19', views: 14, content: '경기 정말 멋졌어요!' },
-  { id: 2, teamId: 1, title: '선수 이적 소식', author: '임꺽정', createdAt: '2025-06-17', views: 21, content: '누가 이적했는지 아세요?' },
-];
 
 const PostList = () => {
   const [search, setSearch] = useState('');
   const [teamFilter, setTeamFilter] = useState('');
   const [myPostsOnly, setMyPostsOnly] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [posts] = useState(dummyPosts);
+  const [posts, setPosts] = useState([]); // ← DB에서 받아올 게시글 목록
   const [teams, setTeams] = useState([]);
 
+  // 게시글 목록 불러오기
   useEffect(() => {
-    // 팀 목록을 백엔드에서 받아옴 (team_logo는 이미지 링크)
+    fetch('/api/posts')
+      .then(res => res.json())
+      .then(data => setPosts(data))
+      .catch(err => console.error('게시글 목록 로딩 실패:', err));
+  }, []);
+
+  // 팀 목록 불러오기
+  useEffect(() => {
     fetch('/api/teams')
       .then(res => res.json())
       .then(data => setTeams(data))
       .catch(err => console.error('팀 목록 로딩 실패:', err));
   }, []);
 
-  // 검색 버튼 없이 바로 필터 적용
+  // 검색/필터 적용
   const filteredPosts = posts.filter((post) => {
-    const matchesSearch = post.title.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = post.postTitle?.toLowerCase().includes(search.toLowerCase());
     const matchesTeam = !teamFilter || String(post.teamId) === String(teamFilter);
-    const matchesAuthor = !myPostsOnly || post.author === dummyUser.nickname;
-    return matchesSearch && matchesTeam && matchesAuthor;
+    // author 필드는 백엔드에서 내려주는 경우에만 사용
+    return matchesSearch && matchesTeam;
   });
-  console.log('search:', search, 'teamFilter:', teamFilter, 'myPostsOnly:', myPostsOnly, 'filteredPosts:', filteredPosts);
 
   return (
     <div className={`post-list page-container ${selectedPost ? '' : 'show-header'}`}>
@@ -46,7 +47,9 @@ const PostList = () => {
         >
           <option value="">전체 팀</option>
           {teams.map((team) => (
-            <option key={team.teamId} value={team.teamId}>{team.teamName}</option>
+            <option key={team.teamId || team.id} value={team.teamId || team.id}>
+              {team.teamName || team.name}
+            </option>
           ))}
         </select>
 
@@ -59,7 +62,7 @@ const PostList = () => {
         />
       </div>
 
-      {/* ✏️ 글쓰기 버튼만 유지 */}
+      {/* ✏️ 글쓰기 버튼 */}
       <div className="post-actions">
         <Link to="/postform" className="write-btn small">글쓰기</Link>
       </div>
@@ -80,22 +83,22 @@ const PostList = () => {
             </thead>
             <tbody>
               {filteredPosts.map((post, idx) => {
-                const team = teams.find(t => t.teamId === post.teamId);
+                const team = teams.find(t => (t.teamId || t.id) === post.teamId);
                 return (
                   <tr
-                    key={post.id || idx}
+                    key={post.postId || post.id || idx}
                     onClick={() => setSelectedPost(post)}
                     className="hoverable-row"
                   >
                     <td>
                       {team && team.teamLogo
-                        ? <img src={team.teamLogo} alt={team.teamName} style={{ width: "50px"}} />
-                        : post.teamName}
+                        ? <img src={team.teamLogo} alt={team.teamName || team.name} style={{ width: "50px"}} />
+                        : team?.teamName || team?.name || post.teamId}
                     </td>
-                    <td className="title-cell">{post.title}</td>
-                    <td>{post.author}</td>
-                    <td>{post.createdAt}</td>
-                    <td>{post.views}</td>
+                    <td className="title-cell">{post.postTitle || post.title}</td>
+                    <td>{post.author || post.userId}</td>
+                    <td>{post.postCreatedAt || post.createdAt}</td>
+                    <td>{post.views ?? '-'}</td>
                   </tr>
                 );
               })}
@@ -109,26 +112,29 @@ const PostList = () => {
         </div>
       )}
 
-      {/* 🔍 게시글 상세 보기 */}
+      {/* 게시글 상세 보기 */}
+      
       {selectedPost && (
+        <div className="detail-actions">
+       
+      <button className="back-btn" onClick={() => setSelectedPost(null)}>뒤로 가기</button>
         <div className="post-detail">
-          <h3>{selectedPost.title}</h3>
-          <p className="post-content">{selectedPost.content}</p>
+          <h3>{selectedPost.postTitle || selectedPost.title}</h3>
+          <p className="post-content">{selectedPost.postContent || selectedPost.content}</p>
           <div className="meta">
-            작성자: {selectedPost.author} | 작성일: {selectedPost.createdAt}
+            작성자: {selectedPost.author || selectedPost.userId} | 작성일: {selectedPost.postCreatedAt || selectedPost.createdAt}
           </div>
           <div className="actions align-right">
-            <button>수정</button>
-            <button>삭제</button>
-            <button onClick={() => setSelectedPost(null)}>뒤로 가기</button>
+            
+            
+            <button className="edit-btn" onClick={() => alert('수정 기능은 추후 구현!')}>수정</button>
+      <button className="delete-btn" onClick={() => alert('삭제 기능은 추후 구현!')}>삭제</button>
+            
           </div>
-          <div className="comment-box">
-            <h4>댓글</h4>
-            <textarea rows={4} placeholder="댓글을 입력하세요"></textarea>
-            <button>댓글 작성</button>
           </div>
-        </div>
-      )}
+    </div>
+  )
+      }
     </div>
   );
 };

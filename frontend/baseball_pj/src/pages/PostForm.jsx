@@ -97,8 +97,10 @@ const PostForm = () => {
               <option key={team.id} value={team.id}>{team.name}</option>
             ))}
           </select>
-
-          <button type="submit">작성 완료</button>
+          <div className="form-btns">
+  <button type="button" className="back-btn" onClick={() => navigate(-1)}>뒤로 가기</button>
+  <button type="submit" className="submit-btn">작성 완료</button>
+</div>
         </form>
       ) : (
         <div className="submitted-view">
