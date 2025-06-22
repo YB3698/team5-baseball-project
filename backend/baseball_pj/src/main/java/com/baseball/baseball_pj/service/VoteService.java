@@ -1,58 +1,74 @@
 package com.baseball.baseball_pj.service;
 
-import com.baseball.baseball_pj.domain.PlayerEntity;
 import com.baseball.baseball_pj.domain.UserEntity;
-import com.baseball.baseball_pj.domain.VoteEntity;
-import com.baseball.baseball_pj.repository.VoteRepository;
-import com.baseball.baseball_pj.repository.PlayerRepository;
 import com.baseball.baseball_pj.repository.UserRepository;
+import com.baseball.baseball_pj.domain.PollEntity;
+import com.baseball.baseball_pj.domain.VoteEntity;
+import com.baseball.baseball_pj.domain.VoteOptionEntity;
+import com.baseball.baseball_pj.DTO.VoteRequestDTO;
+import com.baseball.baseball_pj.DTO.VoteResultDTO;
+import com.baseball.baseball_pj.repository.PollRepository;
+import com.baseball.baseball_pj.repository.VoteOptionRepository;
+import com.baseball.baseball_pj.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-/**
- * 투표 관련 비즈니스 로직을 담당하는 서비스 클래스
- */
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class VoteService {
-    // 투표 엔티티 DB 접근용
-    private final VoteRepository voteRepository;
-    // 사용자 엔티티 DB 접근용
-    private final UserRepository userRepository;
-    // 선수 엔티티 DB 접근용
-    private final PlayerRepository playerRepository;
 
-    /**
-     * 이미 해당 유저가 해당 선수에게 해당 poll(투표)에 투표했는지 확인
-     * 
-     * @param userId   사용자 PK
-     * @param playerId 선수 PK
-     * @param poll     투표 기간/이름
-     * @return true: 이미 투표함, false: 아직 투표 안함
-     */
-    public boolean hasUserVoted(Long userId, Long playerId, String poll) {
-        UserEntity user = userRepository.findById(userId).orElseThrow(); // userId로 UserEntity 조회
-        PlayerEntity player = playerRepository.findById(playerId).orElseThrow(); // playerId로 PlayerEntity 조회
-        return voteRepository.existsByUserAndPlayerAndPoll(user, player, poll); // 중복 투표 여부 반환
+    private final VoteRepository voteRepository;
+    private final PollRepository pollRepository;
+    private final VoteOptionRepository voteOptionRepository;
+    private final UserRepository userRepository;
+
+    // ✅ 사용자 투표 등록
+    public void vote(VoteRequestDTO dto) {
+        voteRepository.findByUser_IdAndPoll_PollId(dto.getUserId(), dto.getPollId())
+                .ifPresent(v -> { throw new IllegalStateException("이미 투표했습니다."); });
+
+        UserEntity user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+
+        PollEntity poll = pollRepository.findById(dto.getPollId())
+                .orElseThrow(() -> new RuntimeException("투표 항목 없음"));
+
+        VoteOptionEntity option = voteOptionRepository.findById(dto.getOptionId())
+                .orElseThrow(() -> new RuntimeException("선택지 없음"));
+
+        VoteEntity vote = VoteEntity.builder()
+                .user(user)
+                .poll(poll)
+                .option(option)
+                .votedAt(LocalDateTime.now())
+                .build();
+
+        voteRepository.save(vote);
     }
 
-    /**
-     * 투표 저장(실제 투표 DB에 기록)
-     * 
-     * @param userId   사용자 PK
-     * @param playerId 선수 PK
-     * @param poll     투표 기간
-     */
-    @Transactional
-    public void saveVote(Long userId, Long playerId, String poll) {
-        UserEntity user = userRepository.findById(userId).orElseThrow(); // userId로 UserEntity 조회
-        PlayerEntity player = playerRepository.findById(playerId).orElseThrow(); // playerId로 PlayerEntity 조회
-        VoteEntity vote = VoteEntity.builder()
-                .user(user) // 투표한 유저
-                .player(player) // 투표 대상 선수
-                .poll(poll) // 투표 기간/이름
-                .build();
-        voteRepository.save(vote); // 투표 DB에 저장
+    // ✅ 투표 결과 (항목별 선택지 통계)
+    public List<VoteResultDTO> getVoteResults(Long pollId) {
+        List<VoteEntity> votes = voteRepository.findByPoll_PollId(pollId);
+
+        return votes.stream()
+                .collect(Collectors.groupingBy(
+                        v -> v.getOption().getOptionId(),
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .map(e -> {
+                    VoteOptionEntity option = voteOptionRepository.findById(e.getKey()).orElse(null);
+                    return VoteResultDTO.builder()
+                            .optionId(e.getKey())
+                            .description(option != null ? option.getDescription() : "Unknown")
+                            .voteCount(e.getValue())
+                            .build();
+                })
+                .sorted(Comparator.comparingLong(VoteResultDTO::getVoteCount).reversed())
+                .collect(Collectors.toList());
     }
 }

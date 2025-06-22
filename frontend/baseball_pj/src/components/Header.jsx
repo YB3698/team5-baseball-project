@@ -28,7 +28,7 @@ const Header = () => {
           <>
             <span>👋 {user.nickname} 님</span>
             <button onClick={handleLogout} className="logout-btn">로그아웃</button>
-            <Link to="/mypage">마이페이지</Link>
+            <Link to="/mypage">마이페이지</Link> 
           </>
         ) : (
           <>
