@@ -2,32 +2,33 @@ package com.baseball.baseball_pj.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "VOTES")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Table(name = "VOTE", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"USER_ID", "POLL_ID"})
+})
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class VoteEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "vote_id")
+    @Column(name = "VOTE_ID")
     private Long voteId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @ManyToOne
+    @JoinColumn(name = "USER_ID")
     private UserEntity user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "player_id", referencedColumnName = "player_id")
-    private PlayerEntity player;
+    @ManyToOne
+    @JoinColumn(name = "POLL_ID")
+    private PollEntity poll;
 
-    @Column(name = "poll")
-    private String poll;
+    @ManyToOne
+    @JoinColumn(name = "OPTION_ID")
+    private VoteOptionEntity option;
 
-    @Column(name = "voted_at")
+    @Column(name = "VOTED_AT")
     private LocalDateTime votedAt;
 }

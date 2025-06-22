@@ -2,6 +2,7 @@ package com.baseball.baseball_pj.controller;
 
 // 사용자 관련 REST API를 제공하는 컨트롤러 클래스입니다.
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 // UserRepository: 사용자 DB 접근을 위한 JPA 리포지토리
 import com.baseball.baseball_pj.domain.UserEntity;
 import com.baseball.baseball_pj.repository.UserRepository;
+import com.baseball.baseball_pj.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -102,5 +104,12 @@ public class UserController {
     @GetMapping("/check-nickname")
     public boolean checkNickname(@RequestParam String nickname) {
         return userRepository.findByNickname(nickname).isEmpty();
+    }
+
+    private final UserService userService;
+
+    @GetMapping("/team-distribution")
+    public ResponseEntity<List<Map<String, Object>>> getTeamDistribution() {
+        return ResponseEntity.ok(userService.getUserCountByTeam());
     }
 }

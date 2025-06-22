@@ -35,6 +35,9 @@ public class SecurityConfig {
                     "/api/users/check-email",
                     "/api/users/check-nickname",
                     "/api/users/login",
+                    "/api/users/team-distribution",
+                    // ✅ 관리자 전용 API는 인증된 사용자만 접근 허용
+                    "/api/admin/**",
                     // ✅ 선수 목록 API 전체 인증 없이 허용
                     "/api/players",
                     "/api/players/**",
@@ -46,7 +49,10 @@ public class SecurityConfig {
                     "/api/stats",
                     "/api/stats/**",
                     "/api/ranks",
-                    "/api/ranks/**"
+                    "/api/ranks/**",
+                    "/api/votes",
+                    "/api/votes/**"
+                    // ✅ 투표 관련 API 전체 인증 없이 허용
                 ).permitAll()
                 // 그 외 모든 요청은 거부
                 .anyRequest().denyAll()
