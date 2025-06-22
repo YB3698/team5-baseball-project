@@ -1,6 +1,5 @@
-/* 🧾 공통 레이아웃 스타일 */
 .playerstats-container {
-  padding: 140px 20px 60px;
+  padding: 140px 20px 60px; 
   font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
 }
 
@@ -14,7 +13,6 @@
   border-bottom: 1px solid #eee;
 }
 
-/* 🔍 필터 영역 */
 .playerstats-controls {
   display: flex;
   justify-content: center;
@@ -26,11 +24,12 @@
 
 .playerstats-controls select,
 .playerstats-controls button {
-  height: 40px;
-  font-size: 15px;
+  height:40px;
   padding: 0 14px;
+  font-size: 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  height: 36px;
   box-sizing: border-box;
 }
 
@@ -46,7 +45,6 @@
   background-color: #1e5cc0;
 }
 
-/* 📦 하얀 박스 카드 스타일 */
 .playerstats-card {
   max-width: 1000px;
   margin: 0 auto;
@@ -56,7 +54,7 @@
   box-shadow: 0 7px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* 📊 테이블 스타일 */
+/* 테이블 */
 .playerstats-table {
   width: 100%;
   border-collapse: collapse;

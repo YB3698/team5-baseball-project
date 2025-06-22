@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import UserManagement from './UserManagement';
-import VoteManagement from './VoteManagement';
+import PollAdmin from './admin/PollAdmin';
 import './Management.css';
 
 const Management = () => {
@@ -11,7 +11,7 @@ const Management = () => {
       case 'user':
         return <UserManagement />;
       case 'vote':
-        return <VoteManagement />;
+        return <PollAdmin />;
       default:
         return null;
     }
