@@ -4,29 +4,23 @@ import './UserManagement.css';
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [filters, setFilters] = useState({ email: '', nickname: '', teamId: '', role: '' });
+  const [filters, setFilters] = useState({ email: '', nickname: '', favoriteTeamId: '', role: '' });
 
-  // 더미 데이터로 초기화 (API 대체)
+  // 회원 목록을 백엔드에서 받아옴
   useEffect(() => {
-    const dummyData = [
-      {
-        id: 1,
-        email: 'test1@example.com',
-        nickname: '닉네임1',
-        favoriteTeamId: 1,
-        role: 'user',
-        createdAt: '2024-06-20T12:00:00'
-      },
-      {
-        id: 2,
-        email: 'admin@example.com',
-        nickname: '관리자',
-        favoriteTeamId: 2,
-        role: 'admin',
-        createdAt: '2024-06-19T09:30:00'
-      },
-    ];
-    setUsers(dummyData);
+    fetch('/api/admin/users')
+      .then(res => {
+        console.log('status:', res.status);
+        console.log('headers:', [...res.headers.entries()]);
+        return res.text(); // 먼저 text로 받음
+  })
+  .then(text => {
+    console.log('응답 본문:', text); // 여기가 핵심
+    const data = JSON.parse(text || '[]'); // text가 없으면 빈 배열
+    setUsers(Array.isArray(data) ? data : []);
+  })
+  .catch(err => console.error('회원 목록 로딩 실패:', err));
+
   }, []);
 
   const handleFilterChange = (e) => {
@@ -38,42 +32,54 @@ const UserManagement = () => {
     return (
       user.email.includes(filters.email) &&
       user.nickname.includes(filters.nickname) &&
-      String(user.favoriteTeamId).includes(filters.teamId) &&
+      String(user.favoriteTeamId).includes(filters.favoriteTeamId) &&
       user.role.includes(filters.role)
     );
   });
 
+  // 회원 정보 수정
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setSelectedUser({ ...selectedUser, [name]: value });
   };
 
+  // 회원 정보 저장(수정)
   const handleSave = () => {
     if (!selectedUser) return;
-    setUsers(users.map(u => u.id === selectedUser.id ? selectedUser : u));
-    setSelectedUser(null);
+    fetch(`/api/admin/users/${selectedUser.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(selectedUser)
+    })
+      .then(res => res.json())
+      .then(data => {
+        setUsers(users.map(u => u.id === data.id ? data : u));
+        setSelectedUser(null);
+      })
+      .catch(err => alert('수정 실패: ' + err));
   };
 
+  // 회원 삭제
   const handleDelete = () => {
     if (!selectedUser) return;
-    setUsers(users.filter(u => u.id !== selectedUser.id));
-    setSelectedUser(null);
+    fetch(`/api/admin/users/${selectedUser.id}`, { method: 'DELETE' })
+      .then(() => {
+        setUsers(users.filter(u => u.id !== selectedUser.id));
+        setSelectedUser(null);
+      })
+      .catch(err => alert('삭제 실패: ' + err));
   };
 
   return (
     <div className="user-management-container">
       <h2 className="user-management-title">회원 관리</h2>
-
-      {/* 필터 입력 */}
       <div className="filter-section">
         <input name="email" placeholder="이메일" value={filters.email} onChange={handleFilterChange} />
         <input name="nickname" placeholder="닉네임" value={filters.nickname} onChange={handleFilterChange} />
-        <input name="teamId" placeholder="팀 ID" value={filters.teamId} onChange={handleFilterChange} />
+        <input name="favoriteTeamId" placeholder="팀 ID" value={filters.favoriteTeamId} onChange={handleFilterChange} />
         <input name="role" placeholder="권한" value={filters.role} onChange={handleFilterChange} />
         <button className="search-btn">검색</button>
       </div>
-
-      {/* 수정 폼 */}
       {selectedUser && (
         <div className="user-edit-form">
           <h4>회원 수정</h4>
@@ -95,8 +101,6 @@ const UserManagement = () => {
           </div>
         </div>
       )}
-
-      {/* 회원 목록 */}
       <table className="user-management-table">
         <thead>
           <tr>

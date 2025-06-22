@@ -1,4 +1,4 @@
-package com.baseball.baseball_pj.DTO;
+package com.baseball.baseball_pj.User.DTO;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,9 +8,8 @@ import lombok.Setter;
 @Setter
 public class UserAdminRequestDTO {
     private Long id;
-    private String email    ;
-    private String password;
+    private String email;
     private String nickname;
-    private Long TeamId;
+    private Long favoriteTeamId;
     private String role;
 }

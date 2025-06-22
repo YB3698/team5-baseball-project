@@ -54,6 +54,7 @@ public class SecurityConfig {
                     "/api/votes/**"
                     // ✅ 투표 관련 API 전체 인증 없이 허용
                 ).permitAll()
+                // .requestMatchers("/api/admin/**").permitAll()
                 // 그 외 모든 요청은 거부
                 .anyRequest().denyAll()
             )

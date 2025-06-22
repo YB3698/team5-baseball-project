@@ -1,4 +1,4 @@
-package com.baseball.baseball_pj.DTO;
+package com.baseball.baseball_pj.User.DTO;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +14,7 @@ public class UserAdminResponseDTO {
     private Long id;
     private String email;
     private String nickname;
-    private Long teamId;
+    private Long favoriteTeamId;
     private String role;
     private LocalDate createdAt;
 }
