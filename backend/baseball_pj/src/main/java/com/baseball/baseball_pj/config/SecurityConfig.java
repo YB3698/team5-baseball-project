@@ -51,8 +51,14 @@ public class SecurityConfig {
                     "/api/ranks",
                     "/api/ranks/**",
                     "/api/votes",
-                    "/api/votes/**"
+                    "/api/votes/**",
                     // ✅ 투표 관련 API 전체 인증 없이 허용
+                    "/api/votes",
+                    "/api/votes/**",
+                    // 게시글 작성 API 인증 없이 접근 허용
+                    "/api/posts",
+                    "/api/posts/**"
+
                 ).permitAll()
                 // 그 외 모든 요청은 거부
                 .anyRequest().denyAll()
