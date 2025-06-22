@@ -8,10 +8,9 @@ import lombok.Setter;
 @Setter
 public class UserAdminRequestDTO {
     private Long id;
-    private String nickname;
-    private String email;
+    private String email    ;
     private String password;
+    private String nickname;
+    private Long TeamId;
     private String role;
-    private Long favoriteTeamId;
-    // 필요시 상태 등 추가
 }
