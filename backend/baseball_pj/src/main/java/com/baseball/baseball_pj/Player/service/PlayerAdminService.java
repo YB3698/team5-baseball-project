@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.baseball.baseball_pj.Player.DTO.PlayerAdminRequestDTO;
 import com.baseball.baseball_pj.Player.DTO.PlayerAdminResponseDTO;
 import com.baseball.baseball_pj.Player.repository.PlayerRepository;
-import com.baseball.baseball_pj.Team.repository.TeamRepository;
 
 import lombok.*;
 
@@ -16,7 +15,7 @@ import lombok.*;
 public class PlayerAdminService {
 
     private final PlayerRepository playerRepository;
-    private final TeamRepository teamRepository; // 팀 DB 접근을 위한 리포지토리
+
 
     // 전체 선수 목록 조회 (관리자용)
     public List<PlayerAdminResponseDTO> getAllPlayers() {
@@ -26,7 +25,7 @@ public class PlayerAdminService {
                         .playerName(player.getPlayerName())
                         .playerPosition(player.getPlayerPosition())
                         .playerBackNumber(player.getPlayerBackNumber() != null ? Long.valueOf(player.getPlayerBackNumber().toString()) : null)
-                        .playerBirthDate(player.getPlayerBirthDate() != null ? java.time.LocalDate.parse(player.getPlayerBirthDate()) : null)
+                        .playerBirthDate(player.getPlayerBirthDate() != null ? parseDate(player.getPlayerBirthDate()) : null)
                         .playerHeightWeight(player.getPlayerHeightWeight())
                         .playerEducationPath(player.getPlayerEducationPath())
                         .teamId(player.getTeamId() != null ? Long.valueOf(player.getTeamId().toString()) : null)
@@ -53,7 +52,7 @@ public class PlayerAdminService {
                 .playerName(player.getPlayerName())
                 .playerPosition(player.getPlayerPosition())
                 .playerBackNumber(player.getPlayerBackNumber() != null ? Long.valueOf(player.getPlayerBackNumber().toString()) : null)
-                .playerBirthDate(player.getPlayerBirthDate() != null ? java.time.LocalDate.parse(player.getPlayerBirthDate()) : null)
+                .playerBirthDate(player.getPlayerBirthDate() != null ? parseDate(player.getPlayerBirthDate()) : null)
                 .playerHeightWeight(player.getPlayerHeightWeight())
                 .playerEducationPath(player.getPlayerEducationPath())
                 .teamId(player.getTeamId() != null ? Long.valueOf(player.getTeamId().toString()) : null)
@@ -74,10 +73,17 @@ public class PlayerAdminService {
                 .playerName(player.getPlayerName())
                 .playerPosition(player.getPlayerPosition())
                 .playerBackNumber(player.getPlayerBackNumber() != null ? Long.valueOf(player.getPlayerBackNumber().toString()) : null)
-                .playerBirthDate(player.getPlayerBirthDate() != null ? java.time.LocalDate.parse(player.getPlayerBirthDate()) : null)
+                .playerBirthDate(player.getPlayerBirthDate() != null ? parseDate(player.getPlayerBirthDate()) : null)
                 .playerHeightWeight(player.getPlayerHeightWeight())
                 .playerEducationPath(player.getPlayerEducationPath())
                 .teamId(player.getTeamId() != null ? Long.valueOf(player.getTeamId().toString()) : null)
                 .build();
+    }
+
+    // 아래에 유틸 메서드 추가
+    private java.time.LocalDate parseDate(String dateStr) {
+        if (dateStr == null) return null;
+        String onlyDate = dateStr.split(" ")[0]; // 공백 기준 앞부분만 추출
+        return java.time.LocalDate.parse(onlyDate);
     }
 }
