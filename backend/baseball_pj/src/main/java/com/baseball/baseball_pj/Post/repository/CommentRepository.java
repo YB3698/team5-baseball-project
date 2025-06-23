@@ -19,4 +19,7 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
 
     // 게시글의 전체 댓글 수
     Long countByPost_PostId(Long postId);
+
+    // 게시글의 모든 최상위 댓글 반환 (parent가 null)
+    List<CommentEntity> findByPost_PostIdAndParentIsNullOrderByCreatedAt(Long postId);
 }

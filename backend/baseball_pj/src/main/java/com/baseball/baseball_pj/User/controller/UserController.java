@@ -85,6 +85,7 @@ public class UserController {
         result.put("userId", user.getId());
         result.put("email", user.getEmail());
         result.put("nickname", user.getNickname());
+        result.put("role", user.getRole());
         result.put("teamId", user.getFavoriteTeamId());
 
         return ResponseEntity.ok(result);

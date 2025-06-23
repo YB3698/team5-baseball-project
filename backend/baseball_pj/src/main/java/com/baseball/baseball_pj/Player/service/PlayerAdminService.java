@@ -24,7 +24,7 @@ public class PlayerAdminService {
                         .playerName(player.getPlayerName())
                         .playerPosition(player.getPlayerPosition())
                         .playerBackNumber(player.getPlayerBackNumber() != null ? Long.valueOf(player.getPlayerBackNumber().toString()) : null)
-                        .playerBirthDate(player.getPlayerBirthDate() != null ? java.time.LocalDate.parse(player.getPlayerBirthDate()) : null)
+                        .playerBirthDate(player.getPlayerBirthDate() != null ? parseDate(player.getPlayerBirthDate()) : null)
                         .playerHeightWeight(player.getPlayerHeightWeight())
                         .playerEducationPath(player.getPlayerEducationPath())
                         .teamId(player.getTeamId() != null ? Long.valueOf(player.getTeamId().toString()) : null)
@@ -52,10 +52,8 @@ public class PlayerAdminService {
                 .playerPosition(player.getPlayerPosition())
                 .playerBackNumber(player.getPlayerBackNumber() != null ? Long.valueOf(player.getPlayerBackNumber().toString()) : null)
                 .playerBirthDate(player.getPlayerBirthDate() != null ? java.time.LocalDate.parse(player.getPlayerBirthDate()) : null)
-                .playerHeightWeight(player.getPlayerHeightWeight())
-                .playerEducationPath(player.getPlayerEducationPath())
+                .playerBirthDate(player.getPlayerBirthDate() != null ? parseDate(player.getPlayerBirthDate()) : null)
                 .teamId(player.getTeamId() != null ? Long.valueOf(player.getTeamId().toString()) : null)
-                .build();
     }
 
     // 선수 삭제
@@ -73,9 +71,17 @@ public class PlayerAdminService {
                 .playerPosition(player.getPlayerPosition())
                 .playerBackNumber(player.getPlayerBackNumber() != null ? Long.valueOf(player.getPlayerBackNumber().toString()) : null)
                 .playerBirthDate(player.getPlayerBirthDate() != null ? java.time.LocalDate.parse(player.getPlayerBirthDate()) : null)
+                .playerBirthDate(player.getPlayerBirthDate() != null ? parseDate(player.getPlayerBirthDate()) : null)
                 .playerHeightWeight(player.getPlayerHeightWeight())
                 .playerEducationPath(player.getPlayerEducationPath())
                 .teamId(player.getTeamId() != null ? Long.valueOf(player.getTeamId().toString()) : null)
                 .build();
+    }
+
+    // 아래에 유틸 메서드 추가
+    private java.time.LocalDate parseDate(String dateStr) {
+        if (dateStr == null) return null;
+        String onlyDate = dateStr.split(" ")[0]; // 공백 기준 앞부분만 추출
+        return java.time.LocalDate.parse(onlyDate);
     }
 }

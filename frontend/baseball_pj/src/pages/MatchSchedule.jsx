@@ -28,6 +28,7 @@ function MatchSchedule() {
       });
   }, [selectedYear, selectedMonth]);
 
+
   const groupedGames = useMemo(() => {
     return games.reduce((acc, game) => {
       const dateKey = game.gameDate.split('T')[0];
@@ -60,6 +61,7 @@ function MatchSchedule() {
       {loading ? (
         <div className="loading">불러오는 중...</div>
       ) : (
+
         <table className="schedule-table">
           <thead>
             <tr>
@@ -78,29 +80,31 @@ function MatchSchedule() {
               return (
                 <React.Fragment key={dateKey}>
                   {games.map((game, idx) => (
+        
                     <tr key={idx}>
+
                       {idx === 0 && (
                         <td rowSpan={games.length} className="date-cell">
                           {displayDate}
                         </td>
                       )}
                       <td>{game.gameDate.split('T')[1]?.slice(0, 5) || '-'}</td>
+
                       <td>
                         {game.homeTeamName}{' '}
                         <span className="score">
-                          <span className={game.homeScore > game.awayScore ? 'score-red' : 'score-blue'}>
+                          <span style={{ color: game.homeScore > game.awayScore ? 'red' : 'blue' }}>
                             {game.homeScore}
                           </span>
                           {' '}
-                          <span className="score-vs">vs</span>
+                          <span style={{ color: 'black' }}>vs</span>
                           {' '}
-                          <span className={game.awayScore > game.homeScore ? 'score-red' : 'score-blue'}>
+                          <span style={{ color: game.awayScore > game.homeScore ? 'red' : 'blue' }}>
                             {game.awayScore}
                           </span>
                         </span>{' '}
                         {game.awayTeamName}
                       </td>
-
                       <td>{game.stadium}</td>
                       <td>{game.isRainedOut === 'Y' ? '우천취소' : ''}</td>
                     </tr>
@@ -110,7 +114,9 @@ function MatchSchedule() {
             })}
           </tbody>
         </table>
+
       )}
+
     </div>
   );
 }

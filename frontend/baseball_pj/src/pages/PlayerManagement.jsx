@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PlayerManagement from './PlayerManagement';
-import './PlayerManagement.css';
 
 const PlayerManagement = () => {
   // 전체 선수 목록 상태
@@ -17,12 +15,12 @@ const PlayerManagement = () => {
   // 컴포넌트 마운트 시 전체 선수 목록을 백엔드에서 받아옴
   useEffect(() => {
     fetch('/api/admin/players')
-      .then(res => {return res.text();})
+      .then(res => res.text())
       .then(text => {
         const data = JSON.parse(text || '[]');
-        console.log('전체 선수 목록:', data);
         setPlayers(Array.isArray(data) ? data : []);
       })
+      .catch(() => setPlayers([]));
   }, []);
 
   // 필터 입력값 변경 시 상태 업데이트
@@ -31,21 +29,22 @@ const PlayerManagement = () => {
     setFilters({ ...filters, [name]: value });
   };
 
-  // 필터링된 선수 목록(이메일, 닉네임, 팀 ID, 권한으로 필터링)
+  // 필터링된 선수 목록
   const filteredPlayers = players.filter(player => {
     return (
-      player.playerName.includes(filters.playerName) &&
-      player.playerPosition.includes(filters.playerPosition) &&
-      String(player.playerBackNumber).includes(filters.playerBackNumber) &&
-      String(player.playerBirthDate).includes(filters.playerBirthDate) &&
-      player.playerHeightWeight.includes(filters.playerHeightWeight) &&
-      player.playerEducationPath.includes(filters.playerEducationPath) &&
-      String(player.teamId).includes(filters.teamId)
+      String(player.playerId || '').includes(filters.playerId) &&
+      (player.playerName || '').includes(filters.playerName) &&
+      (player.playerPosition || '').includes(filters.playerPosition) &&
+      String(player.playerBackNumber || '').includes(filters.playerBackNumber) &&
+      String(player.playerBirthDate || '').includes(filters.playerBirthDate) &&
+      (player.playerHeightWeight || '').includes(filters.playerHeightWeight) &&
+      (player.playerEducationPath || '').includes(filters.playerEducationPath) &&
+      String(player.teamId || '').includes(filters.teamId)
     );
   });
 
   // 현재 페이지에 보여줄 선수 목록만 추출
-  const totalPages = Math.ceil(filteredPlayers.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredPlayers.length / ITEMS_PER_PAGE) || 1;
   const paginatedPlayers = filteredPlayers.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
@@ -72,11 +71,19 @@ const PlayerManagement = () => {
   // 선수 정보 저장(수정) - PUT 요청
   const handleSave = () => {
     if (!selectedPlayer) return;
-    fetch(`/api/admin/players/${selectedPlayer.playerId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(selectedPlayer)
-    })
+    // 숫자/날짜 필드 변환
+    const payload = {
+      ...selectedPlayer,
+      playerBackNumber: selectedPlayer.playerBackNumber ? Number(selectedPlayer.playerBackNumber) : null,
+      teamId: selectedPlayer.teamId ? Number(selectedPlayer.teamId) : null,
+      playerBirthDate: selectedPlayer.playerBirthDate || null
+    };
+    fetch(`/api/admin/players/${selectedPlayer.playerId}`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
       .then(res => res.text())
       .then(text => {
         try {
@@ -108,33 +115,42 @@ const PlayerManagement = () => {
       <div className="filter-section">
         <input name="playerId" placeholder="선수 ID" value={filters.playerId} onChange={handleFilterChange} />
         <input name="playerName" placeholder="선수 이름" value={filters.playerName} onChange={handleFilterChange} />
-        <input name="playerPosition" placeholder="선수 포지션" value={filters.playerPosition} onChange={handleFilterChange} />
-        <input name="playerBackNumber" placeholder="선수 등번호" value={filters.playerBackNumber} onChange={handleFilterChange} />
-        <input name="playerBirthDate" placeholder="선수 생일" value={filters.playerBirthDate} onChange={handleFilterChange} />
-        <input name="playerHeightWeight" placeholder="선수 키/몸무게" value={filters.playerHeightWeight} onChange={handleFilterChange} />
-        <input name="playerEducationPath" placeholder="선수 학력" value={filters.playerEducationPath} onChange={handleFilterChange} />
+        <input name="playerPosition" placeholder="포지션" value={filters.playerPosition} onChange={handleFilterChange} />
+        <input name="playerBackNumber" placeholder="등번호" value={filters.playerBackNumber} onChange={handleFilterChange} />
+        <input name="playerBirthDate" placeholder="생년월일(YYYY-MM-DD)" value={filters.playerBirthDate} onChange={handleFilterChange} />
+        <input name="playerHeightWeight" placeholder="키/몸무게" value={filters.playerHeightWeight} onChange={handleFilterChange} />
+        <input name="playerEducationPath" placeholder="학력" value={filters.playerEducationPath} onChange={handleFilterChange} />
         <input name="teamId" placeholder="팀 ID" value={filters.teamId} onChange={handleFilterChange} />
-        <button className="search-btn">검색</button>
       </div>
       {/* 선수 정보 수정 폼 (행 더블클릭 시 노출) */}
       {selectedPlayer && (
         <div className="player-edit-form">
           <h4>선수 수정</h4>
           <label>
-            이메일: <input name="email" value={selectedPlayer.email} onChange={handleEditChange} />
+            이름: <input name="playerName" value={selectedPlayer.playerName || ''} onChange={handleEditChange} />
           </label>
           <label>
-            닉네임: <input name="nickname" value={selectedPlayer.nickname} onChange={handleEditChange} />
+            포지션: <input name="playerPosition" value={selectedPlayer.playerPosition || ''} onChange={handleEditChange} />
           </label>
           <label>
-            팀 ID: <input name="favoriteTeamId" value={selectedPlayer.favoriteTeamId} onChange={handleEditChange} />
+            등번호: <input name="playerBackNumber" value={selectedPlayer.playerBackNumber || ''} onChange={handleEditChange} />
           </label>
           <label>
-            권한: <input name="role" value={selectedPlayer.role} onChange={handleEditChange} />
+            생년월일: <input name="playerBirthDate" value={selectedPlayer.playerBirthDate || ''} onChange={handleEditChange} placeholder="YYYY-MM-DD" />
+          </label>
+          <label>
+            키/몸무게: <input name="playerHeightWeight" value={selectedPlayer.playerHeightWeight || ''} onChange={handleEditChange} />
+          </label>
+          <label>
+            학력: <input name="playerEducationPath" value={selectedPlayer.playerEducationPath || ''} onChange={handleEditChange} />
+          </label>
+          <label>
+            팀 ID: <input name="teamId" value={selectedPlayer.teamId || ''} onChange={handleEditChange} />
           </label>
           <div className="edit-form-buttons">
             <button className="save-btn" onClick={handleSave}>저장</button>
             <button className="delete-btn" onClick={handleDelete}>삭제</button>
+            <button className="cancel-btn" onClick={() => setSelectedPlayer(null)}>취소</button>
           </div>
         </div>
       )}
@@ -142,21 +158,27 @@ const PlayerManagement = () => {
       <table className="player-management-table">
         <thead>
           <tr>
-            <th>이메일</th>
-            <th>닉네임</th>
+            <th>ID</th>
+            <th>이름</th>
+            <th>포지션</th>
+            <th>등번호</th>
+            <th>생년월일</th>
+            <th>키/몸무게</th>
+            <th>학력</th>
             <th>팀 ID</th>
-            <th>권한</th>
-            <th>가입일</th>
           </tr>
         </thead>
         <tbody>
           {paginatedPlayers.map(player => (
             <tr key={player.playerId} onDoubleClick={() => setSelectedPlayer(player)}>
-              <td>{player.email}</td>
-              <td>{player.nickname}</td>
-              <td>{player.favoriteTeamId}</td>
-              <td>{player.role}</td>
-              <td>{player.createdAt?.split('T')[0]}</td>
+              <td>{player.playerId}</td>
+              <td>{player.playerName}</td>
+              <td>{player.playerPosition}</td>
+              <td>{player.playerBackNumber}</td>
+              <td>{player.playerBirthDate}</td>
+              <td>{player.playerHeightWeight}</td>
+              <td>{player.playerEducationPath}</td>
+              <td>{player.teamId}</td>
             </tr>
           ))}
         </tbody>
