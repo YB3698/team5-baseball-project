@@ -28,7 +28,6 @@ const PostForm = () => {
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
 
-  // 사용자 정보 가져오기 (token 제거)
   let user = null;
   let userId = null;
   try {
@@ -55,8 +54,7 @@ const PostForm = () => {
         teamId,
         postTitle: title,
         postContent: content
-      }); // ✅ Authorization 헤더 제거
-
+      });
       setSubmitted(true);
     } catch (err) {
       alert('글 저장에 실패했습니다.');
@@ -67,50 +65,71 @@ const PostForm = () => {
   return (
     <div className="post-form page-container wider-form">
       <h2>게시글 작성</h2>
+      <div className="section-line" />
       {!isLoggedIn ? (
         <div className="not-logged-in">
           <p>로그인 후에 게시글을 작성할 수 있습니다.</p>
           <button onClick={() => navigate('/login')}>로그인 하러 가기</button>
         </div>
       ) : !submitted ? (
-        <form onSubmit={handleSubmit}>
-          <label>제목</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+        <div className="form-card">
+          <form onSubmit={handleSubmit} className="post-form">
+            <label>제목</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
 
-          <label>내용</label>
-          <textarea
-            rows={10}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-          ></textarea>
+            <label>내용</label>
+            <textarea
+              rows={10}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              required
+            ></textarea>
 
-          <label>관련 팀</label>
-          <select value={teamId} onChange={(e) => setTeamId(Number(e.target.value))} required>
-            <option value="">-- 선택 --</option>
-            {dummyTeams.map((team) => (
-              <option key={team.id} value={team.id}>{team.name}</option>
-            ))}
-          </select>
-          <div className="form-btns">
-  <button type="button" className="back-btn" onClick={() => navigate(-1)}>뒤로 가기</button>
-  <button type="submit" className="submit-btn">작성 완료</button>
-</div>
-        </form>
+            <label>관련 팀</label>
+            <select
+              value={teamId}
+              onChange={(e) => setTeamId(Number(e.target.value))}
+              required
+            >
+              <option value="">-- 선택 --</option>
+              {dummyTeams.map((team) => (
+                <option key={team.id} value={team.id}>
+                  {team.name}
+                </option>
+              ))}
+            </select>
+
+            <div className="form-btns">
+              <button
+                type="button"
+                className="back-btn"
+                onClick={() => navigate(-1)}
+              >
+                뒤로 가기
+              </button>
+              <button type="submit" className="submit-btn">
+                작성 완료
+              </button>
+            </div>
+          </form>
+        </div>
       ) : (
-        <div className="submitted-view">
-          <h3>{title}</h3>
-          <p className="submitted-content">{content}</p>
-          <p className="meta">
-            작성자: {user?.nickname} | 관련 팀: {dummyTeams.find(t => t.id === Number(teamId))?.name}
-          </p>
-          <div className="actions align-right">
-            <button onClick={() => navigate('/postlist')}>목록으로</button>
+        <div className="form-card">
+          <div className="submitted-view">
+            <h3>{title}</h3>
+            <p className="submitted-content">{content}</p>
+            <p className="meta">
+              작성자: {user?.nickname} | 관련 팀:{' '}
+              {dummyTeams.find((t) => t.id === Number(teamId))?.name}
+            </p>
+            <div className="actions align-right">
+              <button onClick={() => navigate('/postlist')}>목록으로</button>
+            </div>
           </div>
         </div>
       )}
