@@ -1,29 +1,22 @@
 package com.baseball.baseball_pj.Post.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.baseball.baseball_pj.Post.domain.PostEntity;
+import com.baseball.baseball_pj.Post.domain.PostFormEntity;
 import com.baseball.baseball_pj.Post.repository.PostRepository;
 
 @Service
-public class PostService {
+public class PostFormService {
     @Autowired
     private PostRepository postRepository;
 
-    public void createPost(PostEntity post) {
+    public void createPost(PostFormEntity post) {
         postRepository.save(post);
     }
 
-    // 전체 게시글 조회
-    public List<PostEntity> findAll() {
-        return postRepository.findAll();
-    }
-
-    // PostService.java
-    public PostEntity save(PostEntity post) {
+    // 게시글 저장
+    public PostFormEntity save(PostFormEntity post) {
         return postRepository.save(post);
     }
 }

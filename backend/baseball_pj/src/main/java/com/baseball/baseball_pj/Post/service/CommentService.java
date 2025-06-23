@@ -22,7 +22,7 @@ public class CommentService {
         comment.setContent(content);
         comment.setCreatedAt(java.time.LocalDateTime.now());
         // post, parent 엔티티 세팅
-        comment.setPost(new com.baseball.baseball_pj.Post.domain.PostEntity());
+        comment.setPost(new com.baseball.baseball_pj.Post.domain.PostFormEntity());
         comment.getPost().setPostId(postId);
         if (parentId != null) {
             CommentEntity parent = new CommentEntity();
@@ -38,7 +38,7 @@ public class CommentService {
         comment.setContent(content);
         comment.setCreatedAt(java.time.LocalDateTime.now());
         // post, parent 엔티티 세팅
-        comment.setPost(new com.baseball.baseball_pj.Post.domain.PostEntity());
+        comment.setPost(new com.baseball.baseball_pj.Post.domain.PostFormEntity());
         comment.getPost().setPostId(postId);
         if (parentId != null) {
             CommentEntity parent = new CommentEntity();

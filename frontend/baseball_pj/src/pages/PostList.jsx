@@ -149,7 +149,7 @@ const PostList = () => {
                         : team?.teamName || post.teamId}
                     </td>
                     <td className="title-cell">{post.postTitle}</td>
-                    <td>{post.userId}</td>
+                    <td>{post.nickname}</td>
                     <td>{formatDate(post.postCreatedAt)}</td>
                     <td>{post.views ?? '-'}</td>
                   </tr>

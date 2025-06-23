@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import com.baseball.baseball_pj.User.domain.UserEntity;
+
 @Entity
 @Table(name = "POSTS")
 @Getter
@@ -12,15 +14,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostEntity {
+public class PostFormEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "posts_seq_gen")
     @SequenceGenerator(name = "posts_seq_gen", sequenceName = "POSTS_SEQ", allocationSize = 1)
     @Column(name = "POST_ID")
     private Long postId;
-
-    @Column(name = "USER_ID")
-    private Long userId;
 
     @Column(name = "TEAM_ID")
     private Integer teamId;
@@ -34,4 +33,17 @@ public class PostEntity {
     @Builder.Default
     @Column(name = "POST_CREATED_AT")
     private LocalDateTime postCreatedAt = LocalDateTime.now();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID")
+    private UserEntity user;
+
+    // 제대로 구현된 getUser() 메서드
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
 }
