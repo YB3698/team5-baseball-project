@@ -20,7 +20,6 @@ public class PlayerController {
 
     @GetMapping("/players")
     public List<PlayerEntity> getAllPlayers() {
-        return playerService.getAllPlayersEntity(); // DTO 없이 Entity 그대로 반환
+        return playerService.getAllPlayers(); // DTO 없이 Entity 그대로 반환
     }
 }
-

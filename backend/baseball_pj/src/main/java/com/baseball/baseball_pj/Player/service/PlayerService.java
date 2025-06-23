@@ -1,16 +1,13 @@
 package com.baseball.baseball_pj.Player.service;
 
-import com.baseball.baseball_pj.Player.repository.PlayerRepository;
-import com.baseball.baseball_pj.Team.domain.TeamEntity;
-import com.baseball.baseball_pj.Player.domain.PlayerEntity;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import com.baseball.baseball_pj.Player.DTO.PlayerAdminResponseDTO;
+import com.baseball.baseball_pj.Player.domain.PlayerEntity;
+import com.baseball.baseball_pj.Player.repository.PlayerRepository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +15,7 @@ public class PlayerService {
 
     private final PlayerRepository playerRepository;
 
-    public List<PlayerEntity> getAllPlayersEntity() {
+    public List<PlayerEntity> getAllPlayers() {
         return playerRepository.findAll();
     }
 }

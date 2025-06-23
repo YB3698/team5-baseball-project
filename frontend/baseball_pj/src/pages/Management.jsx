@@ -29,7 +29,7 @@ const Management = () => {
         회원 관리
       </button>
       <button
-        className={activeTab === 'user' ? 'active' : ''}
+        className={activeTab === 'player' ? 'active' : ''}
         onClick={() => setActiveTab('player')}
       >
         선수 관리

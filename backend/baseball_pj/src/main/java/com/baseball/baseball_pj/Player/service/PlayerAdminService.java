@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.baseball.baseball_pj.Player.DTO.PlayerAdminRequestDTO;
 import com.baseball.baseball_pj.Player.DTO.PlayerAdminResponseDTO;
 import com.baseball.baseball_pj.Player.repository.PlayerRepository;
-import com.baseball.baseball_pj.Team.repository.TeamRepository;
 
 import lombok.*;
 
@@ -16,7 +15,6 @@ import lombok.*;
 public class PlayerAdminService {
 
     private final PlayerRepository playerRepository;
-    private final TeamRepository teamRepository; // 팀 DB 접근을 위한 리포지토리
 
     // 전체 선수 목록 조회 (관리자용)
     public List<PlayerAdminResponseDTO> getAllPlayers() {

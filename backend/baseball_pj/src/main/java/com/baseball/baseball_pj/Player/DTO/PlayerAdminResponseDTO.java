@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-// 관리자 회원정보 응답 DTO
 @Getter
 @Setter
 @Builder
