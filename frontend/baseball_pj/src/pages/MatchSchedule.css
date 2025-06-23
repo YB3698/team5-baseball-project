@@ -74,10 +74,23 @@
   padding: 12px 8px;
 }
 .score {
-  font-weight: 700;
+  font-weight: 500;
   color: #d84843;
 }
 
 .tv {
   color: #555;
 }
+
+.score-red {
+  color: red;
+}
+
+.score-blue {
+  color: blue;
+}
+
+.score-vs {
+  color: black;
+}
+
