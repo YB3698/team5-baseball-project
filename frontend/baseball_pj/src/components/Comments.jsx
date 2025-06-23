@@ -16,6 +16,9 @@ const Comments = ({ postId }) => {
   const [editInput, setEditInput] = useState('');
   // 대댓글 펼치기/접기 상태 (댓글별로 관리)
   const [replyOpen, setReplyOpen] = useState({});
+  // 페이지네이션 대신 보여줄 댓글 개수 상태
+  const ITEMS_PER_PAGE = 5;
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
   // 사용자 정보(localStorage에서 가져옴)
   let user = null;
@@ -36,7 +39,10 @@ const Comments = ({ postId }) => {
     if (!postId) return;
     fetch(`/api/comments?postId=${postId}`)
       .then(res => res.json())
-      .then(data => setComments(data))
+      .then(data => {
+        setComments(data || []);
+        setVisibleCount(ITEMS_PER_PAGE); // postId 바뀔 때만 초기화
+      })
       .catch(() => setComments([]));
   }, [postId]);
 
@@ -55,7 +61,7 @@ const Comments = ({ postId }) => {
       body: JSON.stringify({ postId, content: input, userId })
     });
     setInput('');
-    // 등록 후 목록 새로고침
+    // 등록 후 목록 새로고침 (visibleCount는 초기화하지 않음)
     fetch(`/api/comments?postId=${postId}`)
       .then(res => res.json())
       .then(data => setComments(data));
@@ -77,7 +83,7 @@ const Comments = ({ postId }) => {
     });
     setReplyInput({ ...replyInput, [commentId]: '' });
     setReplyingTo(null);
-    // 등록 후 목록 새로고침
+    // 등록 후 목록 새로고침 (visibleCount는 초기화하지 않음)
     fetch(`/api/comments?postId=${postId}`)
       .then(res => res.json())
       .then(data => setComments(data));
@@ -126,11 +132,12 @@ const Comments = ({ postId }) => {
     <div className="comment-section">
       <h4>댓글</h4>
       <ul className="comment-list">
+        {console.log('comments.length:', comments.length, 'visibleCount:', visibleCount)}
         {/* 댓글이 없을 때 */}
         {comments.length === 0 ? (
           <li className="comment-item">아직 댓글이 없습니다.</li>
         ) : (
-          comments.map((c) => (
+          comments.slice(0, visibleCount).map((c) => (
             <li key={c.comment.commentId} className="comment-item">
               {/* 댓글 닉네임/내용 세로 정렬 */}
               <div className="comment-main">
@@ -236,6 +243,14 @@ const Comments = ({ postId }) => {
           ))
         )}
       </ul>
+      {/* 더보기 버튼 */}
+      {Array.isArray(comments) && comments.length > 0 && comments.length > visibleCount && (
+        <div className="more-btn-wrap">
+          <button type="button" className="more-btn" onClick={() => setVisibleCount(v => v + ITEMS_PER_PAGE)}>
+            더보기
+          </button>
+        </div>
+      )}
       {/* 댓글 입력창 (로그인 시만) */}
       {isLoggedIn ? (
         <form className="comment-form" onSubmit={handleSubmit}>

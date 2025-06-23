@@ -28,18 +28,14 @@ public class CommentsController {
     private CommentService commentService;
 
     @GetMapping("/comments")
-    public ResponseEntity<?> getComments(@RequestParam Long postId,
-                                         @RequestParam(defaultValue = "0") int page,
-                                         @RequestParam(defaultValue = "5") int size) {
-        List<CommentEntity> rootComments = commentService.getRootCommentsWithPaging(postId, page, size);
-
+    public ResponseEntity<?> getComments(@RequestParam Long postId) {
+        List<CommentEntity> rootComments = commentService.getAllRootComments(postId);
         List<Map<String, Object>> result = rootComments.stream().map(c -> {
             Map<String, Object> commentMap = new HashMap<>();
             commentMap.put("comment", c);
             commentMap.put("replies", commentService.getReplies(c.getCommentId()));
             return commentMap;
         }).toList();
-
         return ResponseEntity.ok(result);
     }
 

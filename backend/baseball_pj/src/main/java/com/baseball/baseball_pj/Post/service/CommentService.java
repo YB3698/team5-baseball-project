@@ -77,4 +77,8 @@ public class CommentService {
         commentRepository.deleteById(commentId);
         return true;
     }
+
+    public List<CommentEntity> getAllRootComments(Long postId) {
+        return commentRepository.findByPost_PostIdAndParentIsNullOrderByCreatedAt(postId);
+    }
 }
