@@ -51,6 +51,7 @@ const Header = () => {
           </div>
 
           <nav className="nav-menu">
+            <Link to="/" className="nav-link">홈</Link>
             <Link to="/matchschedule" className="nav-link">경기일정 및 결과</Link>
             <Link to="/playerlist" className="nav-link">선수정보</Link>
             <Link to="/teamlist" className="nav-link">팀정보</Link>
