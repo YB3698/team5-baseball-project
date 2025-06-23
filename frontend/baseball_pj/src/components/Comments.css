@@ -1,0 +1,96 @@
+.comment-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.comment-section h4 {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.comment-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.comment-item {
+  padding: 0.5rem 0.7rem;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 1rem;
+  color: #444;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.comment-input {
+  flex: 1;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.comment-submit {
+  padding: 0.5rem 1.2rem;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: background 0.2s;
+}
+
+.comment-submit:hover {
+  background: #125ea2;
+}
+
+.comment-list .comment-item:empty {
+  color: #aaa;
+  font-style: italic;
+  text-align: center;
+}
+
+/* 댓글 닉네임과 내용 간격 넓힘 */
+.comment-nickname,
+.reply-nickname {
+  font-weight: bold;
+  margin-right: 16px; /* 기존보다 더 넓게 */
+}
+
+.reply-list {
+  margin-left: 32px; /* 댓글보다 더 안쪽으로 */
+  margin-top: 0.3rem;
+}
+
+.reply-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  margin-left: 16px; /* 대댓글 자체도 추가 들여쓰기 */
+}
+
+.reply-nickname {
+  color: #388e3c;
+}
+
+.reply-content {
+  margin-left: 0.1rem;
+}
+
+/* 기존 스타일 유지, 필요한 경우 추가 조정 */
+.comment-content {
+  margin-left: 0.2rem;
+}

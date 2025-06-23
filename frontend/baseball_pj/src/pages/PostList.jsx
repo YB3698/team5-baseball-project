@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Board.css';
 import axios from 'axios';
+import Comments from '../components/Comments';
+
 
 const PostList = () => {
   const [search, setSearch] = useState('');
@@ -208,6 +210,9 @@ const PostList = () => {
                 })()}
               </>
             )}
+     
+            {/* 댓글 컴포넌트 분리 */}
+            <Comments postId={selectedPost.postId || selectedPost.id} />
           </div>
         </div>
       )}

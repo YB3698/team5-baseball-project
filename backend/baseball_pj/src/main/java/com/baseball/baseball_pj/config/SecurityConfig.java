@@ -22,41 +22,44 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF 보호 비활성화 (API 서버에서 주로 사용)
-                .csrf(csrf -> csrf.disable())
-                // CORS 기본 설정 적용
-                .cors(Customizer.withDefaults())
-                // 요청별 인가 정책 설정
-                .authorizeHttpRequests(auth -> auth
-                        // 회원가입, 이메일/닉네임 중복확인, 로그인 API는 인증 없이 접근 허용
-                        .requestMatchers(
-                                "/api/users/join",
-                                "/api/users/check-email",
-                                "/api/users/check-nickname",
-                                "/api/users/login",
-                                "/api/users/team-distribution",
-                                // ✅ 관리자 전용 API는 인증된 사용자만 접근 허용
-                                "/api/admin/**",
-                                // ✅ 선수 목록 API 전체 인증 없이 허용
-                                "/api/players",
-                                "/api/players/**",
-                                "/api/schedule",
-                                "/api/schedule/**",
-                                // ✅ 팀 목록 API 전체 인증 없이 허용
-                                "/api/teams",
-                                "/api/teams/**",
-                                "/api/stats",
-                                "/api/stats/**",
-                                "/api/ranks",
-                                "/api/ranks/**",
-                                "/api/votes",
-                                "/api/votes/**",
-                                // ✅ 투표 관련 API 전체 인증 없이 허용
-                                "/api/votes",
-                                "/api/votes/**",
-                                // 게시글 작성 API 인증 없이 접근 허용
-                                "/api/posts",
-                                "/api/posts/**"
+            // CSRF 보호 비활성화 (API 서버에서 주로 사용)
+            .csrf(csrf -> csrf.disable())
+            // CORS 기본 설정 적용
+            .cors(Customizer.withDefaults())
+            // 요청별 인가 정책 설정
+            .authorizeHttpRequests(auth -> auth
+                // 회원가입, 이메일/닉네임 중복확인, 로그인 API는 인증 없이 접근 허용
+                .requestMatchers(
+                    "/api/users/join",
+                    "/api/users/check-email",
+                    "/api/users/check-nickname",
+                    "/api/users/login",
+                    "/api/users/team-distribution",
+                    // ✅ 관리자 전용 API는 인증된 사용자만 접근 허용
+                    "/api/admin/**",
+                    // ✅ 선수 목록 API 전체 인증 없이 허용
+                    "/api/players",
+                    "/api/players/**",
+                    "/api/schedule",
+                    "/api/schedule/**",
+                    // ✅ 팀 목록 API 전체 인증 없이 허용
+                    "/api/teams",
+                    "/api/teams/**",
+                    "/api/stats",
+                    "/api/stats/**",
+                    "/api/ranks",
+                    "/api/ranks/**",
+                    "/api/votes",
+                    "/api/votes/**",
+                    // ✅ 투표 관련 API 전체 인증 없이 허용
+                    "/api/votes",
+                    "/api/votes/**",
+                    // 게시글 작성 API 인증 없이 접근 허용
+                    "/api/posts",
+                    "/api/posts/**",
+                    // 게시글 댓글 API 인증 없이 접근 허용
+                    "/api/comments",
+                    "/api/comments/**"
 
                         ).permitAll()
                         // .requestMatchers("/api/admin/**").permitAll()
