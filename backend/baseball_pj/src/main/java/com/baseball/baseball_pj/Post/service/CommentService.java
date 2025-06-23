@@ -58,4 +58,23 @@ public class CommentService {
         int endRow = startRow + size;
         return commentRepository.findRootCommentsWithPaging(postId, startRow, endRow);
     }
+
+    public boolean updateComment(Long commentId, Long userId, String content) {
+        CommentEntity comment = commentRepository.findById(commentId).orElse(null);
+        if (comment == null || comment.getUser() == null || !comment.getUser().getId().equals(userId)) {
+            return false;
+        }
+        comment.setContent(content);
+        commentRepository.save(comment);
+        return true;
+    }
+
+    public boolean deleteComment(Long commentId, Long userId) {
+        CommentEntity comment = commentRepository.findById(commentId).orElse(null);
+        if (comment == null || comment.getUser() == null || !comment.getUser().getId().equals(userId)) {
+            return false;
+        }
+        commentRepository.deleteById(commentId);
+        return true;
+    }
 }

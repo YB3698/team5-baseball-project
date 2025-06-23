@@ -90,8 +90,21 @@ function MatchSchedule() {
                       )}
                       <td>{game.gameDate.split('T')[1]?.slice(0, 5) || '-'}</td>
 
-                      <td>{game.homeTeamName} <span className="score">{game.homeScore} vs {game.awayScore}</span> {game.awayTeamName}</td>
-
+                      <td>
+                        {game.homeTeamName}{' '}
+                        <span className="score">
+                          <span style={{ color: game.homeScore > game.awayScore ? 'red' : 'blue' }}>
+                            {game.homeScore}
+                          </span>
+                          {' '}
+                          <span style={{ color: 'black' }}>vs</span>
+                          {' '}
+                          <span style={{ color: game.awayScore > game.homeScore ? 'red' : 'blue' }}>
+                            {game.awayScore}
+                          </span>
+                        </span>{' '}
+                        {game.awayTeamName}
+                      </td>
                       <td>{game.stadium}</td>
                       <td>{game.isRainedOut === 'Y' ? '우천취소' : ''}</td>
                     </tr>
