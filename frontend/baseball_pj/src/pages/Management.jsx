@@ -29,6 +29,12 @@ const Management = () => {
         회원 관리
       </button>
       <button
+        className={activeTab === 'user' ? 'active' : ''}
+        onClick={() => setActiveTab('player')}
+      >
+        선수 관리
+      </button>
+      <button
         className={activeTab === 'vote' ? 'active' : ''}
         onClick={() => setActiveTab('vote')}
       >

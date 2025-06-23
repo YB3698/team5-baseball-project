@@ -1,8 +1,19 @@
 package com.baseball.baseball_pj.Player.domain;
 
+import java.time.LocalDate;
+
 // UserEntity는 USERS 테이블과 매핑되는 사용자 엔티티 클래스입니다.
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 // JPA 엔티티임을 명시합니다.
 @Entity
@@ -32,7 +43,7 @@ public class PlayerEntity {
     private Integer playerBackNumber;
 
     @Column(name = "player_birth_date")
-    private String playerBirthDate;
+    private LocalDate playerBirthDate;
 
     @Column(name = "player_height_weight")
     private String playerHeightWeight;
@@ -41,7 +52,7 @@ public class PlayerEntity {
     private String playerEducationPath;
 
     @Column(name = "team_id")
-    private Integer teamId;
+    private Long teamId;
 
     // ✅ Getter/Setter (Lombok 써도 됨)
     // @Getter @Setter 혹은 직접 작성
