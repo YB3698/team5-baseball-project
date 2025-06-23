@@ -3,6 +3,7 @@ package com.baseball.baseball_pj.Post.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.baseball.baseball_pj.Post.domain.PostEntity;
@@ -31,4 +32,28 @@ public class PostController {
     public List<PostEntity> getAllPosts() {
         return postRepository.findAll();
     }
+
+    @PutMapping("/posts/{id}")
+    public ResponseEntity<PostEntity> updatePost(
+            @PathVariable Long id,
+            @RequestBody PostEntity updatedPost) {
+        return postRepository.findById(id)
+                .map(post -> {
+                    post.setPostTitle(updatedPost.getPostTitle());
+                    post.setPostContent(updatedPost.getPostContent());
+                    return ResponseEntity.ok(postRepository.save(post));
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/posts/{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+        if (!postRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        postRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
