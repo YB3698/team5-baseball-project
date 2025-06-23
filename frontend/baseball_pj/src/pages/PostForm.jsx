@@ -13,12 +13,8 @@ const dummyTeams = [
   { id: 7, name: 'KT 위즈' },
   { id: 8, name: 'SSG 랜더스' },
   { id: 9, name: '한화 이글스' },
-  { id: 10, name: '키움 히어로즈' },
-  { id: 11, name: '고양' },
-  { id: 12, name: '현대 유니콘스' },
-  { id: 13, name: 'SK 와이번스' },
-  { id: 14, name: '넥센 히어로즈' },
-  { id: 15, name: '우리' }
+  { id: 10, name: '키움 히어로즈' }
+  // 11~15번 팀 제거
 ];
 
 const PostForm = () => {
@@ -55,7 +51,7 @@ const PostForm = () => {
         teamId,
         postTitle: title,
         postContent: content
-      }); // ✅ Authorization 헤더 제거
+      });
 
       setSubmitted(true);
     } catch (err) {
@@ -93,14 +89,16 @@ const PostForm = () => {
           <label>관련 팀</label>
           <select value={teamId} onChange={(e) => setTeamId(Number(e.target.value))} required>
             <option value="">-- 선택 --</option>
-            {dummyTeams.map((team) => (
-              <option key={team.id} value={team.id}>{team.name}</option>
-            ))}
+            {dummyTeams
+              .filter(team => team.id >= 1 && team.id <= 10) // 1~10번 팀만 필터링
+              .map((team) => (
+                <option key={team.id} value={team.id}>{team.name}</option>
+              ))}
           </select>
           <div className="form-btns">
-  <button type="button" className="back-btn" onClick={() => navigate(-1)}>뒤로 가기</button>
-  <button type="submit" className="submit-btn">작성 완료</button>
-</div>
+            <button type="button" className="back-btn" onClick={() => navigate(-1)}>뒤로 가기</button>
+            <button type="submit" className="submit-btn">작성 완료</button>
+          </div>
         </form>
       ) : (
         <div className="submitted-view">
