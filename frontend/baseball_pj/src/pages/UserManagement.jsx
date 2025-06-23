@@ -2,32 +2,34 @@ import React, { useEffect, useState } from 'react';
 import './UserManagement.css';
 
 const UserManagement = () => {
+  // 전체 회원 목록 상태
   const [users, setUsers] = useState([]);
+  // 더블클릭 시 선택된 회원 정보(수정/삭제용)
   const [selectedUser, setSelectedUser] = useState(null);
+  // 필터 입력값 상태
   const [filters, setFilters] = useState({ email: '', nickname: '', favoriteTeamId: '', role: '' });
 
-  // 회원 목록을 백엔드에서 받아옴
+  // 페이지네이션 관련 상태
+  const ITEMS_PER_PAGE = 10; // 한 페이지에 보여줄 회원 수
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
+
+  // 컴포넌트 마운트 시 전체 회원 목록을 백엔드에서 받아옴
   useEffect(() => {
     fetch('/api/admin/users')
-      .then(res => {
-        console.log('status:', res.status);
-        console.log('headers:', [...res.headers.entries()]);
-        return res.text(); // 먼저 text로 받음
-  })
-  .then(text => {
-    console.log('응답 본문:', text); // 여기가 핵심
-    const data = JSON.parse(text || '[]'); // text가 없으면 빈 배열
-    setUsers(Array.isArray(data) ? data : []);
-  })
-  .catch(err => console.error('회원 목록 로딩 실패:', err));
-
+      .then(res => {return res.text();})
+      .then(text => {
+        const data = JSON.parse(text || '[]');
+        setUsers(Array.isArray(data) ? data : []);
+      })
   }, []);
 
+  // 필터 입력값 변경 시 상태 업데이트
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value });
   };
 
+  // 필터링된 사용자 목록(이메일, 닉네임, 팀 ID, 권한으로 필터링)
   const filteredUsers = users.filter(user => {
     return (
       user.email.includes(filters.email) &&
@@ -37,13 +39,32 @@ const UserManagement = () => {
     );
   });
 
-  // 회원 정보 수정
+  // 현재 페이지에 보여줄 회원 목록만 추출
+  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  // 페이지네이션 버튼에 표시할 페이지 번호 목록 계산
+  const getPageNumbers = () => {
+    const visibleCount = 5; // 한 번에 보여줄 페이지 버튼 개수
+    let start = Math.max(1, currentPage - Math.floor(visibleCount / 2));
+    let end = start + visibleCount - 1;
+    if (end > totalPages) {
+      end = totalPages;
+      start = Math.max(1, end - visibleCount + 1);
+    }
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
+
+  // 회원 정보 수정 폼 입력값 변경 시 상태 업데이트
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setSelectedUser({ ...selectedUser, [name]: value });
   };
 
-  // 회원 정보 저장(수정)
+  // 회원 정보 저장(수정) - PUT 요청
   const handleSave = () => {
     if (!selectedUser) return;
     fetch(`/api/admin/users/${selectedUser.id}`, {
@@ -51,15 +72,20 @@ const UserManagement = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(selectedUser)
     })
-      .then(res => res.json())
-      .then(data => {
-        setUsers(users.map(u => u.id === data.id ? data : u));
+      .then(res => res.text())
+      .then(text => {
+        try {
+          const data = JSON.parse(text || '{}');
+          setUsers(users.map(u => u.id === data.id ? data : u));
+        } catch (e) {
+          alert('수정 응답 파싱 오류: ' + e);
+        }
         setSelectedUser(null);
       })
       .catch(err => alert('수정 실패: ' + err));
   };
 
-  // 회원 삭제
+  // 회원 삭제 - DELETE 요청
   const handleDelete = () => {
     if (!selectedUser) return;
     fetch(`/api/admin/users/${selectedUser.id}`, { method: 'DELETE' })
@@ -73,6 +99,7 @@ const UserManagement = () => {
   return (
     <div className="user-management-container">
       <h2 className="user-management-title">회원 관리</h2>
+      {/* 필터 입력 영역 */}
       <div className="filter-section">
         <input name="email" placeholder="이메일" value={filters.email} onChange={handleFilterChange} />
         <input name="nickname" placeholder="닉네임" value={filters.nickname} onChange={handleFilterChange} />
@@ -80,6 +107,7 @@ const UserManagement = () => {
         <input name="role" placeholder="권한" value={filters.role} onChange={handleFilterChange} />
         <button className="search-btn">검색</button>
       </div>
+      {/* 회원 정보 수정 폼 (행 더블클릭 시 노출) */}
       {selectedUser && (
         <div className="user-edit-form">
           <h4>회원 수정</h4>
@@ -101,6 +129,7 @@ const UserManagement = () => {
           </div>
         </div>
       )}
+      {/* 회원 목록 테이블 */}
       <table className="user-management-table">
         <thead>
           <tr>
@@ -112,7 +141,7 @@ const UserManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredUsers.map(user => (
+          {paginatedUsers.map(user => (
             <tr key={user.id} onDoubleClick={() => setSelectedUser(user)}>
               <td>{user.email}</td>
               <td>{user.nickname}</td>
@@ -123,6 +152,22 @@ const UserManagement = () => {
           ))}
         </tbody>
       </table>
+      {/* 페이지네이션 버튼 */}
+      <div className="pagination">
+        <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>«</button>
+        <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}>‹</button>
+        {getPageNumbers().map(num => (
+          <button
+            key={num}
+            onClick={() => setCurrentPage(num)}
+            className={num === currentPage ? 'active' : ''}
+          >
+            {num}
+          </button>
+        ))}
+        <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>›</button>
+        <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>»</button>
+      </div>
     </div>
   );
 };
