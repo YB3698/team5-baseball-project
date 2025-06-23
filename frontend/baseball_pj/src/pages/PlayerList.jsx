@@ -5,31 +5,40 @@ const ITEMS_PER_PAGE = 10;
 
 const PlayerList = () => {
   const [players, setPlayers] = useState([]);
+  const [teams, setTeams] = useState([]);
   const [searchName, setSearchName] = useState('');
   const [searchPosition, setSearchPosition] = useState('');
+  const [searchTeamId, setSearchTeamId] = useState('');
   const [filtered, setFiltered] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
-useEffect(() => {
-  fetch('/api/players')
-    .then(res => {
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.json();
-    })
-    .then(data => {
-      setPlayers(data);
-      setFiltered(data);
-    })
-    .catch(err => {
-      console.error('API 요청 오류:', err);
-    });
-}, []);
+  useEffect(() => {
+    // 선수 데이터 불러오기
+    fetch('/api/players')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        setPlayers(data);
+        setFiltered(data);
+      })
+      .catch(err => {
+        console.error('선수 데이터 로딩 실패:', err);
+      });
 
+    // 팀 목록 불러오기
+    fetch('/api/teams')
+      .then(res => res.json())
+      .then(data => setTeams(data))
+      .catch(err => console.error('팀 목록 로딩 실패:', err));
+  }, []);
 
   const handleSearch = () => {
     const result = players.filter(player =>
       (searchName === '' || player.playerName?.includes(searchName)) &&
-      (searchPosition === '' || player.playerPosition?.includes(searchPosition))
+      (searchPosition === '' || player.playerPosition?.includes(searchPosition)) &&
+      (searchTeamId === '' || player.teamId === Number(searchTeamId)) // 💡 정확한 비교
     );
     setFiltered(result);
     setCurrentPage(1);
@@ -63,6 +72,7 @@ useEffect(() => {
           value={searchName}
           onChange={(e) => setSearchName(e.target.value)}
         />
+
         <select
           value={searchPosition}
           onChange={(e) => setSearchPosition(e.target.value)}
@@ -73,6 +83,19 @@ useEffect(() => {
           <option value="내야수">내야수</option>
           <option value="외야수">외야수</option>
         </select>
+
+        <select
+          value={searchTeamId}
+          onChange={(e) => setSearchTeamId(e.target.value)}
+        >
+          <option value="">팀 선택</option>
+          {teams.map(team => (
+            <option key={team.teamId} value={team.teamId}>
+              {team.teamName}
+            </option>
+          ))}
+        </select>
+
         <button onClick={handleSearch}>검색</button>
       </div>
 

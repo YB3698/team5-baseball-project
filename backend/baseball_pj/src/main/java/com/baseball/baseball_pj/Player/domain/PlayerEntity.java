@@ -9,11 +9,16 @@ import lombok.*;
 // USERS 테이블과 매핑합니다.
 @Table(name = "PLAYERS")
 // Lombok을 사용하여 Getter, Setter, 생성자, 빌더 등을 자동 생성합니다.
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PlayerEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Column(name = "player_id")
     private Long playerId;
 
@@ -34,6 +39,9 @@ public class PlayerEntity {
 
     @Column(name = "player_education_path")
     private String playerEducationPath;
+
+    @Column(name = "team_id")
+    private Integer teamId;
 
     // ✅ Getter/Setter (Lombok 써도 됨)
     // @Getter @Setter 혹은 직접 작성
