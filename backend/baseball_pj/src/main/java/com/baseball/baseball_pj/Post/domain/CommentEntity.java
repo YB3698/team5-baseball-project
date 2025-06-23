@@ -17,7 +17,11 @@ import lombok.*;
 
 @Entity
 @Table(name = "COMMENTS")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CommentEntity {
 
     @Id
@@ -27,7 +31,7 @@ public class CommentEntity {
 
     @ManyToOne
     @JoinColumn(name = "post_id")
-    private PostEntity post;
+    private PostFormEntity post;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -35,7 +39,7 @@ public class CommentEntity {
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private CommentEntity parent;  // ✅ 대댓글을 위한 자기참조
+    private CommentEntity parent; // ✅ 대댓글을 위한 자기참조
 
     @Column(name = "comment_content", columnDefinition = "CLOB")
     private String content;
