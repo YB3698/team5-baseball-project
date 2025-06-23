@@ -28,7 +28,7 @@ const PostForm = () => {
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
 
-  // 사용자 정보 가져오기 (token 제거)
+  // 사용자 정보 가져오기
   let user = null;
   let userId = null;
   try {
@@ -55,7 +55,7 @@ const PostForm = () => {
         teamId,
         postTitle: title,
         postContent: content
-      }); // ✅ Authorization 헤더 제거
+      }); 
 
       setSubmitted(true);
     } catch (err) {

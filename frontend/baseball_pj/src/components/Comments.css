@@ -22,6 +22,9 @@
   border-bottom: 1px solid #e0e0e0;
   font-size: 1rem;
   color: #444;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .comment-item:last-child {
@@ -70,6 +73,10 @@
   margin-right: 16px; /* 기존보다 더 넓게 */
 }
 
+.comment-nickname {
+  margin-bottom: 2px;
+}
+
 .reply-list {
   margin-left: 32px; /* 댓글보다 더 안쪽으로 */
   margin-top: 0.3rem;
@@ -77,13 +84,15 @@
 
 .reply-item {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   margin-bottom: 8px;
   margin-left: 16px; /* 대댓글 자체도 추가 들여쓰기 */
 }
 
 .reply-nickname {
   color: #388e3c;
+  margin-bottom: 2px;
 }
 
 .reply-content {
@@ -93,4 +102,57 @@
 /* 기존 스타일 유지, 필요한 경우 추가 조정 */
 .comment-content {
   margin-left: 0.2rem;
+  margin-top: 2px;
+}
+
+/* 답글 텍스트링크 스타일 (펼치기/답글 동일) */
+.reply-link-wrap {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+.reply-link-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+.reply-link, .reply-toggle-link {
+  color: #1976d2;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.95em;
+  margin-bottom: 2px;
+}
+.reply-form {
+  margin-top: 4px;
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+.reply-form .comment-input {
+  flex: 1;
+}
+
+.comment-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.reply-action-links {
+  margin-left: 8px;
+  display: inline-flex;
+  gap: 8px;
+}
+.reply-edit-link, .reply-delete-link {
+  color: #1976d2;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.93em;
+}
+.reply-delete-link {
+  color: #d32f2f;
 }
