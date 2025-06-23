@@ -3,38 +3,46 @@ import './PlayerStats.css';
 import axios from 'axios';
 
 const PlayerStats = () => {
-  const [year, setYear] = useState(new Date().getFullYear());
-  const [type, setType] = useState('hitter');
-  const [players, setPlayers] = useState([]);
+  const currentYear = new Date().getFullYear();
 
-  const fetchData = async () => {
+  const [searchYear, setSearchYear] = useState(currentYear);
+  const [searchType, setSearchType] = useState('hitter');
+
+  const [players, setPlayers] = useState([]);
+  const [lastQueryYear, setLastQueryYear] = useState(currentYear);
+  const [lastQueryType, setLastQueryType] = useState('hitter');
+
+  // 첫 로딩
+  useEffect(() => {
+    fetchData(currentYear, 'hitter');
+  }, []);
+
+  const fetchData = async (year, type) => {
     try {
       const res = await axios.get(`/api/stats?year=${year}&type=${type}`);
-      console.log('받은 데이터:', type, res.data);
       setPlayers(res.data);
+      setLastQueryYear(year);
+      setLastQueryType(type);
     } catch (err) {
       console.error('데이터 불러오기 실패:', err);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [type, year]);
-
   const handleSearch = () => {
-    fetchData();
+    fetchData(searchYear, searchType);
   };
 
   return (
     <div className="playerstats-container">
       <h2 className="playerstats-title">선수 기록</h2>
+
       <div className="playerstats-controls">
-        <select value={year} onChange={(e) => setYear(e.target.value)}>
+        <select value={searchYear} onChange={(e) => setSearchYear(Number(e.target.value))}>
           {Array.from({ length: 30 }, (_, i) => 2002 + i).map((y) => (
             <option key={y} value={y}>{y}</option>
           ))}
         </select>
-        <select value={type} onChange={(e) => setType(e.target.value)}>
+        <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
           <option value="hitter">타자</option>
           <option value="pitcher">투수</option>
         </select>
@@ -42,7 +50,7 @@ const PlayerStats = () => {
       </div>
 
       <div className="playerstats-card">
-        {type === 'hitter' ? (
+        {lastQueryType === 'hitter' ? (
           <table className="playerstats-table">
             <thead>
               <tr>
