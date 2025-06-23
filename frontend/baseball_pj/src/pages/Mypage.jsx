@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Mypage.css';
 
-// 최신 팀 정보 기반 배열
 const kboTeams = [
   { id: 1, name: 'NC 다이노스' },
   { id: 2, name: '롯데 자이언츠' },
@@ -18,45 +17,166 @@ const kboTeams = [
 
 const MyPage = () => {
   const [user, setUser] = useState(null);
-  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('info');
+  const [nickname, setNickname] = useState('');
+  const [email, setEmail] = useState('');
+  const [teamId, setTeamId] = useState(1);
+  const [myPosts, setMyPosts] = useState([]);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      navigate('/login'); // 로그인 안 되어있으면 리디렉션
+      const parsed = JSON.parse(storedUser);
+      setUser(parsed);
+      setNickname(parsed.nickname);
+      setEmail(parsed.email);
+      setTeamId(parsed.teamId);
+
+      axios.get('/api/posts')
+        .then(res => {
+          const filtered = res.data.filter(p => p.userId === parsed.userId);
+          setMyPosts(filtered);
+        })
+        .catch(console.error);
     }
-  }, [navigate]);
+  }, []);
+
+  const handlePostClick = (post) => {
+    setSelectedPost(post);
+    setEditMode(false);
+    setEditTitle(post.postTitle);
+    setEditContent(post.postContent);
+  };
+
+  const handleBackToList = () => {
+    setSelectedPost(null);
+    setEditMode(false);
+  };
+
+  const handleDeletePost = () => {
+    if (window.confirm('정말로 이 글을 삭제하시겠습니까?')) {
+      axios.delete(`/api/posts/${selectedPost.postId}`)
+        .then(() => {
+          setMyPosts(myPosts.filter(p => p.postId !== selectedPost.postId));
+          setSelectedPost(null);
+          alert('삭제되었습니다.');
+        })
+        .catch(console.error);
+    }
+  };
+
+  const handleSaveEdit = () => {
+    const updated = {
+      ...selectedPost,
+      postTitle: editTitle,
+      postContent: editContent,
+    };
+
+    axios.put(`/api/posts/${selectedPost.postId}`, updated)
+      .then(res => {
+        const updatedList = myPosts.map(p =>
+          p.postId === selectedPost.postId ? res.data : p
+        );
+        setMyPosts(updatedList);
+        setSelectedPost(res.data);
+        setEditMode(false);
+        alert('수정되었습니다.');
+      })
+      .catch(console.error);
+  };
 
   if (!user) return null;
-
-  const teamName = kboTeams.find((team) => team.id === user.teamId)?.name || '정보 없음';
 
   return (
     <div className="mypage-container">
       <h2 className="mypage-title">마이페이지</h2>
-      <div className="mypage-row">
-        <label className="mypage-label">닉네임</label>
-        <div className="mypage-info">{user.nickname}</div>
+      <hr className="mypage-divider" />
+      <div className="mypage-layout">
+        <div className="mypage-sidebar">
+          <button className={`mypage-tab ${activeTab === 'info' ? 'active' : ''}`} onClick={() => setActiveTab('info')}>정보확인</button>
+          <button className={`mypage-tab ${activeTab === 'posts' ? 'active' : ''}`} onClick={() => setActiveTab('posts')}>내 활동</button>
+        </div>
+
+        <div className="mypage-content">
+          {activeTab === 'info' && (
+            <div className="mypage-card">
+              <div className="mypage-info-item">
+                <div className="mypage-info-label">닉네임</div>
+                <div className="mypage-info-value boxed">{nickname}</div>
+              </div>
+              <div className="mypage-info-item">
+                <div className="mypage-info-label">이메일</div>
+                <div className="mypage-info-value boxed">{email}</div>
+              </div>
+              <div className="mypage-info-item">
+                <div className="mypage-info-label">응원 팀</div>
+                <div className="mypage-info-value boxed">
+                  {kboTeams.find(team => team.id === teamId)?.name || '-'}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'posts' && (
+            <div className="mypage-card">
+              {selectedPost ? (
+                <div className="mypage-post-detail">
+                  <button onClick={handleBackToList} className="mypage-back">← 뒤로가기</button>
+
+                  {editMode ? (
+                    <>
+                      <input
+                        value={editTitle}
+                        onChange={e => setEditTitle(e.target.value)}
+                        className="mypage-input"
+                      />
+                      <textarea
+                        value={editContent}
+                        onChange={e => setEditContent(e.target.value)}
+                        className="mypage-textarea"
+                      />
+                      <div className="mypage-post-actions">
+                        <button className="edit" onClick={handleSaveEdit}>저장</button>
+                        <button className="delete" onClick={() => setEditMode(false)}>취소</button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="mypage-post-title">{selectedPost.postTitle}</h3>
+                      <p className="mypage-post-content boxed">{selectedPost.postContent}</p>
+                      <p className="mypage-post-date">작성일: {new Date(selectedPost.postCreatedAt).toLocaleDateString()}</p>
+                      <div className="mypage-post-actions">
+                        <button className="edit" onClick={() => setEditMode(true)}>수정</button>
+                        <button className="delete" onClick={handleDeletePost}>삭제</button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <h3 className="mypage-subtitle">내가 쓴 글</h3>
+                  {myPosts.length === 0 ? (
+                    <p>작성한 글이 없습니다.</p>
+                  ) : (
+                    <ul className="mypage-post-list">
+                      {myPosts.map(post => (
+                        <li key={post.postId} onClick={() => handlePostClick(post)}>
+                          <strong>{post.postTitle}</strong>
+                          <div>{new Date(post.postCreatedAt).toLocaleString()}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
-      <div className="mypage-row">
-        <label className="mypage-label">이메일</label>
-        <div className="mypage-info">{user.email}</div>
-      </div>
-      <div className="mypage-row">
-        <label className="mypage-label">응원 팀</label>
-        <div className="mypage-info">{teamName}</div>
-      </div>
-      <button
-        className="mypage-btn"
-        onClick={() => {
-          localStorage.removeItem('user');
-          window.location.reload();
-        }}
-      >
-        로그아웃
-      </button>
     </div>
   );
 };

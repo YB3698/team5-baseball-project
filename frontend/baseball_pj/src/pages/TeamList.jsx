@@ -7,26 +7,30 @@ const TeamList = () => {
   const [selectedTeamName, setSelectedTeamName] = useState('');
 
   useEffect(() => {
-  axios.get('/api/teams')
-    .then(res => {
-      // 한글 팀명 오름차순 정렬
-      const sortedTeams = res.data.sort((a, b) => a.teamName.localeCompare(b.teamName, 'ko'));
-      setTeams(sortedTeams);
-    })
-    .catch(err => console.error('팀 정보 로딩 실패:', err));
-}, []);
-
+    axios.get('/api/teams')
+      .then(res => {
+        const sortedTeams = res.data.sort((a, b) =>
+          a.teamName.localeCompare(b.teamName, 'ko')
+        );
+        setTeams(sortedTeams);
+      })
+      .catch(err => console.error('팀 정보 로딩 실패:', err));
+  }, []);
 
   const filteredTeams = selectedTeamName
-    ? teams.filter(team => team.teamName === selectedTeamName && team.teamId >= 1 && team.teamId <= 10)
+    ? teams.filter(
+        team =>
+          team.teamName === selectedTeamName &&
+          team.teamId >= 1 &&
+          team.teamId <= 10
+      )
     : teams.filter(team => team.teamId >= 1 && team.teamId <= 10);
 
   return (
     <div className="team-page-container">
-      {/* ❌ 카드 아님: 제목은 배경 위에 */}
       <h2 className="team-title">팀 목록</h2>
+      <div className="section-line" />
 
-      {/* ✅ 이 아래부터 카드 박스 시작 */}
       <div className="team-card-box">
         <table className="team-table">
           <thead>
@@ -44,7 +48,9 @@ const TeamList = () => {
                 <td>
                   {team.teamLogo ? (
                     <img src={team.teamLogo} alt={team.teamName} />
-                  ) : ('이미지 없음')}
+                  ) : (
+                    '이미지 없음'
+                  )}
                 </td>
                 <td>{team.teamName}</td>
                 <td>{team.teamMascot}</td>
