@@ -1,4 +1,4 @@
-package com.baseball.baseball_pj.Post.dto;
+package com.baseball.baseball_pj.Post.DTO;
 
 import lombok.Getter;
 import lombok.Setter;
