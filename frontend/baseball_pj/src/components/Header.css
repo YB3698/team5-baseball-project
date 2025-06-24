@@ -26,9 +26,10 @@
 .logo-wrap {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0px;
   flex-shrink: 0;
   min-width: 250px;
+  width: 250px;
 }
 
 /* 네비게이션 메뉴 - 가운데 정렬 */
@@ -49,6 +50,7 @@
 
 /* 네비게이션 링크 (a 태그와 button 공통 스타일) */
 .nav-link {
+  
   font-size: 22px;
   color: #333;
   text-decoration: none;
@@ -126,8 +128,11 @@
 
 /* ====== 로고 영역 ====== */
 .baseball-icon {
-  font-size: 30px;
+  font-size: 40px;
   color: rgb(91, 170, 216);
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
 }
 
 .logo-text {
@@ -139,6 +144,8 @@
 .logo-link {
   text-decoration: none;
   color: #222;
+  width: 100%;
+  height: 100%;
 }
 
 .logo-link:hover {
@@ -220,7 +227,8 @@
   }
   
   .baseball-icon {
-    font-size: 24px;
+    width: 40px;
+    height: 40px;
   }
   
   .nav-link {

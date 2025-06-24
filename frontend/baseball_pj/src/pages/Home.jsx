@@ -177,7 +177,7 @@ function Home() {
                   className="vote-image"
                 />
                 <div className="vote-image-text">
-                  <img src="" alt="" className="vote-icon" />
+                  
                 </div>
               </div>
             </div>
