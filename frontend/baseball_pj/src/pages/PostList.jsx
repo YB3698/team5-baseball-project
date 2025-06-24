@@ -27,11 +27,17 @@ const PostList = () => {
   };
 
   const fetchPosts = () => {
-    fetch('/api/posts')
-      .then(res => res.json())
-      .then(data => setPosts(data))
-      .catch(err => console.error('게시글 목록 로딩 실패:', err));
-  };
+  fetch('/api/posts')
+    .then(res => res.json())
+    .then(data => {
+      // 최신순으로 정렬 (postCreatedAt 기준 내림차순)
+      const sortedPosts = data.sort((a, b) => {
+        return new Date(b.postCreatedAt) - new Date(a.postCreatedAt);
+      });
+      setPosts(sortedPosts);
+    })
+    .catch(err => console.error('게시글 목록 로딩 실패:', err));
+};
 
   useEffect(() => {
     fetchPosts();
@@ -41,6 +47,7 @@ const PostList = () => {
     fetch('/api/teams')
       .then(res => res.json())
       .then(data => {
+        console.log('팀 데이터:', data); // 디버깅용
         // 팀 ID가 1~10번인 팀만 필터링
         const filteredTeams = data.filter(team => team.teamId >= 1 && team.teamId <= 10);
         setTeams(filteredTeams);
@@ -73,6 +80,12 @@ const PostList = () => {
   useEffect(() => {
     setCurrentPage(0);
   }, [search, teamFilter]);
+
+  // 팀 선택 함수
+  const handleTeamSelect = (teamId) => {
+    setTeamFilter(teamId === teamFilter ? '' : String(teamId)); // 같은 팀 클릭시 해제
+    setCurrentPage(0); // 첫 페이지로 이동
+  };
 
   // 페이징 버튼 렌더링 함수
   const renderPagination = () => {
@@ -167,33 +180,53 @@ const PostList = () => {
     <div className={`post-list page-container ${selectedPost ? '' : 'show-header'}`}>
       <h2>게시판</h2>
 
-      {/* 검색 필터 */}
-      <div className="post-controls">
-        <select
-          value={teamFilter}
-          onChange={(e) => setTeamFilter(e.target.value)}
-          className="search-select"
-        >
-          <option value="">전체 팀</option>
-          {teams.map((team) => (
-            <option key={team.teamId} value={team.teamId}>
-              {team.teamName}
-            </option>
-          ))}
-        </select>
-        <input
-          type="text"
-          placeholder="제목 검색"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="search-input"
-        />
-      </div>
+      {/* 팀 로고 필터 - 게시글 리스트에서만 표시 */}
+      {!selectedPost && (
+        <div className="team-filter-container">
+          <div className="team-logos">
+            <div 
+              className={`team-logo-item ${teamFilter === '' ? 'active' : ''}`}
+              onClick={() => handleTeamSelect('')}
+            >
+              <div className="all-teams">전체</div>
+            </div>
+            {teams.map((team) => (
+              <div 
+                key={team.teamId}
+                className={`team-logo-item ${String(teamFilter) === String(team.teamId) ? 'active' : ''}`}
+                onClick={() => handleTeamSelect(team.teamId)}
+                title={team.teamName} // 툴팁 추가
+              >
+                {team.teamLogo ? (
+                  <img 
+                    src={team.teamLogo} 
+                    alt={team.teamName} 
+                    className="team-logo-img"
+                    onError={(e) => {
+                      // 이미지 로드 실패 시 팀 이름으로 대체
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
+                  />
+                ) : null}
+                <div 
+                  className="team-name-fallback" 
+                  style={{ display: team.teamLogo ? 'none' : 'block' }}
+                >
+                  {team.teamName}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-      {/* 글쓰기 버튼 */}
-      <div className="post-actions">
-        <Link to="/postform" className="write-btn small">글쓰기</Link>
-      </div>
+      {/* 글쓰기 버튼 - 게시글 리스트에서만 표시 */}
+      {!selectedPost && (
+        <div className="post-actions">
+          <Link to="/postform" className="write-btn small">글쓰기</Link>
+        </div>
+      )}
 
       {/* 게시글 리스트 */}
       {!selectedPost && (
@@ -211,7 +244,6 @@ const PostList = () => {
             </thead>
             <tbody>
               {currentPosts.map((post, idx) => {
-                // 1~10번 팀만 표시
                 const team = teams.find(t => t.teamId === post.teamId);
                 return (
                   <tr
@@ -220,9 +252,20 @@ const PostList = () => {
                     className="hoverable-row"
                   >
                     <td>
-                      {team?.teamLogo
-                        ? <img src={team.teamLogo} alt={team.teamName} style={{ width: "50px" }} />
-                        : team?.teamName || `팀 ${post.teamId}`}
+                      {team?.teamLogo ? (
+                        <img 
+                          src={team.teamLogo} 
+                          alt={team.teamName} 
+                          style={{ width: "40px", height: "40px", objectFit: "contain" }}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'inline';
+                          }}
+                        />
+                      ) : null}
+                      <span style={{ display: team?.teamLogo ? 'none' : 'inline' }}>
+                        {team?.teamName || `팀 ${post.teamId}`}
+                      </span>
                     </td>
                     <td className="title-cell">{post.postTitle}</td>
                     <td>{post.nickname}</td>
@@ -242,6 +285,17 @@ const PostList = () => {
               검색 결과가 없습니다.
             </p>
           )}
+
+          {/* 검색 입력 - 게시글 리스트에서만 표시 */}
+          <div className="post-controls">
+            <input
+              type="text"
+              placeholder="게시글 검색"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="search-input"
+            />
+          </div>
         </div>
       )}
 

@@ -1,12 +1,13 @@
 // Header.jsx
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaBaseballBall } from 'react-icons/fa';
 import './Header.css';
 
 const Header = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -19,6 +20,34 @@ const Header = () => {
     localStorage.removeItem('user');
     setUser(null);
     navigate('/login');
+  };
+
+  const handleHomeClick = () => {
+    navigate('/', { replace: true });
+  };
+
+  const handleScheduleClick = () => {
+    navigate('/matchschedule', { replace: true });
+  };
+
+  const handlePlayerClick = () => {
+    navigate('/playerlist', { replace: true });
+  };
+
+  const handleTeamClick = () => {
+    navigate('/teamlist', { replace: true });
+  };
+
+  const handleStatsClick = () => {
+    navigate('/playerstats', { replace: true });
+  };
+
+  const handleBoardClick = () => {
+    navigate('/postlist', { replace: true });
+    // 페이지 새로고침으로 상태 완전 초기화
+    setTimeout(() => {
+      window.location.reload();
+    }, 10);
   };
 
   return (
@@ -53,13 +82,12 @@ const Header = () => {
           </div>
 
           <nav className="nav-menu">
-            <Link to="/" className="nav-link">홈</Link>
-            <Link to="/matchschedule" className="nav-link">경기일정 및 결과</Link>
-            <Link to="/playerlist" className="nav-link">선수정보</Link>
-            <Link to="/teamlist" className="nav-link">팀정보</Link>
-            <Link to="/playerstats" className="nav-link">기록실</Link>
-            <Link to="/postlist" className="nav-link">게시판</Link>
-
+            <button onClick={handleHomeClick} className="nav-link">홈</button>
+            <button onClick={handleScheduleClick} className="nav-link">경기일정 및 결과</button>
+            <button onClick={handlePlayerClick} className="nav-link">선수정보</button>
+            <button onClick={handleTeamClick} className="nav-link">팀정보</button>
+            <button onClick={handleStatsClick} className="nav-link">기록실</button>
+            <button onClick={handleBoardClick} className="nav-link board-button">게시판</button>
           </nav>
         </div>
       </header>

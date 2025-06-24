@@ -23,13 +23,16 @@ const Comments = ({ postId }) => {
   // 사용자 정보(localStorage에서 가져옴)
   let user = null;
   let userId = null;
+  let isAdmin = false;
   try {
     user = JSON.parse(localStorage.getItem('user'));
-    // userId는 user.userId 또는 user.user_id로 저장될 수 있음
-    userId = user?.userId || user?.user_id;
+    userId = Number(user?.userId || user?.user_id);
+    // 관리자: userId가 110이거나, role이 'ADMIN'이거나, isAdmin === true
+    isAdmin = userId === 110 || user?.role === 'ADMIN' || user?.isAdmin === true;
   } catch (e) {
     user = null;
     userId = null;
+    isAdmin = false;
   }
   // 로그인 여부
   const isLoggedIn = !!userId;
@@ -155,15 +158,24 @@ const Comments = ({ postId }) => {
                     <button type="button" onClick={() => setEditingCommentId(null)}>취소</button>
                   </form>
                 ) : (
-                  <span className="comment-content">{c.comment.content}</span>
+                  <span className={`comment-content${c.comment.content === '삭제된 댓글입니다.' ? ' deleted' : ''}`}>
+                    {c.comment.content === '삭제된 댓글입니다.' ? '삭제된 댓글입니다.' : c.comment.content}
+                  </span>
                 )}
               </div>
-              {/* 본인 댓글만 수정/삭제 텍스트 링크 노출 */}
-              {isLoggedIn && String(userId) === String(c.comment.user?.id) && editingCommentId !== c.comment.commentId && (
-                <span className="reply-action-links">
-                  <span className="reply-edit-link" onClick={() => handleEdit(c.comment.commentId, c.comment.content)}>수정</span>
-                  <span className="reply-delete-link" onClick={() => handleDelete(c.comment.commentId)}>삭제</span>
-                </span>
+              {/* 본인 댓글 또는 관리자만 수정/삭제 텍스트 링크 노출 */}
+              {(isLoggedIn &&
+                (String(userId) === String(c.comment.user?.id) || isAdmin) &&
+                editingCommentId !== c.comment.commentId &&
+                c.comment.content !== '삭제된 댓글입니다.' &&
+                c.comment.content !== '※관리자에 의해 삭제된 댓글입니다. ※') && (
+                  <span className="reply-action-links">
+                    {/* 본인만 수정, 관리자/본인 모두 삭제 가능 */}
+                    {String(userId) === String(c.comment.user?.id) && (
+                      <span className="reply-edit-link" onClick={() => handleEdit(c.comment.commentId, c.comment.content)}>수정</span>
+                    )}
+                    <span className="reply-delete-link" onClick={() => handleDelete(c.comment.commentId)}>삭제</span>
+                  </span>
               )}
               {/* 답글 펼치기/접기, 댓글 쓰기 텍스트링크 */}
               <div className="reply-link-wrap">
@@ -226,12 +238,21 @@ const Comments = ({ postId }) => {
                           <button type="button" onClick={() => setEditingCommentId(null)}>취소</button>
                         </form>
                       ) : (
-                        <span className="reply-content">{r.content}</span>
+                        <span className={`reply-content${r.content === '삭제된 댓글입니다.' ? ' deleted' : ''}`}>
+                          {r.content === '삭제된 댓글입니다.' ? '삭제된 댓글입니다.' : r.content}
+                        </span>
                       )}
                       {/* 본인 대댓글만 수정/삭제 텍스트 링크 노출 */}
-                      {isLoggedIn && String(userId) === String(r.user?.id) && editingCommentId !== r.commentId && (
+                      {(isLoggedIn &&
+                        (String(userId) === String(r.user?.id) || isAdmin) &&
+                        editingCommentId !== r.commentId &&
+                        r.content !== '삭제된 댓글입니다.' &&
+                        r.content !== '※관리자에 의해 삭제된 댓글입니다. ※') && (
                         <span className="reply-action-links">
-                          <span className="reply-edit-link" onClick={() => handleEdit(r.commentId, r.content)}>수정</span>
+                          {/* 본인만 수정, 관리자/본인 모두 삭제 가능 */}
+                          {String(userId) === String(r.user?.id) && (
+                            <span className="reply-edit-link" onClick={() => handleEdit(r.commentId, r.content)}>수정</span>
+                          )}
                           <span className="reply-delete-link" onClick={() => handleDelete(r.commentId)}>삭제</span>
                         </span>
                       )}

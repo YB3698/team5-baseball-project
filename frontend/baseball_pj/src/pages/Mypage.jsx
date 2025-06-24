@@ -18,14 +18,17 @@ const kboTeams = [
 const MyPage = () => {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('info');
+  const [activityView, setActivityView] = useState('posts');
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
   const [teamId, setTeamId] = useState(1);
   const [myPosts, setMyPosts] = useState([]);
+  const [myComments, setMyComments] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
+  const [allComments, setAllComments] = useState([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -38,8 +41,26 @@ const MyPage = () => {
 
       axios.get('/api/posts')
         .then(res => {
-          const filtered = res.data.filter(p => p.userId === parsed.userId);
+          const filtered = res.data.filter(p => p.userId === parsed.userId)
+            .map(post => ({
+              ...post,
+              createdAt: post.postCreatedAt,
+              title: post.postTitle,
+              content: post.postContent,
+            }));
           setMyPosts(filtered);
+        })
+        .catch(console.error);
+
+      axios.get(`/api/user-comments?userId=${parsed.userId}`)
+        .then(res => {
+          const comments = res.data.map(c => ({
+            ...c,
+            createdAt: c.createdAt,
+            content: c.content,
+            postId: c.postId || c.post?.postId || null,
+          }));
+          setMyComments(comments);
         })
         .catch(console.error);
     }
@@ -50,6 +71,13 @@ const MyPage = () => {
     setEditMode(false);
     setEditTitle(post.postTitle);
     setEditContent(post.postContent);
+
+    axios.get(`/api/comments?postId=${post.postId}`)
+      .then(res => {
+        const comments = res.data.flatMap(item => [item.comment, ...item.replies]);
+        setAllComments(comments);
+      })
+      .catch(console.error);
   };
 
   const handleBackToList = () => {
@@ -98,7 +126,7 @@ const MyPage = () => {
       <div className="mypage-layout">
         <div className="mypage-sidebar">
           <button className={`mypage-tab ${activeTab === 'info' ? 'active' : ''}`} onClick={() => setActiveTab('info')}>정보확인</button>
-          <button className={`mypage-tab ${activeTab === 'posts' ? 'active' : ''}`} onClick={() => setActiveTab('posts')}>내 활동</button>
+          <button className={`mypage-tab ${activeTab === 'activity' ? 'active' : ''}`} onClick={() => setActiveTab('activity')}>내 활동</button>
         </div>
 
         <div className="mypage-content">
@@ -121,58 +149,90 @@ const MyPage = () => {
             </div>
           )}
 
-          {activeTab === 'posts' && (
+          {activeTab === 'activity' && (
             <div className="mypage-card">
-              {selectedPost ? (
-                <div className="mypage-post-detail">
-                  <button onClick={handleBackToList} className="mypage-back">← 뒤로가기</button>
+              <div style={{ marginBottom: '20px' }}>
+                <button onClick={() => setActivityView('posts')} className={`mypage-tab ${activityView === 'posts' ? 'active' : ''}`}>내가 쓴 글</button>
+                <button onClick={() => setActivityView('comments')} className={`mypage-tab ${activityView === 'comments' ? 'active' : ''}`}>내가 쓴 댓글</button>
+              </div>
 
-                  {editMode ? (
-                    <>
-                      <input
-                        value={editTitle}
-                        onChange={e => setEditTitle(e.target.value)}
-                        className="mypage-input"
-                      />
-                      <textarea
-                        value={editContent}
-                        onChange={e => setEditContent(e.target.value)}
-                        className="mypage-textarea"
-                      />
-                      <div className="mypage-post-actions">
-                        <button className="edit" onClick={handleSaveEdit}>저장</button>
-                        <button className="delete" onClick={() => setEditMode(false)}>취소</button>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <h3 className="mypage-post-title">{selectedPost.postTitle}</h3>
-                      <p className="mypage-post-content boxed">{selectedPost.postContent}</p>
-                      <p className="mypage-post-date">작성일: {new Date(selectedPost.postCreatedAt).toLocaleDateString()}</p>
-                      <div className="mypage-post-actions">
-                        <button className="edit" onClick={() => setEditMode(true)}>수정</button>
-                        <button className="delete" onClick={handleDeletePost}>삭제</button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
+              {activityView === 'posts' ? (
                 <>
-                  <h3 className="mypage-subtitle">내가 쓴 글</h3>
+                  <h3 className="mypage-subtitle">내 글</h3>
                   {myPosts.length === 0 ? (
                     <p>작성한 글이 없습니다.</p>
                   ) : (
                     <ul className="mypage-post-list">
-                      {myPosts.map(post => (
-                        <li key={post.postId} onClick={() => handlePostClick(post)}>
-                          <strong>{post.postTitle}</strong>
-                          <div>{new Date(post.postCreatedAt).toLocaleString()}</div>
+                      {myPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((item, idx) => (
+                        <li key={idx} onClick={() => handlePostClick(item)}>
+                          <strong>{item.title}</strong>
+                          <div>{item.content}</div>
+                          <div>{new Date(item.createdAt).toLocaleString()}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                <>
+                  <h3 className="mypage-subtitle">내 댓글</h3>
+                  {myComments.length === 0 ? (
+                    <p>작성한 댓글이 없습니다.</p>
+                  ) : (
+                    <ul className="mypage-post-list">
+                      {myComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((item, idx) => (
+                        <li key={idx}>
+                          <div>{item.content}</div>
+                          <div>{new Date(item.createdAt).toLocaleString()}</div>
+                          {item.postId && <div>📌 관련 게시글 ID: {item.postId}</div>}
                         </li>
                       ))}
                     </ul>
                   )}
                 </>
               )}
+            </div>
+          )}
+
+          {selectedPost && (
+            <div className="mypage-card">
+              <div className="mypage-post-detail">
+                <button onClick={handleBackToList} className="mypage-back">← 뒤로가기</button>
+
+                {editMode ? (
+                  <>
+                    <input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="mypage-input" />
+                    <textarea value={editContent} onChange={e => setEditContent(e.target.value)} className="mypage-textarea" />
+                    <div className="mypage-post-actions">
+                      <button className="edit" onClick={handleSaveEdit}>저장</button>
+                      <button className="delete" onClick={() => setEditMode(false)}>취소</button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="mypage-post-title">{selectedPost.postTitle}</h3>
+                    <p className="mypage-post-content boxed">{selectedPost.postContent}</p>
+                    <p className="mypage-post-date">작성일: {new Date(selectedPost.postCreatedAt).toLocaleDateString()}</p>
+                    <div className="mypage-post-actions">
+                      <button className="edit" onClick={() => setEditMode(true)}>수정</button>
+                      <button className="delete" onClick={handleDeletePost}>삭제</button>
+                    </div>
+                    <div className="mypage-comments" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                      <h4>댓글 목록</h4>
+                      {allComments.length === 0 ? <p>댓글이 없습니다.</p> : (
+                        <ul className="mypage-post-list">
+                          {allComments.map(c => (
+                            <li key={c.commentId}>
+                              <strong>{c.user?.nickname || '익명'}:</strong> {c.content}
+                              <div>{new Date(c.createdAt).toLocaleString()}</div>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           )}
         </div>

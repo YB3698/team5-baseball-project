@@ -1,16 +1,15 @@
 package com.baseball.baseball_pj.Post.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.baseball.baseball_pj.Post.DTO.PostListDto;
-import com.baseball.baseball_pj.Post.domain.PostFormEntity;
+import com.baseball.baseball_pj.Post.domain.PostEntity;
 import com.baseball.baseball_pj.Post.repository.PostRepository;
-import com.baseball.baseball_pj.Post.service.PostListService;
-import com.baseball.baseball_pj.User.domain.UserEntity;
+import com.baseball.baseball_pj.Post.DTO.PostWithNicknameDto;
 import com.baseball.baseball_pj.User.repository.UserRepository;
 
 @CrossOrigin(origins = "*", allowCredentials = "false")
@@ -21,25 +20,12 @@ public class PostController {
     @Autowired
     private PostRepository postRepository;
     @Autowired
-    private UserRepository userRepository; // UserRepository 추가
-    private final PostListService postListService;
-
-    public PostController(PostListService postListService) {
-        this.postListService = postListService;
-    }
+    private UserRepository userRepository;
 
     // 게시글 저장
     @PostMapping("/posts")
-    public PostFormEntity createPost(@RequestBody PostFormEntity postEntity) {
+    public PostEntity createPost(@RequestBody PostEntity postEntity) {
         try {
-            // 임시로 기본 사용자 ID 설정 (나중에 로그인 정보로 대체)
-            if (postEntity.getUser() == null) {
-                // 예시: ID가 1인 사용자를 기본으로 설정
-                UserEntity defaultUser = userRepository.findById(1L)
-                        .orElseThrow(() -> new RuntimeException("기본 사용자를 찾을 수 없습니다"));
-                postEntity.setUser(defaultUser);
-            }
-
             return postRepository.save(postEntity);
         } catch (Exception e) {
             e.printStackTrace(); // 콘솔에 에러 로그 출력
@@ -47,13 +33,30 @@ public class PostController {
         }
     }
 
-    // 전체 게시글 조회는 아래의 getAllPosts() 메서드에서 처리합니다.
+    // 전체 게시글 조회 (작성자 닉네임 포함)
+    @GetMapping("/posts")
+    public List<PostWithNicknameDto> getAllPosts() {
+        List<PostEntity> posts = postRepository.findAll();
+        return posts.stream().map(post -> {
+            String nickname = userRepository.findById(post.getUserId())
+                    .map(user -> user.getNickname())
+                    .orElse("알 수 없음");
+            return new PostWithNicknameDto(
+                    post.getPostId(),
+                    post.getUserId(),
+                    post.getTeamId(),
+                    post.getPostTitle(),
+                    post.getPostContent(),
+                    post.getPostCreatedAt(),
+                    nickname);
+        }).collect(Collectors.toList());
+    }
 
     // 게시글 수정
     @PutMapping("/posts/{id}")
-    public ResponseEntity<PostFormEntity> updatePost(
+    public ResponseEntity<PostEntity> updatePost(
             @PathVariable Long id,
-            @RequestBody PostFormEntity updatedPost) {
+            @RequestBody PostEntity updatedPost) {
         return postRepository.findById(id)
                 .map(post -> {
                     post.setPostTitle(updatedPost.getPostTitle());
@@ -69,14 +72,8 @@ public class PostController {
         if (!postRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-
         postRepository.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/posts")
-    public List<PostListDto> getAllPosts() {
-        return postListService.getAllPostDtos();
     }
 
 }

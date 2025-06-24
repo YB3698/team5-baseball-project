@@ -13,8 +13,7 @@ const dummyTeams = [
   { id: 7, name: 'KT 위즈' },
   { id: 8, name: 'SSG 랜더스' },
   { id: 9, name: '한화 이글스' },
-  { id: 10, name: '키움 히어로즈' }
-  // 11~15번 팀 제거
+  { id: 10, name: '키움 히어로즈' },
 ];
 
 const PostForm = () => {
@@ -51,7 +50,7 @@ const PostForm = () => {
         teamId,
         postTitle: title,
         postContent: content
-      }); // ✅ Authorization 헤더 제거
+      }); 
 
       setSubmitted(true);
     } catch (err) {
@@ -96,9 +95,9 @@ const PostForm = () => {
               ))}
           </select>
           <div className="form-btns">
-            <button type="button" className="back-btn" onClick={() => navigate(-1)}>뒤로 가기</button>
-            <button type="submit" className="submit-btn">작성 완료</button>
-          </div>
+  <button type="button" className="back-btn" onClick={() => navigate(-1)}>뒤로 가기</button>
+  <button type="submit" className="submit-btn">작성 완료</button>
+</div>
         </form>
       ) : (
         <div className="submitted-view">

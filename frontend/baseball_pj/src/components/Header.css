@@ -9,6 +9,91 @@
   z-index: 1000;                /* 다른 요소 위로 올라오게 */
 }
 
+.nav-menu button.nav-link {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+  /* 기존 .nav-link와 동일한 스타일 적용 */
+}
+
+/* ...existing code... */
+
+/* 헤더 컨테이너 레이아웃 */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 네비게이션 메뉴를 가운데로 정렬 */
+.nav-menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem; /* 버튼 간격 조정 */
+  flex: 1; /* 남은 공간을 차지하여 가운데 정렬 */
+}
+
+/* 네비게이션 링크/버튼 스타일 통일 */
+.nav-menu .nav-link {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+}
+
+.nav-menu .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #007bff;
+}
+
+/* 로고 영역 */
+.logo-wrap {
+  flex-shrink: 0; /* 로고 크기 고정 */
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .nav-menu {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .nav-menu .nav-link {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+}
+.nav-menu button.nav-link:hover {
+  color: #007bff; /* 또는 기존 hover 색상 */
+}
+
+/* 기존 .nav-link 스타일이 버튼에도 적용되도록 */
+.nav-menu .nav-link {
+  /* 기존 스타일 유지 */
+}
+
 /* 로그인/회원가입 링크 줄 */
 
 .top-bar {

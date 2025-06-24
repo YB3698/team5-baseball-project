@@ -3,6 +3,7 @@ package com.baseball.baseball_pj.Post.domain;
 import java.time.LocalDateTime;
 
 import com.baseball.baseball_pj.User.domain.UserEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,11 +18,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "COMMENTS")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class CommentEntity {
 
     @Id
@@ -31,15 +28,18 @@ public class CommentEntity {
 
     @ManyToOne
     @JoinColumn(name = "post_id")
-    private PostFormEntity post;
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private PostEntity post;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private CommentEntity parent; // ✅ 대댓글을 위한 자기참조
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private CommentEntity parent;  // ✅ 대댓글을 위한 자기참조
 
     @Column(name = "comment_content", columnDefinition = "CLOB")
     private String content;
