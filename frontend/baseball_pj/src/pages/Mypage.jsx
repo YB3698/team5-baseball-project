@@ -18,103 +18,99 @@ const kboTeams = [
 const MyPage = () => {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('info');
-  const [activityView, setActivityView] = useState('posts');
+  const [subTab, setSubTab] = useState('posts');
+
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
   const [teamId, setTeamId] = useState(1);
+
   const [myPosts, setMyPosts] = useState([]);
   const [myComments, setMyComments] = useState([]);
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [editMode, setEditMode] = useState(false);
-  const [editTitle, setEditTitle] = useState('');
-  const [editContent, setEditContent] = useState('');
-  const [allComments, setAllComments] = useState([]);
+
+  const [editPostId, setEditPostId] = useState(null);
+  const [editPostTitle, setEditPostTitle] = useState('');
+  const [editPostContent, setEditPostContent] = useState('');
+
+  const [editCommentId, setEditCommentId] = useState(null);
+  const [editCommentContent, setEditCommentContent] = useState('');
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const parsed = JSON.parse(storedUser);
-      setUser(parsed);
-      setNickname(parsed.nickname);
-      setEmail(parsed.email);
-      setTeamId(parsed.teamId);
+    const stored = localStorage.getItem('user');
+    if (stored) {
+      const u = JSON.parse(stored);
+      setUser(u);
+      setNickname(u.nickname);
+      setEmail(u.email);
+      setTeamId(u.teamId);
 
       axios.get('/api/posts')
         .then(res => {
-          const filtered = res.data.filter(p => p.userId === parsed.userId)
-            .map(post => ({
-              ...post,
-              createdAt: post.postCreatedAt,
-              title: post.postTitle,
-              content: post.postContent,
-            }));
-          setMyPosts(filtered);
-        })
-        .catch(console.error);
+          const posts = res.data
+            .filter(p => p.userId === u.userId)
+            .sort((a, b) => new Date(b.postCreatedAt) - new Date(a.postCreatedAt));
+          setMyPosts(posts);
+        });
 
-      axios.get(`/api/user-comments?userId=${parsed.userId}`)
+      axios.get(`/api/user-comments?userId=${u.userId}`)
         .then(res => {
-          const comments = res.data.map(c => ({
-            ...c,
-            createdAt: c.createdAt,
-            content: c.content,
-            postId: c.postId || c.post?.postId || null,
-          }));
-          setMyComments(comments);
-        })
-        .catch(console.error);
+          const sorted = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          setMyComments(sorted);
+        });
     }
   }, []);
 
-  const handlePostClick = (post) => {
-    setSelectedPost(post);
-    setEditMode(false);
-    setEditTitle(post.postTitle);
-    setEditContent(post.postContent);
-
-    axios.get(`/api/comments?postId=${post.postId}`)
-      .then(res => {
-        const comments = res.data.flatMap(item => [item.comment, ...item.replies]);
-        setAllComments(comments);
-      })
-      .catch(console.error);
+  const handleDeletePost = (postId) => {
+    if (!window.confirm('정말로 삭제하시겠습니까?')) return;
+    axios.delete(`/api/posts/${postId}`).then(() => {
+      setMyPosts(myPosts.filter(p => p.postId !== postId));
+    });
   };
 
-  const handleBackToList = () => {
-    setSelectedPost(null);
-    setEditMode(false);
+  const handleStartEditPost = (post) => {
+    setEditPostId(post.postId);
+    setEditPostTitle(post.postTitle);
+    setEditPostContent(post.postContent);
   };
 
-  const handleDeletePost = () => {
-    if (window.confirm('정말로 이 글을 삭제하시겠습니까?')) {
-      axios.delete(`/api/posts/${selectedPost.postId}`)
-        .then(() => {
-          setMyPosts(myPosts.filter(p => p.postId !== selectedPost.postId));
-          setSelectedPost(null);
-          alert('삭제되었습니다.');
-        })
-        .catch(console.error);
-    }
+  const handleSavePost = () => {
+    axios.put(`/api/posts/${editPostId}`, {
+      postTitle: editPostTitle,
+      postContent: editPostContent,
+      userId: user.userId
+    }).then(res => {
+      const updated = myPosts.map(p =>
+        p.postId === editPostId ? res.data : p
+      );
+      setMyPosts(updated);
+      setEditPostId(null);
+    });
   };
 
-  const handleSaveEdit = () => {
-    const updated = {
-      ...selectedPost,
-      postTitle: editTitle,
-      postContent: editContent,
-    };
+  const handleDeleteComment = (commentId) => {
+    if (!window.confirm('댓글을 삭제하시겠습니까?')) return;
+    axios.delete(`/api/comments/${commentId}`, {
+      data: { userId: user.userId }
+    }).then(() => {
+      setMyComments(myComments.filter(c => c.commentId !== commentId));
+    });
+  };
 
-    axios.put(`/api/posts/${selectedPost.postId}`, updated)
-      .then(res => {
-        const updatedList = myPosts.map(p =>
-          p.postId === selectedPost.postId ? res.data : p
-        );
-        setMyPosts(updatedList);
-        setSelectedPost(res.data);
-        setEditMode(false);
-        alert('수정되었습니다.');
-      })
-      .catch(console.error);
+  const handleStartEditComment = (comment) => {
+    setEditCommentId(comment.commentId);
+    setEditCommentContent(comment.content);
+  };
+
+  const handleSaveComment = () => {
+    axios.put(`/api/comments/${editCommentId}`, {
+      content: editCommentContent,
+      userId: user.userId
+    }).then(() => {
+      const updated = myComments.map(c =>
+        c.commentId === editCommentId ? { ...c, content: editCommentContent } : c
+      );
+      setMyComments(updated);
+      setEditCommentId(null);
+    });
   };
 
   if (!user) return null;
@@ -134,105 +130,84 @@ const MyPage = () => {
             <div className="mypage-card">
               <div className="mypage-info-item">
                 <div className="mypage-info-label">닉네임</div>
-                <div className="mypage-info-value boxed">{nickname}</div>
+                <div className="mypage-info-value">{nickname}</div>
               </div>
               <div className="mypage-info-item">
                 <div className="mypage-info-label">이메일</div>
-                <div className="mypage-info-value boxed">{email}</div>
+                <div className="mypage-info-value">{email}</div>
               </div>
               <div className="mypage-info-item">
                 <div className="mypage-info-label">응원 팀</div>
-                <div className="mypage-info-value boxed">
-                  {kboTeams.find(team => team.id === teamId)?.name || '-'}
-                </div>
+                <div className="mypage-info-value">{kboTeams.find(t => t.id === teamId)?.name || '-'}</div>
               </div>
             </div>
           )}
 
           {activeTab === 'activity' && (
             <div className="mypage-card">
-              <div style={{ marginBottom: '20px' }}>
-                <button onClick={() => setActivityView('posts')} className={`mypage-tab ${activityView === 'posts' ? 'active' : ''}`}>내가 쓴 글</button>
-                <button onClick={() => setActivityView('comments')} className={`mypage-tab ${activityView === 'comments' ? 'active' : ''}`}>내가 쓴 댓글</button>
+              <div className="mypage-subtab-buttons">
+                <button className={`subtab ${subTab === 'posts' ? 'active' : ''}`} onClick={() => setSubTab('posts')}>내가 쓴 글</button>
+                <button className={`subtab ${subTab === 'comments' ? 'active' : ''}`} onClick={() => setSubTab('comments')}>내가 쓴 댓글</button>
               </div>
 
-              {activityView === 'posts' ? (
-                <>
-                  <h3 className="mypage-subtitle">내 글</h3>
-                  {myPosts.length === 0 ? (
-                    <p>작성한 글이 없습니다.</p>
-                  ) : (
-                    <ul className="mypage-post-list">
-                      {myPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((item, idx) => (
-                        <li key={idx} onClick={() => handlePostClick(item)}>
-                          <strong>{item.title}</strong>
-                          <div>{item.content}</div>
-                          <div>{new Date(item.createdAt).toLocaleString()}</div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </>
-              ) : (
-                <>
-                  <h3 className="mypage-subtitle">내 댓글</h3>
-                  {myComments.length === 0 ? (
-                    <p>작성한 댓글이 없습니다.</p>
-                  ) : (
-                    <ul className="mypage-post-list">
-                      {myComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((item, idx) => (
-                        <li key={idx}>
-                          <div>{item.content}</div>
-                          <div>{new Date(item.createdAt).toLocaleString()}</div>
-                          {item.postId && <div>📌 관련 게시글 ID: {item.postId}</div>}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </>
+              {subTab === 'posts' && (
+                <ul className="mypage-post-list">
+                  {myPosts.length === 0 ? <p>작성한 글이 없습니다.</p> :
+                    myPosts.map(p => (
+                      <li key={p.postId}>
+                        {editPostId === p.postId ? (
+                          <div className="mypage-post-content-box">
+                            <input value={editPostTitle} onChange={e => setEditPostTitle(e.target.value)} />
+                            <textarea value={editPostContent} onChange={e => setEditPostContent(e.target.value)} />
+                            <div>
+                              <button className="save" onClick={handleSavePost}>저장</button>
+                              <button className="cancel" onClick={() => setEditPostId(null)}>취소</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <strong>{p.postTitle}</strong>
+                            <div>{p.postContent}</div>
+                            <div>작성일: {new Date(p.postCreatedAt).toLocaleString()}</div>
+                            <div>
+                              <button className="edit" onClick={() => handleStartEditPost(p)}>수정</button>
+                              <button className="delete" onClick={() => handleDeletePost(p.postId)}>삭제</button>
+                            </div>
+                          </>
+                        )}
+                      </li>
+                    ))}
+                </ul>
               )}
-            </div>
-          )}
 
-          {selectedPost && (
-            <div className="mypage-card">
-              <div className="mypage-post-detail">
-                <button onClick={handleBackToList} className="mypage-back">← 뒤로가기</button>
-
-                {editMode ? (
-                  <>
-                    <input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="mypage-input" />
-                    <textarea value={editContent} onChange={e => setEditContent(e.target.value)} className="mypage-textarea" />
-                    <div className="mypage-post-actions">
-                      <button className="edit" onClick={handleSaveEdit}>저장</button>
-                      <button className="delete" onClick={() => setEditMode(false)}>취소</button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="mypage-post-title">{selectedPost.postTitle}</h3>
-                    <p className="mypage-post-content boxed">{selectedPost.postContent}</p>
-                    <p className="mypage-post-date">작성일: {new Date(selectedPost.postCreatedAt).toLocaleDateString()}</p>
-                    <div className="mypage-post-actions">
-                      <button className="edit" onClick={() => setEditMode(true)}>수정</button>
-                      <button className="delete" onClick={handleDeletePost}>삭제</button>
-                    </div>
-                    <div className="mypage-comments" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                      <h4>댓글 목록</h4>
-                      {allComments.length === 0 ? <p>댓글이 없습니다.</p> : (
-                        <ul className="mypage-post-list">
-                          {allComments.map(c => (
-                            <li key={c.commentId}>
-                              <strong>{c.user?.nickname || '익명'}:</strong> {c.content}
-                              <div>{new Date(c.createdAt).toLocaleString()}</div>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
+              {subTab === 'comments' && (
+                <ul className="mypage-post-list">
+                  {myComments.length === 0 ? <p>작성한 댓글이 없습니다.</p> :
+                    myComments.map(c => (
+                      <li key={c.commentId}>
+                        {editCommentId === c.commentId ? (
+                          <div className="mypage-comment-edit-box">
+                            <textarea value={editCommentContent} onChange={e => setEditCommentContent(e.target.value)} />
+                            <div>
+                              <button className="save" onClick={handleSaveComment}>저장</button>
+                              <button className="cancel" onClick={() => setEditCommentId(null)}>취소</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div>{c.content}</div>
+                            <div>작성일: {new Date(c.createdAt).toLocaleString()}</div>
+                            <div>게시글 ID: {c.post?.postId}</div>
+                            <div>
+                              <button className="edit" onClick={() => handleStartEditComment(c)}>수정</button>
+                              <button className="delete" onClick={() => handleDeleteComment(c.commentId)}>삭제</button>
+                            </div>
+                          </>
+                        )}
+                      </li>
+                    ))}
+                </ul>
+              )}
             </div>
           )}
         </div>

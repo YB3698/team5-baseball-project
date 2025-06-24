@@ -1,3 +1,4 @@
+/* Mypage.css */
 .mypage-container {
   padding: 120px 40px 40px;
   background-color: #f9fbfc;
@@ -100,6 +101,29 @@
   margin-bottom: 10px;
 }
 
+.mypage-subtab-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.subtab {
+  padding: 8px 16px;
+  font-size: 14px;
+  background: #eee;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.subtab.active {
+  background: #377dff;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 0 2px #377dff44;
+}
+
 .mypage-post-list {
   list-style: none;
   padding: 0;
@@ -109,82 +133,45 @@
 .mypage-post-list li {
   padding: 12px 0;
   border-bottom: 1px solid #eee;
-  cursor: pointer;
 }
 
-.mypage-post-list li:hover {
-  background-color: #f0f4ff;
+.mypage-comment-edit-box {
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.mypage-post-list strong {
-  display: block;
-  font-size: 16px;
-  margin-bottom: 5px;
+.mypage-comment-edit-box textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 
-
-.mypage-back {
-  align-self: flex-start;
-  margin-bottom: 20px;
-  background-color: #f1f1f1;
-  border: none;
+button.edit, button.delete, button.save, button.cancel {
+  margin-right: 6px;
   padding: 6px 12px;
+  font-size: 13px;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
-.mypage-post-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-top: 20px;
-  color: #222;
-}
-.mypage-post-title,
-.mypage-post-content,
-.mypage-post-date,
-.mypage-post-actions {
-  align-self: center;
-  margin-bottom: 12px;
-}
-.mypage-post-content {
-  font-size: 16px;
-  line-height: 1.6;
-  margin-top: 10px;
-}
+button.edit { background: #4caf50; color: white; }
+button.delete { background: #f44336; color: white; }
+button.save { background: #1976d2; color: white; }
+button.cancel { background: #999; color: white; }
 
-.mypage-post-date {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #666;
-}
-.mypage-post-detail {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 30px;
-  position: relative;
-}
-.mypage-post-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.mypage-post-actions button {
-  padding: 10px 16px;
-  font-size: 14px;
-  border: none;
+.mypage-post-content-box textarea {
+  width: 100%;
+  min-height: 100px;
+  font-size: 15px;
+  padding: 10px;
   border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.mypage-post-actions .edit {
-  background-color: #4caf50;
-  color: white;
-}
-
-.mypage-post-actions .delete {
-  background-color: #f44336;
-  color: white;
+  border: 1px solid #ccc;
+  resize: vertical;
+  margin-bottom: 10px;
 }
