@@ -347,3 +347,35 @@
     height: 100px;
   }
 }
+
+/* 피타고리안 툴팁 스타일 */
+.pyth-tooltip-icon {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.pyth-tooltip-text {
+  display: none;
+  position: absolute;
+  top: 28px;
+  left: 0;
+  background-color: #fff;
+  color: #222;
+  padding: 14px 20px;
+  border-radius: 10px;
+  white-space: pre-line;
+  z-index: 10;
+  min-width: 320px;
+  max-width: 420px;
+  font-size: 15px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+  line-height: 1.7;
+  border: 1px solid #ccc;
+  font-weight: 400;
+}
+
+.pyth-tooltip-icon:hover .pyth-tooltip-text,
+.pyth-tooltip-icon:focus .pyth-tooltip-text {
+  display: block !important;
+}
