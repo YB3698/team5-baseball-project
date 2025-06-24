@@ -116,11 +116,21 @@
 }
 
 .clear-filter-btn {
-  background: rgb(201, 198, 198);
+  padding: 0;
   border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
+  background: none;
+}
+
+.clear-filter-btn img {
+  width: 48px;              /* 조금만 크게 */
+  height: auto;
+  border-radius: 6px;       /* 약간 둥글게 */
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.2); /* 키보드 느낌의 입체감 */
+  display: block;
+}
+.clear-filter-btn img:hover {
+  transform: scale(0.95);
+  transition: 0.1s;
 }
 
 .stats-info {

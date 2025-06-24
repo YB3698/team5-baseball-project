@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PlayerAddModal from './PlayerAddModal';
 import './PlayerManagement.css';
+import backspaceImg from './img/backspace.png';
 
 // 선수 관리 페이지 컴포넌트
 const PlayerManagement = () => {
@@ -142,10 +143,10 @@ const PlayerManagement = () => {
     <div className="player-management-container">
       <h2 className="player-management-title">선수 관리</h2>
       <div className="action-buttons">
-        <div className="stats-info">
-          총 선수 수: {players.length} | 필터된 선수 수: {filteredPlayers.length}
-        </div>
         <button className="add-btn" onClick={() => setIsAddModalOpen(true)}>선수 등록</button>
+        <div className="stats-info">
+          총 선수: {filteredPlayers.length}
+        </div>
       </div>
 
       <div className="filter-section">
@@ -154,7 +155,10 @@ const PlayerManagement = () => {
         <input name="playerPosition" placeholder="포지션" value={filters.playerPosition} onChange={handleFilterChange} />
         <input name="playerBackNumber" placeholder="등번호" value={filters.playerBackNumber} onChange={handleFilterChange} />
         <input name="teamId" placeholder="팀 ID" value={filters.teamId} onChange={handleFilterChange} />
-        <button className="clear-filter-btn" onClick={clearFilters}>❌</button>
+        <button className="clear-filter-btn" onClick={clearFilters}>
+          <img src={backspaceImg} alt="Backspace" />
+        </button>
+
       </div>
 
       <PlayerAddModal 
