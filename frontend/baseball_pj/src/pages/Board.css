@@ -87,11 +87,24 @@
 }
 
 .post-actions {
-  display: block;
-  text-align: right;
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
-  padding: 0 60px 0 10px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.post-actions .search-input {
+  width: 250px;
+  margin-right: 10px;
+  max-width: 250px;
+  flex-shrink: 0;
+}
+
+.post-actions .write-btn {
+  flex-shrink: 0;
 }
 
 .write-btn {
@@ -322,17 +335,23 @@
 
 /* 👁 게시판 진입 시 보여질 요소 제어 */
 .post-list > h2,
-.post-controls,
-.post-actions,
-.post-count {
+.post-list > .post-controls,
+.post-list > .post-count {
   display: none;
 }
 
 .post-list.show-header > h2,
 .post-list.show-header > .post-controls,
-.post-list.show-header > .post-actions,
 .post-list.show-header > .post-count {
   display: block;
+}
+
+/* post-actions는 항상 flex로 표시 */
+.post-list .post-actions,
+.post-list.show-header .post-actions {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
 }
 
 /* 팀 필터 스타일 */
@@ -399,27 +418,6 @@
   color: #6c757d;
   font-weight: 500;
   padding: 5px;
-}
-
-/* 검색 입력창 스타일 */
-.post-controls {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
-}
-
-.search-input {
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 16px;
-  width: 300px;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0,123,255,0.3);
 }
 
 /* 페이징 스타일 */

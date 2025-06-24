@@ -17,4 +17,5 @@ public class PostWithNicknameDto {
     private String postContent;
     private LocalDateTime postCreatedAt;
     private String nickname;
+    private Long viewCount;
 }
