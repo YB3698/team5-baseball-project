@@ -1,6 +1,4 @@
-package com.baseball.baseball_pj.Post.DTO;
-
-import java.util.List;
+package com.baseball.baseball_pj.Post.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,10 +13,4 @@ public class PostListDto {
     private String postContent;
     private String postCreatedAt;
     private String nickname;
-
-    public static List<PostListDto> getAllPostDtos() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllPostDtos'");
-    }
-
 }

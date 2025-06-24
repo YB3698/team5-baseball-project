@@ -1,11 +1,11 @@
 package com.baseball.baseball_pj.Post.domain;
 
+import com.baseball.baseball_pj.User.domain.UserEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
-import com.baseball.baseball_pj.User.domain.UserEntity;
 
 @Entity
 @Table(name = "POSTS")
@@ -14,12 +14,15 @@ import com.baseball.baseball_pj.User.domain.UserEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostFormEntity {
+public class PostEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "posts_seq_gen")
     @SequenceGenerator(name = "posts_seq_gen", sequenceName = "POSTS_SEQ", allocationSize = 1)
     @Column(name = "POST_ID")
     private Long postId;
+
+    @Column(name = "USER_ID")
+    private Long userId;
 
     @Column(name = "TEAM_ID")
     private Integer teamId;
@@ -35,15 +38,7 @@ public class PostFormEntity {
     private LocalDateTime postCreatedAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "USER_ID", insertable = false, updatable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private UserEntity user;
-
-    // 제대로 구현된 getUser() 메서드
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public void setUser(UserEntity user) {
-        this.user = user;
-    }
 }
