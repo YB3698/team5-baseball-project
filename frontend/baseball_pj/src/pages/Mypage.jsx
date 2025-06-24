@@ -197,7 +197,6 @@ const MyPage = () => {
                           <>
                             <div>{c.content}</div>
                             <div>작성일: {new Date(c.createdAt).toLocaleString()}</div>
-                            <div>게시글 ID: {c.post?.postId}</div>
                             <div>
                               <button className="edit" onClick={() => handleStartEditComment(c)}>수정</button>
                               <button className="delete" onClick={() => handleDeleteComment(c.commentId)}>삭제</button>
