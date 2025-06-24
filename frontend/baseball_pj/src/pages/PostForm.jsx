@@ -35,12 +35,29 @@ const PostForm = () => {
   }
 
   const isLoggedIn = !!userId;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isLoggedIn) {
       alert('로그인 후에 게시글 작성이 가능합니다.');
       navigate('/login');
+      return;
+    }
+
+    // 제목 유효성 검사
+    if (!title.trim()) {
+      alert('제목을 입력해주세요.');
+      return;
+    }
+
+    // 내용 유효성 검사
+    if (!content.trim()) {
+      alert('내용을 입력해주세요.');
+      return;
+    }
+
+    // 팀 선택 유효성 검사
+    if (!teamId) {
+      alert('관련 팀을 선택해주세요.');
       return;
     }
 
@@ -68,12 +85,12 @@ const PostForm = () => {
           <button onClick={() => navigate('/login')}>로그인 하러 가기</button>
         </div>
       ) : !submitted ? (
-        <form onSubmit={handleSubmit}>
-          <label>제목</label>
+        <form onSubmit={handleSubmit}>          <label>제목</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            placeholder="게시글 제목을 입력해주세요"
             required
           />
 
@@ -82,12 +99,13 @@ const PostForm = () => {
             rows={10}
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            placeholder="게시글 내용을 입력해주세요"
             required
           ></textarea>
 
           <label>관련 팀</label>
           <select value={teamId} onChange={(e) => setTeamId(Number(e.target.value))} required>
-            <option value="">-- 선택 --</option>
+            <option value="">-- 팀을 선택해주세요 --</option>
             {dummyTeams
               .filter(team => team.id >= 1 && team.id <= 10) // 1~10번 팀만 필터링
               .map((team) => (
