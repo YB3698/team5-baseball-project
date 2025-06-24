@@ -22,6 +22,8 @@ const MyPage = () => {
   const [email, setEmail] = useState('');
   const [teamId, setTeamId] = useState(1);
   const [myPosts, setMyPosts] = useState([]);
+  const [myComments, setMyComments] = useState([]);
+  const [allComments, setAllComments] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [editTitle, setEditTitle] = useState('');
@@ -38,30 +40,37 @@ const MyPage = () => {
 
       axios.get('/api/posts')
         .then(res => {
-          const filtered = res.data
-            .filter(p => p.userId === parsed.userId)
-            .sort((a, b) => new Date(b.postCreatedAt) - new Date(a.postCreatedAt)); // 최신순 정렬
+          const filtered = res.data.filter(p => p.userId === parsed.userId);
           setMyPosts(filtered);
+        })
+        .catch(console.error);
+
+      axios.get(`/api/user-comments?userId=${parsed.userId}`)
+        .then(res => {
+          setMyComments(res.data);
         })
         .catch(console.error);
     }
   }, []);
 
-  useEffect(() => {
-    if (selectedPost) {
-      setEditTitle(selectedPost.postTitle);
-      setEditContent(selectedPost.postContent);
-    }
-  }, [selectedPost]);
-
   const handlePostClick = (post) => {
     setSelectedPost(post);
     setEditMode(false);
+    setEditTitle(post.postTitle);
+    setEditContent(post.postContent);
+
+    axios.get(`/api/comments?postId=${post.postId}`)
+      .then(res => {
+        const comments = res.data.flatMap(item => [item.comment, ...item.replies]);
+        setAllComments(comments);
+      })
+      .catch(console.error);
   };
 
   const handleBackToList = () => {
     setSelectedPost(null);
     setEditMode(false);
+    setAllComments([]);
   };
 
   const handleDeletePost = () => {
@@ -78,25 +87,22 @@ const MyPage = () => {
 
   const handleSaveEdit = () => {
     const updated = {
+      ...selectedPost,
       postTitle: editTitle,
       postContent: editContent,
     };
 
     axios.put(`/api/posts/${selectedPost.postId}`, updated)
-      .then(() => {
-        const updatedPost = { ...selectedPost, ...updated };
+      .then(res => {
         const updatedList = myPosts.map(p =>
-          p.postId === selectedPost.postId ? updatedPost : p
+          p.postId === selectedPost.postId ? res.data : p
         );
         setMyPosts(updatedList);
-        setSelectedPost(updatedPost);
+        setSelectedPost(res.data);
         setEditMode(false);
         alert('수정되었습니다.');
       })
-      .catch(err => {
-        console.error(err);
-        alert('수정에 실패했습니다.');
-      });
+      .catch(console.error);
   };
 
   if (!user) return null;
@@ -108,7 +114,8 @@ const MyPage = () => {
       <div className="mypage-layout">
         <div className="mypage-sidebar">
           <button className={`mypage-tab ${activeTab === 'info' ? 'active' : ''}`} onClick={() => setActiveTab('info')}>정보확인</button>
-          <button className={`mypage-tab ${activeTab === 'posts' ? 'active' : ''}`} onClick={() => setActiveTab('posts')}>내 활동</button>
+          <button className={`mypage-tab ${activeTab === 'posts' ? 'active' : ''}`} onClick={() => setActiveTab('posts')}>내 글</button>
+          <button className={`mypage-tab ${activeTab === 'comments' ? 'active' : ''}`} onClick={() => setActiveTab('comments')}>내 댓글</button>
         </div>
 
         <div className="mypage-content">
@@ -139,16 +146,8 @@ const MyPage = () => {
 
                   {editMode ? (
                     <>
-                      <input
-                        value={editTitle}
-                        onChange={e => setEditTitle(e.target.value)}
-                        className="mypage-input"
-                      />
-                      <textarea
-                        value={editContent}
-                        onChange={e => setEditContent(e.target.value)}
-                        className="mypage-textarea"
-                      />
+                      <input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="mypage-input" />
+                      <textarea value={editContent} onChange={e => setEditContent(e.target.value)} className="mypage-textarea" />
                       <div className="mypage-post-actions">
                         <button className="edit" onClick={handleSaveEdit}>저장</button>
                         <button className="delete" onClick={() => setEditMode(false)}>취소</button>
@@ -162,6 +161,19 @@ const MyPage = () => {
                       <div className="mypage-post-actions">
                         <button className="edit" onClick={() => setEditMode(true)}>수정</button>
                         <button className="delete" onClick={handleDeletePost}>삭제</button>
+                      </div>
+                      <div className="mypage-comments" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                        <h4>댓글 목록</h4>
+                        {allComments.length === 0 ? <p>댓글이 없습니다.</p> : (
+                          <ul className="mypage-post-list">
+                            {allComments.map(c => (
+                              <li key={c.commentId}>
+                                <strong>{c.user?.nickname || '익명'}:</strong> {c.content}
+                                <div>{new Date(c.createdAt).toLocaleString()}</div>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
                     </>
                   )}
@@ -182,6 +194,25 @@ const MyPage = () => {
                     </ul>
                   )}
                 </>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'comments' && (
+            <div className="mypage-card">
+              <h3 className="mypage-subtitle">내가 쓴 댓글</h3>
+              {myComments.length === 0 ? (
+                <p>작성한 댓글이 없습니다.</p>
+              ) : (
+                <ul className="mypage-post-list">
+                  {myComments.map(comment => (
+                    <li key={comment.commentId}>
+                      <strong>{comment.content}</strong>
+                      <div>작성일: {new Date(comment.createdAt).toLocaleString()}</div>
+                      <div>게시글 ID: {comment.post?.postId}</div>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
           )}
