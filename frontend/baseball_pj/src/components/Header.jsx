@@ -68,9 +68,7 @@ const Header = () => {
             <Link to="/login">로그인</Link>
           </>
         )}
-      </div>
-
-      <header className="header">
+      </div>      <header className="header">
         <div className="header-container">
           <div className="logo-wrap">
             <FaBaseballBall className="baseball-icon" />
@@ -79,7 +77,8 @@ const Header = () => {
                  <span style={{ fontWeight: '700' }}>Baseball 커뮤니티</span>
               </Link>
             </h1>
-          </div>          <nav className="nav-menu">
+          </div>
+          <nav className="nav-menu">
             <button onClick={handleHomeClick} className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>홈</button>
             <button onClick={handleScheduleClick} className={`nav-link ${location.pathname === '/matchschedule' ? 'active' : ''}`}>경기일정 및 결과</button>
             <button onClick={handlePlayerClick} className={`nav-link ${location.pathname === '/playerlist' ? 'active' : ''}`}>선수정보</button>
@@ -87,6 +86,7 @@ const Header = () => {
             <button onClick={handleStatsClick} className={`nav-link ${location.pathname === '/playerstats' ? 'active' : ''}`}>기록실</button>
             <button onClick={handleBoardClick} className={`nav-link board-button ${location.pathname === '/postlist' ? 'active' : ''}`}>게시판</button>
           </nav>
+          <div className="header-spacer"></div>
         </div>
       </header>
     </div>

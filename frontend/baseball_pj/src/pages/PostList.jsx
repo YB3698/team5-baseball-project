@@ -115,12 +115,25 @@ const PostList = () => {
     setTeamFilter(teamId === teamFilter ? '' : String(teamId)); // 같은 팀 클릭시 해제
     setCurrentPage(0); // 첫 페이지로 이동
   };
-
   // 페이징 버튼 렌더링 함수
   const renderPagination = () => {
     const pageButtons = [];
     const startPage = Math.max(0, currentPage - 2);
     const endPage = Math.min(totalPages - 1, currentPage + 2);
+
+    // 첫 페이지 버튼 (맨 처음으로)
+    if (currentPage > 0) {
+      pageButtons.push(
+        <button 
+          key="first" 
+          onClick={() => handlePageChange(0)}
+          className="page-btn page-btn-arrow"
+          title="첫 페이지"
+        >
+          ≪
+        </button>
+      );
+    }
 
     // 이전 버튼
     if (currentPage > 0) {
@@ -128,9 +141,10 @@ const PostList = () => {
         <button 
           key="prev" 
           onClick={() => handlePageChange(currentPage - 1)}
-          className="page-btn"
+          className="page-btn page-btn-arrow"
+          title="이전 페이지"
         >
-          이전
+          ‹
         </button>
       );
     }
@@ -146,17 +160,30 @@ const PostList = () => {
           {i + 1}
         </button>
       );
-    }
-
-    // 다음 버튼
+    }    // 다음 버튼
     if (currentPage < totalPages - 1) {
       pageButtons.push(
         <button 
           key="next" 
           onClick={() => handlePageChange(currentPage + 1)}
-          className="page-btn"
+          className="page-btn page-btn-arrow"
+          title="다음 페이지"
         >
-          다음
+          ›
+        </button>
+      );
+    }
+
+    // 마지막 페이지 버튼 (맨 끝으로)
+    if (currentPage < totalPages - 1) {
+      pageButtons.push(
+        <button 
+          key="last" 
+          onClick={() => handlePageChange(totalPages - 1)}
+          className="page-btn page-btn-arrow"
+          title="마지막 페이지"
+        >
+          ≫
         </button>
       );
     }
@@ -289,11 +316,11 @@ const PostList = () => {
                 <th>등록일</th>
                 <th>조회수</th>
               </tr>
-            </thead>
-            <tbody>
+            </thead>            <tbody>
               {currentPosts.map((post, idx) => {
                 const team = teams.find(t => t.teamId === post.teamId);
-                return (                  <tr
+                return (
+                  <tr
                     key={post.postId}
                     onClick={() => handlePostClick(post)}
                     className="hoverable-row"
@@ -313,7 +340,8 @@ const PostList = () => {
                       <span style={{ display: team?.teamLogo ? 'none' : 'inline' }}>
                         {team?.teamName || `팀 ${post.teamId}`}
                       </span>
-                    </td>                    <td className="title-cell">{post.postTitle}</td>
+                    </td>
+                    <td className="title-cell">{post.postTitle}</td>
                     <td>{post.nickname}</td>
                     <td>{formatDate(post.postCreatedAt)}</td>
                     <td>{post.viewCount ?? 0}</td>

@@ -424,6 +424,7 @@
 .pagination {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin: 20px 0;
   gap: 5px;
 }
@@ -436,14 +437,60 @@
   border-radius: 4px;
   font-size: 14px;
   transition: all 0.2s;
+  min-width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .page-btn:hover {
   background: #f5f5f5;
+  border-color: #007bff;
 }
 
 .page-btn.active {
   background: #007bff;
   color: white;
   border-color: #007bff;
+  font-weight: 600;
+}
+
+/* 화살표 버튼 스타일 */
+.page-btn-arrow {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 8px 10px;
+}
+
+.page-btn-arrow:hover {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+/* 첫 페이지/마지막 페이지 화살표 */
+.page-btn-arrow:first-child,
+.page-btn-arrow:last-child {
+  margin: 0 5px;
+}
+
+/* 반응형 - 모바일에서 페이징 */
+@media (max-width: 768px) {
+  .pagination {
+    gap: 3px;
+    margin: 15px 0;
+  }
+  
+  .page-btn {
+    padding: 6px 8px;
+    font-size: 12px;
+    min-width: 32px;
+    height: 32px;
+  }
+  
+  .page-btn-arrow {
+    padding: 6px 8px;
+    font-size: 14px;
+  }
 }
