@@ -56,18 +56,29 @@ public class CommentsController {
     public ResponseEntity<?> updateComment(@PathVariable Long commentId, @RequestBody Map<String, Object> payload) {
         Long userId = payload.get("userId") != null ? Long.valueOf(payload.get("userId").toString()) : null;
         String content = payload.get("content").toString();
-        if (userId == null) return ResponseEntity.status(401).body("로그인 필요");
+        if (userId == null)
+            return ResponseEntity.status(401).body("로그인 필요");
         boolean ok = commentService.updateComment(commentId, userId, content);
-        if (!ok) return ResponseEntity.status(403).body("본인만 수정할 수 있습니다.");
+        if (!ok)
+            return ResponseEntity.status(403).body("본인만 수정할 수 있습니다.");
         return ResponseEntity.ok("수정 완료");
     }
 
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId, @RequestBody Map<String, Object> payload) {
         Long userId = payload.get("userId") != null ? Long.valueOf(payload.get("userId").toString()) : null;
-        if (userId == null) return ResponseEntity.status(401).body("로그인 필요");
+        if (userId == null)
+            return ResponseEntity.status(401).body("로그인 필요");
         boolean ok = commentService.deleteComment(commentId, userId);
-        if (!ok) return ResponseEntity.status(403).body("본인만 삭제할 수 있습니다.");
+        if (!ok)
+            return ResponseEntity.status(403).body("본인만 삭제할 수 있습니다.");
         return ResponseEntity.ok("삭제 완료");
     }
+
+    @GetMapping("/user-comments")
+    public ResponseEntity<?> getUserComments(@RequestParam Long userId) {
+        List<CommentEntity> comments = commentService.getCommentsByUserId(userId);
+        return ResponseEntity.ok(comments);
+    }
+
 }

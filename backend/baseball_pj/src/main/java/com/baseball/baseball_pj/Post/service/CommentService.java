@@ -81,4 +81,9 @@ public class CommentService {
     public List<CommentEntity> getAllRootComments(Long postId) {
         return commentRepository.findByPost_PostIdAndParentIsNullOrderByCreatedAt(postId);
     }
+
+    public List<CommentEntity> getCommentsByUserId(Long userId) {
+        return commentRepository.findByUser_IdOrderByCreatedAtDesc(userId);
+    }
+
 }
