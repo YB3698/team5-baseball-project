@@ -220,7 +220,14 @@ const PostList = () => {
   const handleDelete = async () => {
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
     try {
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      const userId = storedUser?.userId;
+      const userRole = storedUser?.role;
       await axios.delete(`/api/posts/${selectedPost.postId}`, {
+        headers: {
+          'X-USER-ID': userId,
+          'X-USER-ROLE': userRole
+        },
         withCredentials: true,
       });
       alert('삭제 완료');
@@ -393,10 +400,13 @@ const PostList = () => {
                 {(() => {
                   const storedUser = JSON.parse(localStorage.getItem('user'));
                   const loggedInUserId = storedUser?.userId;
-                  if (Number(loggedInUserId) === Number(selectedPost.userId)) {
+                  const isAdmin = storedUser?.role === 'ADMIN' || storedUser?.role === 'admin';
+                  if (Number(loggedInUserId) === Number(selectedPost.userId) || isAdmin) {
                     return (
                       <div className="actions align-right">
-                        <button className="edit-btn" onClick={handleEdit}>수정</button>
+                        {Number(loggedInUserId) === Number(selectedPost.userId) && (
+                          <button className="edit-btn" onClick={handleEdit}>수정</button>
+                        )}
                         <button className="delete-btn" onClick={handleDelete}>삭제</button>
                       </div>
                     );

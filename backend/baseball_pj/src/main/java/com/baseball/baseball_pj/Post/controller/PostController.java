@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import com.baseball.baseball_pj.Post.domain.PostEntity;
@@ -21,6 +22,8 @@ public class PostController {
     private PostRepository postRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private com.baseball.baseball_pj.Post.repository.CommentRepository commentRepository;
 
     // 게시글 저장
     @PostMapping("/posts")
@@ -97,12 +100,24 @@ public class PostController {
 
     // 게시글 삭제
     @DeleteMapping("/posts/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
-        if (!postRepository.existsById(id)) {
+    @Transactional
+    public ResponseEntity<Void> deletePost(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-USER-ID") Long userId,
+            @RequestHeader(value = "X-USER-ROLE", required = false) String role) {
+        var postOpt = postRepository.findById(id);
+        if (postOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        postRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        var post = postOpt.get();
+        boolean isAdmin = role != null && (role.equalsIgnoreCase("ADMIN") || role.equalsIgnoreCase("admin"));
+        if (isAdmin || post.getUserId().equals(userId)) {
+            commentRepository.deleteByPost_PostId(id); // 댓글 먼저 삭제
+            postRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.status(403).build();
+        }
     }
 
 }

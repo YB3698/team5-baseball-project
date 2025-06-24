@@ -60,8 +60,10 @@ public class SecurityConfig {
                                 // 게시글 댓글 API 인증 없이 접근 허용
                                 "/api/comments",
                                 "/api/comments/**",
-                                "/api/user-comments/**"
-
+                                "/api/user-comments/**",
+                                // Swagger/OpenAPI 문서 허용
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
                         ).permitAll()
                         // .requestMatchers("/api/admin/**").permitAll()
                         // 그 외 모든 요청은 거부

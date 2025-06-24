@@ -26,4 +26,6 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
 
     List<CommentEntity> findByUser_IdOrderByCreatedAtDesc(Long userId);
 
+    // 게시글의 모든 댓글 삭제
+    void deleteByPost_PostId(Long postId);
 }
