@@ -45,11 +45,40 @@ public class PostController {
                     post.getPostId(),
                     post.getUserId(),
                     post.getTeamId(),
-                    post.getPostTitle(),
-                    post.getPostContent(),
+                    post.getPostTitle(), post.getPostContent(),
                     post.getPostCreatedAt(),
-                    nickname);
+                    nickname,
+                    post.getViewCount());
         }).collect(Collectors.toList());
+    }
+
+    // 특정 게시글 조회 (조회수 증가)
+    @GetMapping("/posts/{id}")
+    public ResponseEntity<PostWithNicknameDto> getPost(@PathVariable Long id) {
+        return postRepository.findById(id)
+                .map(post -> {
+                    // 조회수 증가
+                    post.setViewCount(post.getViewCount() + 1);
+                    postRepository.save(post);
+
+                    // 닉네임 조회
+                    String nickname = userRepository.findById(post.getUserId())
+                            .map(user -> user.getNickname())
+                            .orElse("알 수 없음");
+
+                    PostWithNicknameDto dto = new PostWithNicknameDto(
+                            post.getPostId(),
+                            post.getUserId(),
+                            post.getTeamId(),
+                            post.getPostTitle(),
+                            post.getPostContent(),
+                            post.getPostCreatedAt(),
+                            nickname,
+                            post.getViewCount());
+
+                    return ResponseEntity.ok(dto);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // 게시글 수정

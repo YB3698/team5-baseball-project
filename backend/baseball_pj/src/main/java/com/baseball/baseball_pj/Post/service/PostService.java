@@ -26,4 +26,17 @@ public class PostService {
     public PostEntity save(PostEntity post) {
         return postRepository.save(post);
     }
+
+    // 특정 게시글 조회 (조회수 증가 없이)
+    public PostEntity findById(Long id) {
+        return postRepository.findById(id).orElse(null);
+    }
+
+    // 조회수 증가
+    public void incrementViewCount(Long postId) {
+        postRepository.findById(postId).ifPresent(post -> {
+            post.setViewCount(post.getViewCount() + 1);
+            postRepository.save(post);
+        });
+    }
 }

@@ -16,7 +16,36 @@ const PostList = () => {
   
   // 페이징 관련 state 추가
   const [currentPage, setCurrentPage] = useState(0);
-  const [postsPerPage] = useState(10); // 페이지당 게시글 수
+  const [postsPerPage] = useState(10); // 페이지당 게시글 수  // 게시글 클릭 시 상세보기 및 조회수 증가
+  const handlePostClick = async (post) => {
+    try {
+      // 조회수 증가를 위해 개별 게시글 조회 API 호출
+      const response = await fetch(`/api/posts/${post.postId}`);
+      if (response.ok) {
+        const updatedPost = await response.json();
+        setSelectedPost(updatedPost);
+        setIsEditing(false);
+        
+        // 목록의 해당 게시글 조회수만 업데이트 (전체 목록 새로고침 없이)
+        setPosts(prevPosts => 
+          prevPosts.map(p => 
+            p.postId === updatedPost.postId 
+              ? { ...p, viewCount: updatedPost.viewCount }
+              : p
+          )
+        );
+      } else {
+        // API 호출 실패 시에도 기존 데이터로 상세보기 표시
+        setSelectedPost(post);
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error('게시글 조회 실패:', error);
+      // 에러 발생 시에도 기존 데이터로 상세보기 표시
+      setSelectedPost(post);
+      setIsEditing(false);
+    }
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -86,12 +115,25 @@ const PostList = () => {
     setTeamFilter(teamId === teamFilter ? '' : String(teamId)); // 같은 팀 클릭시 해제
     setCurrentPage(0); // 첫 페이지로 이동
   };
-
   // 페이징 버튼 렌더링 함수
   const renderPagination = () => {
     const pageButtons = [];
     const startPage = Math.max(0, currentPage - 2);
     const endPage = Math.min(totalPages - 1, currentPage + 2);
+
+    // 첫 페이지 버튼 (맨 처음으로)
+    if (currentPage > 0) {
+      pageButtons.push(
+        <button 
+          key="first" 
+          onClick={() => handlePageChange(0)}
+          className="page-btn page-btn-arrow"
+          title="첫 페이지"
+        >
+          ≪
+        </button>
+      );
+    }
 
     // 이전 버튼
     if (currentPage > 0) {
@@ -99,9 +141,10 @@ const PostList = () => {
         <button 
           key="prev" 
           onClick={() => handlePageChange(currentPage - 1)}
-          className="page-btn"
+          className="page-btn page-btn-arrow"
+          title="이전 페이지"
         >
-          이전
+          ‹
         </button>
       );
     }
@@ -117,17 +160,30 @@ const PostList = () => {
           {i + 1}
         </button>
       );
-    }
-
-    // 다음 버튼
+    }    // 다음 버튼
     if (currentPage < totalPages - 1) {
       pageButtons.push(
         <button 
           key="next" 
           onClick={() => handlePageChange(currentPage + 1)}
-          className="page-btn"
+          className="page-btn page-btn-arrow"
+          title="다음 페이지"
         >
-          다음
+          ›
+        </button>
+      );
+    }
+
+    // 마지막 페이지 버튼 (맨 끝으로)
+    if (currentPage < totalPages - 1) {
+      pageButtons.push(
+        <button 
+          key="last" 
+          onClick={() => handlePageChange(totalPages - 1)}
+          className="page-btn page-btn-arrow"
+          title="마지막 페이지"
+        >
+          ≫
         </button>
       );
     }
@@ -219,12 +275,31 @@ const PostList = () => {
             ))}
           </div>
         </div>
-      )}
-
-      {/* 글쓰기 버튼 - 게시글 리스트에서만 표시 */}
+      )}      {/* 글쓰기 버튼과 검색 입력 - 게시글 리스트에서만 표시 */}
       {!selectedPost && (
-        <div className="post-actions">
-          <Link to="/postform" className="write-btn small">글쓰기</Link>
+        <div className="post-actions" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', padding: '0 20px' }}>          <input
+            type="text"
+            placeholder="게시글 검색"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="search-input"
+            style={{ flex: '1', padding: '8px 12px', border: '1px solid #ddd', borderRadius: '4px', marginRight: '10px' }}
+          /><Link 
+            to="/postform" 
+            className="write-btn small"
+            style={{ 
+              backgroundColor: '#007bff', 
+              color: 'white', 
+              padding: '8px 16px', 
+              textDecoration: 'none', 
+              borderRadius: '4px',
+              fontSize: '14px',
+              whiteSpace: 'nowrap',
+              marginLeft: '-10px'
+            }}
+          >
+            글쓰기
+          </Link>
         </div>
       )}
 
@@ -241,14 +316,13 @@ const PostList = () => {
                 <th>등록일</th>
                 <th>조회수</th>
               </tr>
-            </thead>
-            <tbody>
+            </thead>            <tbody>
               {currentPosts.map((post, idx) => {
                 const team = teams.find(t => t.teamId === post.teamId);
                 return (
                   <tr
                     key={post.postId}
-                    onClick={() => { setSelectedPost(post); setIsEditing(false); }}
+                    onClick={() => handlePostClick(post)}
                     className="hoverable-row"
                   >
                     <td>
@@ -270,7 +344,7 @@ const PostList = () => {
                     <td className="title-cell">{post.postTitle}</td>
                     <td>{post.nickname}</td>
                     <td>{formatDate(post.postCreatedAt)}</td>
-                    <td>{post.views ?? '-'}</td>
+                    <td>{post.viewCount ?? 0}</td>
                   </tr>
                 );
               })}
@@ -279,23 +353,11 @@ const PostList = () => {
           
           {/* 페이징 버튼 추가 */}
           {totalPages > 1 && renderPagination()}
-          
-          {filteredPosts.length === 0 && (
+            {filteredPosts.length === 0 && (
             <p style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>
               검색 결과가 없습니다.
             </p>
           )}
-
-          {/* 검색 입력 - 게시글 리스트에서만 표시 */}
-          <div className="post-controls">
-            <input
-              type="text"
-              placeholder="게시글 검색"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="search-input"
-            />
-          </div>
         </div>
       )}
 
@@ -323,11 +385,10 @@ const PostList = () => {
                 </div>
               </>
             ) : (
-              <>
-                <h3>{selectedPost.postTitle}</h3>
+              <>                <h3>{selectedPost.postTitle}</h3>
                 <p className="post-content">{selectedPost.postContent}</p>
                 <div className="meta">
-                  작성자: {selectedPost.nickname} | 작성일: {formatDate(selectedPost.postCreatedAt)}
+                  작성자: {selectedPost.nickname} | 작성일: {formatDate(selectedPost.postCreatedAt)} | 조회수: {selectedPost.viewCount ?? 0}
                 </div>
                 {(() => {
                   const storedUser = JSON.parse(localStorage.getItem('user'));

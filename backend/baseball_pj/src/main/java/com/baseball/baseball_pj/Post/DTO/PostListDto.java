@@ -13,4 +13,5 @@ public class PostListDto {
     private String postContent;
     private String postCreatedAt;
     private String nickname;
+    private Long viewCount;
 }

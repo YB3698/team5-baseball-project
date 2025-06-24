@@ -1,6 +1,7 @@
-/* Home 페이지 레이아웃 및 스타일 */
+
 .home-root {
   padding: 32px;
+  padding-top: 140px; /* 헤더 높이(~120px) + 여백 */
   background: #f7f7fa;
   min-height: 100vh;
 }
@@ -42,6 +43,11 @@
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.07);
   padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* transform 사용을 위해 추가 */
 }
 
 .home-vote-box {
@@ -51,12 +57,17 @@
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.07);
   padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .vote-title {
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 12px;
+  text-align: center;
 }
 
 .vote-select {
@@ -72,18 +83,34 @@
   list-style: none;
   padding: 0;
   margin-bottom: 16px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
+.vote-options li {
+  margin-bottom: 8px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .vote-option-label {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 1rem;
+  justify-content: flex-start;
+  width: auto;
 }
 
 .vote-btn-row {
   display: flex;
   gap: 10px;
   margin-bottom: 8px;
+  justify-content: center;
+  width: 100%;
 }
 .vote-btn, .result-btn {
   padding: 6px 18px;
@@ -124,4 +151,99 @@
 .vote-result-list {
   list-style: none;
   padding: 0;
+}
+
+/* 차트 제목 스타일 */
+.home-chart-box h3,
+.home-chart-box h4 {
+  text-align: center;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ResponsiveContainer 가운데 정렬 */
+.home-chart-box .recharts-wrapper {
+  margin: 0 auto;
+  transform: translateX(-10px); /* 왼쪽으로 10px 이동 */
+}
+
+/* 차트별 개별 조정 */
+.home-chart-box:nth-child(1) .recharts-wrapper {
+  transform: translateX(-15px); /* 순위 차트는 더 왼쪽으로 */
+}
+
+.home-chart-box:nth-child(3) .recharts-wrapper {
+  transform: translateX(-5px); /* 팀 분포 차트는 살짝만 */
+}
+
+/* 투표 결과 박스 가운데 정렬 */
+.vote-result-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.vote-result-title {
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .home-root {
+    padding: 20px;
+    padding-top: 160px; /* 모바일에서 헤더가 더 높을 수 있음 */
+  }
+  
+  .home-grid-2x2 {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    gap: 20px;
+  }
+  
+  .home-chart-box,
+  .home-vote-box {
+    width: 100%;
+    min-width: auto;
+    height: auto;
+    min-height: 300px;
+  }
+  
+  .home-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  /* 모바일에서 차트 위치 조정 */
+  .home-chart-box .recharts-wrapper {
+    transform: translateX(-5px); /* 모바일에서는 덜 이동 */
+  }
+}
+
+@media (max-width: 480px) {
+  .home-root {
+    padding: 16px;
+    padding-top: 180px; /* 작은 모바일에서 더 많은 여백 */
+  }
+  
+  .home-grid-2x2 {
+    gap: 16px;
+  }
+  
+  .home-chart-box,
+  .home-vote-box {
+    padding: 16px;
+  }
+  
+  .home-title {
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+  }
 }

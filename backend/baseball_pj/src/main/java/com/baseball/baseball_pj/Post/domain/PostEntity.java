@@ -32,13 +32,16 @@ public class PostEntity {
 
     @Column(name = "POST_CONTENT")
     private String postContent;
-
     @Builder.Default
     @Column(name = "POST_CREATED_AT")
     private LocalDateTime postCreatedAt = LocalDateTime.now();
 
+    @Builder.Default
+    @Column(name = "VIEW_COUNT")
+    private Long viewCount = 0L;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", insertable = false, updatable = false)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private UserEntity user;
 }
