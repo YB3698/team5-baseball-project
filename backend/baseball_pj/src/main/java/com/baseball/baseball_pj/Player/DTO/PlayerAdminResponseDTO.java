@@ -13,9 +13,9 @@ public class PlayerAdminResponseDTO {
     private Long playerId;
     private String playerName;
     private String playerPosition;
-    private Long playerBackNumber;
+    private Integer playerBackNumber;
     private LocalDate playerBirthDate;
     private String playerHeightWeight;
     private String playerEducationPath;
-    private Long teamId;
+    private Integer teamId;
 }

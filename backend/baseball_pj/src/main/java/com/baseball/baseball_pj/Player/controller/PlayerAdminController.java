@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,12 @@ import lombok.*;
 @RequiredArgsConstructor // final로 선언된 변수는 자동으로 생성자 주입
 public class PlayerAdminController {
     private final PlayerAdminService playerAdminService; // PlayerAdminService를 주입받아 사용
+    
+    // 선수 추가
+    @PostMapping // POST 요청을 처리하는 메서드
+    public PlayerAdminResponseDTO addPlayer(@RequestBody PlayerAdminRequestDTO dto) {
+        return playerAdminService.addPlayer(dto);
+    }
 
     // 전체 선수 목록 조회
     @GetMapping

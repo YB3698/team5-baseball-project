@@ -1,5 +1,7 @@
 package com.baseball.baseball_pj.Player.domain;
 
+import java.time.LocalDate;
+
 // UserEntity는 USERS 테이블과 매핑되는 사용자 엔티티 클래스입니다.
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,7 +34,7 @@ public class PlayerEntity {
     private Integer playerBackNumber;
 
     @Column(name = "player_birth_date")
-    private String playerBirthDate;
+    private LocalDate playerBirthDate;
 
     @Column(name = "player_height_weight")
     private String playerHeightWeight;
