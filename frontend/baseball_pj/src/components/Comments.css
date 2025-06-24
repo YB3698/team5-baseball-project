@@ -156,3 +156,11 @@
 .reply-delete-link {
   color: #d32f2f;
 }
+
+.baseball-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-right: 8px;
+  vertical-align: middle;
+}

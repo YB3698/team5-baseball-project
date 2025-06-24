@@ -1,7 +1,8 @@
 // Header.jsx
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FaBaseballBall } from 'react-icons/fa';
+// import { FaBaseballBall } from 'react-icons/fa';
+import mainlogoImg from './img/main_logo.png'; // 로고 이미지 경로
 import './Header.css';
 
 const Header = () => {
@@ -71,7 +72,7 @@ const Header = () => {
       </div>      <header className="header">
         <div className="header-container">
           <div className="logo-wrap">
-            <FaBaseballBall className="baseball-icon" />
+            <img src={mainlogoImg} alt="로고" className="baseball-icon" />
             <h1 className="logo-text">
               <Link to="/" className="logo-link">
                  <span style={{ fontWeight: '700' }}>Baseball 커뮤니티</span>
