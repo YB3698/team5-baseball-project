@@ -7,6 +7,7 @@ import {
   BarChart, Bar
 } from 'recharts';
 import './Home.css';
+import homeImg from './img/home_img.png';
 
 function Home() {
   const [ranks, setRanks] = useState([]);
@@ -125,49 +126,63 @@ function Home() {
               <Line type="monotone" dataKey="pythRank" name="피타고리안 순위" stroke="#82ca9d" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
-        </div>
-        {/* 2. 투표 박스 */}
+        </div>        {/* 2. 투표 박스 */}
         <div className="home-vote-box">
-          <h2 className="vote-title">🗳️ 투표하기</h2>
-          <select
-            className="vote-select"
-            value={selectedPollId}
-            onChange={(e) => {
-              const pollId = e.target.value;
-              setSelectedPollId(pollId);
-              fetchOptions(pollId);
-              setResults([]);
-              setSelectedOptionId(null);
-            }}
-          >
-            <option value="">-- 투표 항목 선택 --</option>
-            {polls.map(p => (
-              <option key={p.pollId} value={p.pollId}>
-                {p.pollTitle} {p.isActive === 'N' && '(종료됨)'}
-              </option>
-            ))}
-          </select>
-          <ul className="vote-options">
-            {options.map(o => (
-              <li key={o.optionId}>
-                <label className="vote-option-label">
-                  <input
-                    type="radio"
-                    name="voteOption"
-                    value={o.optionId}
-                    checked={selectedOptionId === o.optionId}
-                    onChange={() => setSelectedOptionId(o.optionId)}
-                  />
-                  <span>{o.description}</span>
-                </label>
-              </li>
-            ))}
-          </ul>
-          <div className="vote-btn-row">
-            <button onClick={handleVote} disabled={!selectedOptionId} className="vote-btn">투표하기</button>
-            <button onClick={() => handleResultView(selectedPollId)} className="result-btn">결과보기</button>
+          <div className="vote-content">
+            <div className="vote-left">
+              <h2 className="vote-title">🗳️ 투표하기</h2>
+              <select
+                className="vote-select"
+                value={selectedPollId}
+                onChange={(e) => {
+                  const pollId = e.target.value;
+                  setSelectedPollId(pollId);
+                  fetchOptions(pollId);
+                  setResults([]);
+                  setSelectedOptionId(null);
+                }}
+              >
+                <option value="">-- 투표 항목 선택 --</option>
+                {polls.map(p => (
+                  <option key={p.pollId} value={p.pollId}>
+                    {p.pollTitle} {p.isActive === 'N' && '(종료됨)'}
+                  </option>
+                ))}
+              </select>
+              <ul className="vote-options">
+                {options.map(o => (
+                  <li key={o.optionId}>
+                    <label className="vote-option-label">
+                      <input
+                        type="radio"
+                        name="voteOption"
+                        value={o.optionId}
+                        checked={selectedOptionId === o.optionId}
+                        onChange={() => setSelectedOptionId(o.optionId)}
+                      />
+                      <span>{o.description}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+              <div className="vote-btn-row">
+                <button onClick={handleVote} disabled={!selectedOptionId} className="vote-btn">투표하기</button>
+                <button onClick={() => handleResultView(selectedPollId)} className="result-btn">결과보기</button>
+              </div>
+            </div>            <div className="vote-right">
+              <div className="vote-image-container">
+                <img 
+                  src={homeImg} 
+                  alt="투표 이미지" 
+                  className="vote-image"
+                />
+                <div className="vote-image-text">
+                  
+                </div>
+              </div>
+            </div>
           </div>
-        </div>        {/* 3. 유저 팀 분포 */}
+        </div>{/* 3. 유저 팀 분포 */}
         <div className="home-chart-box">
           <h3>👥 유저 팀 분포</h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -183,12 +198,14 @@ function Home() {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </div>
-        {/* 4. 투표 결과 */}
+        </div>        {/* 4. 투표 결과 */}
         <div className="home-chart-box">
-          {results.length > 0 && (
-            <div className="vote-result-box">
-              <h4 className="vote-result-title">📈 투표 결과 ({endedPoll?.pollTitle})</h4>
+          <div className="vote-result-box">
+            <h4 className="vote-result-title">
+              📈 투표 결과
+              {endedPoll?.pollTitle && ` (${endedPoll.pollTitle})`}
+            </h4>
+            {results.length > 0 ? (
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie
@@ -207,8 +224,12 @@ function Home() {
                   <Tooltip formatter={(value, name, props) => [`${value}표`, props.payload.description]} />
                 </PieChart>
               </ResponsiveContainer>
-            </div>
-          )}
+            ) : (
+              <div className="no-vote-result">
+                <p>투표를 진행하면 결과가 표시됩니다.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
