@@ -27,7 +27,7 @@ const PlayerAddModal = ({ isOpen, onClose, onSave }) => {
       ...newPlayer,
       playerBackNumber: newPlayer.playerBackNumber ? Number(newPlayer.playerBackNumber) : null,
       teamId: newPlayer.teamId ? Number(newPlayer.teamId) : null,
-      playerBirthDate: newPlayer.playerBirthDate || null
+      playerBirthDate: newPlayer.playerBirth || null
     };
 
     fetch('/api/admin/players', {
