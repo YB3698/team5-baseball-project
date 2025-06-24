@@ -1,5 +1,7 @@
 package com.baseball.baseball_pj.Post.domain;
 
+import com.baseball.baseball_pj.User.domain.UserEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,4 +36,9 @@ public class PostEntity {
     @Builder.Default
     @Column(name = "POST_CREATED_AT")
     private LocalDateTime postCreatedAt = LocalDateTime.now();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID", insertable = false, updatable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private UserEntity user;
 }

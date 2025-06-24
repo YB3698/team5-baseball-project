@@ -38,18 +38,25 @@ const MyPage = () => {
 
       axios.get('/api/posts')
         .then(res => {
-          const filtered = res.data.filter(p => p.userId === parsed.userId);
+          const filtered = res.data
+            .filter(p => p.userId === parsed.userId)
+            .sort((a, b) => new Date(b.postCreatedAt) - new Date(a.postCreatedAt)); // 최신순 정렬
           setMyPosts(filtered);
         })
         .catch(console.error);
     }
   }, []);
 
+  useEffect(() => {
+    if (selectedPost) {
+      setEditTitle(selectedPost.postTitle);
+      setEditContent(selectedPost.postContent);
+    }
+  }, [selectedPost]);
+
   const handlePostClick = (post) => {
     setSelectedPost(post);
     setEditMode(false);
-    setEditTitle(post.postTitle);
-    setEditContent(post.postContent);
   };
 
   const handleBackToList = () => {
@@ -71,22 +78,25 @@ const MyPage = () => {
 
   const handleSaveEdit = () => {
     const updated = {
-      ...selectedPost,
       postTitle: editTitle,
       postContent: editContent,
     };
 
     axios.put(`/api/posts/${selectedPost.postId}`, updated)
-      .then(res => {
+      .then(() => {
+        const updatedPost = { ...selectedPost, ...updated };
         const updatedList = myPosts.map(p =>
-          p.postId === selectedPost.postId ? res.data : p
+          p.postId === selectedPost.postId ? updatedPost : p
         );
         setMyPosts(updatedList);
-        setSelectedPost(res.data);
+        setSelectedPost(updatedPost);
         setEditMode(false);
         alert('수정되었습니다.');
       })
-      .catch(console.error);
+      .catch(err => {
+        console.error(err);
+        alert('수정에 실패했습니다.');
+      });
   };
 
   if (!user) return null;

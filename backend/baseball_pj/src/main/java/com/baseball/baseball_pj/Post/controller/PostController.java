@@ -1,6 +1,7 @@
 package com.baseball.baseball_pj.Post.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.baseball.baseball_pj.Post.domain.PostEntity;
 import com.baseball.baseball_pj.Post.repository.PostRepository;
+import com.baseball.baseball_pj.Post.dto.PostWithNicknameDto;
+import com.baseball.baseball_pj.User.repository.UserRepository;
 
 @CrossOrigin(origins = "*", allowCredentials = "false")
 @RestController
@@ -16,7 +19,10 @@ public class PostController {
 
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private UserRepository userRepository;
 
+    // 게시글 저장
     @PostMapping("/posts")
     public PostEntity createPost(@RequestBody PostEntity postEntity) {
         try {
@@ -27,12 +33,27 @@ public class PostController {
         }
     }
 
-    // 전체 게시글 조회
+    // 전체 게시글 조회 (작성자 닉네임 포함)
     @GetMapping("/posts")
-    public List<PostEntity> getAllPosts() {
-        return postRepository.findAll();
+    public List<PostWithNicknameDto> getAllPosts() {
+        List<PostEntity> posts = postRepository.findAll();
+        return posts.stream().map(post -> {
+            String nickname = userRepository.findById(post.getUserId())
+                    .map(user -> user.getNickname())
+                    .orElse("알 수 없음");
+            return new PostWithNicknameDto(
+                    post.getPostId(),
+                    post.getUserId(),
+                    post.getTeamId(),
+                    post.getPostTitle(),
+                    post.getPostContent(),
+                    post.getPostCreatedAt(),
+                    nickname
+            );
+        }).collect(Collectors.toList());
     }
 
+    // 게시글 수정
     @PutMapping("/posts/{id}")
     public ResponseEntity<PostEntity> updatePost(
             @PathVariable Long id,
@@ -46,12 +67,12 @@ public class PostController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // 게시글 삭제
     @DeleteMapping("/posts/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         if (!postRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-
         postRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
