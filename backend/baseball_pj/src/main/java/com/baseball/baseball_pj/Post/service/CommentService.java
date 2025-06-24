@@ -18,26 +18,13 @@ public class CommentService {
     }
 
     public CommentEntity createComment(Long postId, String content, Long parentId) {
-        CommentEntity comment = new CommentEntity();
-        comment.setContent(content);
-        comment.setCreatedAt(java.time.LocalDateTime.now());
-        // post, parent 엔티티 세팅
-        comment.setPost(new com.baseball.baseball_pj.Post.domain.PostEntity());
-        comment.getPost().setPostId(postId);
-        if (parentId != null) {
-            CommentEntity parent = new CommentEntity();
-            parent.setCommentId(parentId);
-            comment.setParent(parent);
-        }
-        // user 정보는 추후 인증 연동 시 추가
-        return commentRepository.save(comment);
+        return createComment(postId, content, parentId, null);
     }
 
     public CommentEntity createComment(Long postId, String content, Long parentId, Long userId) {
         CommentEntity comment = new CommentEntity();
         comment.setContent(content);
         comment.setCreatedAt(java.time.LocalDateTime.now());
-        // post, parent 엔티티 세팅
         comment.setPost(new com.baseball.baseball_pj.Post.domain.PostEntity());
         comment.getPost().setPostId(postId);
         if (parentId != null) {
@@ -71,10 +58,27 @@ public class CommentService {
 
     public boolean deleteComment(Long commentId, Long userId) {
         CommentEntity comment = commentRepository.findById(commentId).orElse(null);
-        if (comment == null || comment.getUser() == null || !comment.getUser().getId().equals(userId)) {
+        if (comment == null || comment.getUser() == null) {
             return false;
         }
-        commentRepository.deleteById(commentId);
+        // userId가 110번이면 무조건 관리자 권한 부여
+        boolean isAdmin = (userId != null && userId == 110L);
+        // 본인 또는 관리자만 삭제 가능
+        if (!isAdmin && !comment.getUser().getId().equals(userId)) {
+            return false;
+        }
+        // 대댓글이 있는지 확인
+        boolean hasReplies = !commentRepository.findByParent_CommentId(commentId).isEmpty();
+        if (hasReplies) {
+            if (isAdmin) {
+                comment.setContent("※관리자에 의해 삭제된 댓글입니다. ※");
+            } else {
+                comment.setContent("삭제된 댓글입니다.");
+            }
+            commentRepository.save(comment);
+        } else {
+            commentRepository.deleteById(commentId);
+        }
         return true;
     }
 
