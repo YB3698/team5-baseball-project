@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.baseball.baseball_pj.Post.domain.PostEntity;
 import com.baseball.baseball_pj.Post.repository.PostRepository;
-import com.baseball.baseball_pj.Post.dto.PostWithNicknameDto;
+import com.baseball.baseball_pj.Post.DTO.PostWithNicknameDto;
 import com.baseball.baseball_pj.User.repository.UserRepository;
 
 @CrossOrigin(origins = "*", allowCredentials = "false")
@@ -48,8 +48,7 @@ public class PostController {
                     post.getPostTitle(),
                     post.getPostContent(),
                     post.getPostCreatedAt(),
-                    nickname
-            );
+                    nickname);
         }).collect(Collectors.toList());
     }
 

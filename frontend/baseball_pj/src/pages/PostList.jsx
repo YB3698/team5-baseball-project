@@ -27,11 +27,17 @@ const PostList = () => {
   };
 
   const fetchPosts = () => {
-    fetch('/api/posts')
-      .then(res => res.json())
-      .then(data => setPosts(data))
-      .catch(err => console.error('게시글 목록 로딩 실패:', err));
-  };
+  fetch('/api/posts')
+    .then(res => res.json())
+    .then(data => {
+      // 최신순으로 정렬 (postCreatedAt 기준 내림차순)
+      const sortedPosts = data.sort((a, b) => {
+        return new Date(b.postCreatedAt) - new Date(a.postCreatedAt);
+      });
+      setPosts(sortedPosts);
+    })
+    .catch(err => console.error('게시글 목록 로딩 실패:', err));
+};
 
   useEffect(() => {
     fetchPosts();
@@ -174,51 +180,53 @@ const PostList = () => {
     <div className={`post-list page-container ${selectedPost ? '' : 'show-header'}`}>
       <h2>게시판</h2>
 
-      {/* 팀 로고 필터 */}
-      <div className="team-filter-container">
-        <div className="team-logos">
-          <div 
-            className={`team-logo-item ${teamFilter === '' ? 'active' : ''}`}
-            onClick={() => handleTeamSelect('')}
-          >
-            <div className="all-teams">전체</div>
-          </div>
-          {teams.map((team) => (
+      {/* 팀 로고 필터 - 게시글 리스트에서만 표시 */}
+      {!selectedPost && (
+        <div className="team-filter-container">
+          <div className="team-logos">
             <div 
-              key={team.teamId}
-              className={`team-logo-item ${String(teamFilter) === String(team.teamId) ? 'active' : ''}`}
-              onClick={() => handleTeamSelect(team.teamId)}
-              title={team.teamName} // 툴팁 추가
+              className={`team-logo-item ${teamFilter === '' ? 'active' : ''}`}
+              onClick={() => handleTeamSelect('')}
             >
-              {team.teamLogo ? (
-                <img 
-                  src={team.teamLogo} 
-                  alt={team.teamName} 
-                  className="team-logo-img"
-                  onError={(e) => {
-                    // 이미지 로드 실패 시 팀 이름으로 대체
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'block';
-                  }}
-                />
-              ) : null}
-              <div 
-                className="team-name-fallback" 
-                style={{ display: team.teamLogo ? 'none' : 'block' }}
-              >
-                {team.teamName}
-              </div>
+              <div className="all-teams">전체</div>
             </div>
-          ))}
+            {teams.map((team) => (
+              <div 
+                key={team.teamId}
+                className={`team-logo-item ${String(teamFilter) === String(team.teamId) ? 'active' : ''}`}
+                onClick={() => handleTeamSelect(team.teamId)}
+                title={team.teamName} // 툴팁 추가
+              >
+                {team.teamLogo ? (
+                  <img 
+                    src={team.teamLogo} 
+                    alt={team.teamName} 
+                    className="team-logo-img"
+                    onError={(e) => {
+                      // 이미지 로드 실패 시 팀 이름으로 대체
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
+                  />
+                ) : null}
+                <div 
+                  className="team-name-fallback" 
+                  style={{ display: team.teamLogo ? 'none' : 'block' }}
+                >
+                  {team.teamName}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-    
-
-      {/* 글쓰기 버튼 */}
-      <div className="post-actions">
-        <Link to="/postform" className="write-btn small">글쓰기</Link>
-      </div>
+      {/* 글쓰기 버튼 - 게시글 리스트에서만 표시 */}
+      {!selectedPost && (
+        <div className="post-actions">
+          <Link to="/postform" className="write-btn small">글쓰기</Link>
+        </div>
+      )}
 
       {/* 게시글 리스트 */}
       {!selectedPost && (
@@ -278,17 +286,16 @@ const PostList = () => {
             </p>
           )}
 
-          {/* 검색 입력만 남기기 */}
-      {/* 검색 입력만 남기기 */}
-      <div className="post-controls">
-        <input
-          type="text"
-          placeholder="게시글 검색"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="search-input"
-        />
-      </div>
+          {/* 검색 입력 - 게시글 리스트에서만 표시 */}
+          <div className="post-controls">
+            <input
+              type="text"
+              placeholder="게시글 검색"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="search-input"
+            />
+          </div>
         </div>
       )}
 

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baseball.baseball_pj.Post.dto.PostListDto;
+import com.baseball.baseball_pj.Post.DTO.PostListDto;
 import com.baseball.baseball_pj.Post.domain.PostEntity;
 import com.baseball.baseball_pj.Post.repository.PostRepository;
 

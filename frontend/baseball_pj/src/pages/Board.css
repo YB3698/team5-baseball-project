@@ -237,11 +237,19 @@
   background: #fff;
   border-radius: 16px;
   padding: 50px;
+  width: 800px; /* 고정 너비 추가 */
   margin-top: 20px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.detail-actions {
+  max-width: 800px;
+  width: 800px; /* 고정 너비 추가 */
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .post-detail h3 {
@@ -253,6 +261,10 @@
 .post-content {
   font-size: 1.1rem;
   margin-bottom: 20px;
+  white-space: pre-wrap; /* 줄바꿈과 공백 유지 */
+  word-wrap: break-word; /* 긴 단어 줄바꿈 */
+  line-height: 1.6; /* 행간 조정 */
+  
 }
 
 .post-detail .meta {
