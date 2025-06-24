@@ -31,6 +31,7 @@ public class PostListService {
             dto.setPostContent(e.getPostContent());
             dto.setPostCreatedAt(e.getPostCreatedAt() != null ? e.getPostCreatedAt().toString() : null);
             dto.setTeamId(e.getTeamId());
+            dto.setViewCount(e.getViewCount());
             if (e.getUser() != null) {
                 dto.setNickname(e.getUser().getNickname()); // 닉네임
                 dto.setUserId(e.getUser().getId()); // ❗이 줄 반드시 필요

@@ -109,12 +109,12 @@ function Home() {
 
   return (
     <div className="home-root">
-      <h1 className="home-title">📊 피타고리안 순위 vs 실제 순위</h1>
+      
 
       {/* 4분할 레이아웃 */}
-      <div className="home-grid-2x2">
-        {/* 1. 순위 차트 */}
+      <div className="home-grid-2x2">        {/* 1. 순위 차트 */}
         <div className="home-chart-box">
+          <h3>📊 피타고리안 순위 vs 실제 순위</h3>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={ranks}>
               <XAxis dataKey="teamName" />
@@ -167,10 +167,9 @@ function Home() {
             <button onClick={handleVote} disabled={!selectedOptionId} className="vote-btn">투표하기</button>
             <button onClick={() => handleResultView(selectedPollId)} className="result-btn">결과보기</button>
           </div>
-        </div>
-        {/* 3. 유저 팀 분포 */}
+        </div>        {/* 3. 유저 팀 분포 */}
         <div className="home-chart-box">
-          <h3 style={{ marginBottom: 8 }}>유저 팀 분포</h3>
+          <h3>👥 유저 팀 분포</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={teamDist}>
               <XAxis dataKey="teamName" tick={false} />
