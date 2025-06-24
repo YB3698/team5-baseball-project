@@ -34,6 +34,7 @@ const Signup = () => {
   // 입력값 상태 관리
   const [email, setEmail] = useState(''); // 이메일 입력값
   const [password, setPassword] = useState(''); // 비밀번호 입력값
+  const [passwordCheck, setPasswordCheck] = useState(''); // 비밀번호 확인 입력값
   const [nickname, setNickname] = useState(''); // 닉네임 입력값
   const [favoriteTeamId, setFavoriteTeamId] = useState(''); // 선택한 팀 id
 
@@ -43,13 +44,15 @@ const Signup = () => {
   const [emailMsg, setEmailMsg] = useState(''); // 이메일 검증 메시지
   const [nicknameMsg, setNicknameMsg] = useState(''); // 닉네임 검증 메시지
 
-  // 입력값이 변경될 때마다 0.5초 후에만 실제 검증 요청 (디바운스 적용)
-  const debouncedEmail = useDebounce(email, 500);
-  const debouncedNickname = useDebounce(nickname, 500);
+  // 입력값이 변경될 때마다 1초 후에만 실제 검증 요청 (디바운스 적용)
+  const debouncedEmail = useDebounce(email, 1000);
+  const debouncedNickname = useDebounce(nickname, 1000);
 
   // 이메일 중복 체크 (debouncedEmail이 바뀔 때마다 실행)
   useEffect(() => {
-    if (!debouncedEmail) {
+    // 이메일 형식이 아닐 경우 중복검증 하지 않음
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!debouncedEmail || !emailPattern.test(debouncedEmail)) {
       setEmailValid(null);
       setEmailMsg('');
       return;
@@ -101,6 +104,12 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault(); // 폼 기본 제출 동작 방지
 
+    // 비밀번호와 비밀번호 확인이 다르면 회원가입 불가
+    if (password !== passwordCheck) {
+      alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+      return;
+    }
+
     // 중복 검증 미통과 시 회원가입 불가
     if (emailValid === false || nicknameValid === false) {
       alert('❌ 중복된 이메일 또는 닉네임이 존재합니다.');
@@ -126,6 +135,7 @@ const Signup = () => {
       // 입력값 및 상태 초기화
       setEmail('');
       setPassword('');
+      setPasswordCheck('');
       setNickname('');
       setFavoriteTeamId('');
       setEmailValid(null);
@@ -169,6 +179,21 @@ const Signup = () => {
           onChange={(e) => setPassword(e.target.value)} // 입력값 변경 시 상태 업데이트
           required
         />
+        <label className="signup-label">비밀번호 확인</label>
+        <input
+          type="password"
+          className="signup-input"
+          placeholder="비밀번호 확인"
+          value={passwordCheck}
+          onChange={(e) => setPasswordCheck(e.target.value)}
+          required
+        />
+        {/* 비밀번호 일치 안내 메시지 */}
+        {passwordCheck && (
+          <div className={password === passwordCheck ? 'signup-success' : 'signup-error'}>
+            {password === passwordCheck ? '✅ 비밀번호가 일치합니다.' : '❌ 비밀번호가 일치하지 않습니다.'}
+          </div>
+        )}
 
         <label className="signup-label">닉네임</label> {/* 닉네임 라벨 */}
         <div className="signup-input-row">
@@ -208,7 +233,8 @@ const Signup = () => {
             !email ||
             !password ||
             !nickname ||
-            !favoriteTeamId
+            !favoriteTeamId ||
+            password !== passwordCheck
           }
         >
           회원가입

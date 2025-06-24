@@ -115,7 +115,51 @@ function Home() {
       {/* 4분할 레이아웃 */}
       <div className="home-grid-2x2">        {/* 1. 순위 차트 */}
         <div className="home-chart-box">
-          <h3>📊 피타고리안 순위 vs 실제 순위</h3>
+          <div className="pythagorean-header" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3>📊 피타고리안 순위 vs 실제 순위</h3>
+            <div
+              className="pyth-tooltip-icon"
+              style={{ cursor: 'pointer', position: 'relative', display: 'inline-block' }}
+              tabIndex={0}
+            >
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: 20,
+                  height: 20,
+                  borderRadius: '50%',
+                  background: '#eee',
+                  color: '#333',
+                  textAlign: 'center',
+                  lineHeight: '20px',
+                  fontWeight: 'bold',
+                  fontSize: 14,
+                  border: '1px solid #ccc',
+                  marginLeft: 4
+                }}
+              >?</span>
+              <div className="pyth-tooltip-text" style={{
+                display: 'none',
+                position: 'absolute',
+                top: 28,
+                left: 0,
+                zIndex: 10,
+                background: '#fff',
+                border: '1px solid #ccc',
+                borderRadius: 6,
+                padding: '10px 14px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                width: 260,
+                fontSize: 14,
+                color: '#222',
+                fontWeight: 400
+              }}>
+                피타고리안 승률은 팀의 득점과 실점을 바탕으로 이론적으로 기대되는 승률을 계산한 값입니다.<br/>
+                <b>공식:</b> (득점²) / (득점² + 실점²)<br/>
+                실제 순위와 비교해 팀의 운이나 경기력의 효율성을 평가할 수 있습니다.
+              </div>
+            </div>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={ranks}>
               <XAxis dataKey="teamName" />

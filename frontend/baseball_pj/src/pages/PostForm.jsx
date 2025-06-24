@@ -19,19 +19,21 @@ const dummyTeams = [
 const PostForm = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [teamId, setTeamId] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
 
   // 사용자 정보 가져오기
   let user = null;
   let userId = null;
+  let userTeamId = null;
   try {
     user = JSON.parse(localStorage.getItem('user'));
     userId = user?.userId || user?.user_id;
+    userTeamId = user?.teamId || user?.team_id;
   } catch (e) {
     user = null;
     userId = null;
+    userTeamId = null;
   }
 
   const isLoggedIn = !!userId;
@@ -55,16 +57,16 @@ const PostForm = () => {
       return;
     }
 
-    // 팀 선택 유효성 검사
-    if (!teamId) {
-      alert('관련 팀을 선택해주세요.');
+    // 팀 ID가 없는 경우
+    if (!userTeamId) {
+      alert('회원 정보에 팀이 지정되어 있지 않습니다.');
       return;
     }
 
     try {
       await axios.post('/api/posts', {
         userId,
-        teamId,
+        teamId: userTeamId,
         postTitle: title,
         postContent: content
       }); 
@@ -103,26 +105,18 @@ const PostForm = () => {
             required
           ></textarea>
 
-          <label>관련 팀</label>
-          <select value={teamId} onChange={(e) => setTeamId(Number(e.target.value))} required>
-            <option value="">-- 팀을 선택해주세요 --</option>
-            {dummyTeams
-              .filter(team => team.id >= 1 && team.id <= 10) // 1~10번 팀만 필터링
-              .map((team) => (
-                <option key={team.id} value={team.id}>{team.name}</option>
-              ))}
-          </select>
+          {/* 관련 팀 선택 드롭다운 제거됨 */}
           <div className="form-btns">
-  <button type="button" className="back-btn" onClick={() => navigate(-1)}>뒤로 가기</button>
-  <button type="submit" className="submit-btn">작성 완료</button>
-</div>
+            <button type="button" className="back-btn" onClick={() => navigate(-1)}>뒤로 가기</button>
+            <button type="submit" className="submit-btn">작성 완료</button>
+          </div>
         </form>
       ) : (
         <div className="submitted-view">
           <h3>{title}</h3>
           <p className="submitted-content">{content}</p>
           <p className="meta">
-            작성자: {user?.nickname} | 관련 팀: {dummyTeams.find(t => t.id === Number(teamId))?.name}
+            작성자: {user?.nickname} | 관련 팀: {dummyTeams.find(t => t.id === Number(userTeamId))?.name}
           </p>
           <div className="actions align-right">
             <button onClick={() => navigate('/postlist')}>목록으로</button>
