@@ -125,3 +125,8 @@ select.signup-input {
   margin-bottom: 6px;
   font-weight: 500;
 }
+.notice-text {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}

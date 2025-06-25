@@ -223,6 +223,7 @@ const Signup = () => {
             <option key={team.id} value={team.id}>{team.name}</option>
           ))}
         </select>
+        <div className="notice-text">※ 가입 후 응원팀은 한 번만 변경 가능합니다.</div>
 
         <button
           type="submit"

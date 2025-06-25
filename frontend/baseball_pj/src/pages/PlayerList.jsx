@@ -13,7 +13,6 @@ const PlayerList = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    // 선수 데이터 불러오기
     fetch('/api/players')
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -27,7 +26,6 @@ const PlayerList = () => {
         console.error('선수 데이터 로딩 실패:', err);
       });
 
-    // 팀 목록 불러오기
     fetch('/api/teams')
       .then(res => res.json())
       .then(data => setTeams(data))
@@ -38,7 +36,7 @@ const PlayerList = () => {
     const result = players.filter(player =>
       (searchName === '' || player.playerName?.includes(searchName)) &&
       (searchPosition === '' || player.playerPosition?.includes(searchPosition)) &&
-      (searchTeamId === '' || player.teamId === Number(searchTeamId)) // 💡 정확한 비교
+      (searchTeamId === '' || player.teamId === Number(searchTeamId))
     );
     setFiltered(result);
     setCurrentPage(1);
@@ -89,11 +87,13 @@ const PlayerList = () => {
           onChange={(e) => setSearchTeamId(e.target.value)}
         >
           <option value="">팀 선택</option>
-          {teams.map(team => (
-            <option key={team.teamId} value={team.teamId}>
-              {team.teamName}
-            </option>
-          ))}
+          {teams
+            .filter(team => team.teamId >= 1 && team.teamId <= 10) // ✅ 현재 존재하는 팀만
+            .map(team => (
+              <option key={team.teamId} value={team.teamId}>
+                {team.teamName}
+              </option>
+            ))}
         </select>
 
         <button onClick={handleSearch}>검색</button>

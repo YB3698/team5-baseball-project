@@ -2,6 +2,19 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './TeamList.css';
 
+const homepageLinks = {
+  'SSG 랜더스': 'https://www.ssglanders.com/',
+  'LG 트윈스': 'https://www.lgtwins.com/',
+  '두산 베어스': 'https://www.doosanbears.com/',
+  '롯데 자이언츠': 'https://www.giantsclub.com/',
+  '삼성 라이온즈': 'https://www.samsunglions.com/',
+  '한화 이글스': 'https://www.hanwhaeagles.co.kr/',
+  'KIA 타이거즈': 'https://www.tigers.co.kr/',
+  'NC 다이노스': 'https://www.ncdinos.com/',
+  'KT 위즈': 'https://www.ktwiz.co.kr/',
+  '키움 히어로즈': 'https://www.heroesbaseball.co.kr/'
+};
+
 const TeamList = () => {
   const [teams, setTeams] = useState([]);
   const [selectedTeamName, setSelectedTeamName] = useState('');
@@ -47,7 +60,18 @@ const TeamList = () => {
               <tr key={team.teamId}>
                 <td>
                   {team.teamLogo ? (
-                    <img src={team.teamLogo} alt={team.teamName} />
+                    homepageLinks[team.teamName] ? (
+                      <a
+                        href={homepageLinks[team.teamName]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={`${team.teamName} 공식 홈페이지로 이동`}
+                      >
+                        <img src={team.teamLogo} alt={team.teamName} />
+                      </a>
+                    ) : (
+                      <img src={team.teamLogo} alt={team.teamName} />
+                    )
                   ) : (
                     '이미지 없음'
                   )}
