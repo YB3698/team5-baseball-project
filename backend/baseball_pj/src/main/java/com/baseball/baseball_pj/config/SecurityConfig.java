@@ -63,7 +63,9 @@ public class SecurityConfig {
                                 "/api/user-comments/**",
                                 // Swagger/OpenAPI 문서 허용
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/api/users/**"
+
                         ).permitAll()
                         // .requestMatchers("/api/admin/**").permitAll()
                         // 그 외 모든 요청은 거부

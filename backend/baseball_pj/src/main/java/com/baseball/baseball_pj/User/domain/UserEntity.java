@@ -10,7 +10,11 @@ import java.time.LocalDateTime;
 // USERS 테이블과 매핑합니다.
 @Table(name = "USERS")
 // Lombok을 사용하여 Getter, Setter, 생성자, 빌더 등을 자동 생성합니다.
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserEntity {
 
     // 사용자 고유 ID (PK)
