@@ -4,15 +4,15 @@ import './Mypage.css';
 
 const kboTeams = [
   { id: 1, name: 'NC 다이노스' },
-  { id: 2, name: '로바이 자이언츠' },
+  { id: 2, name: '롯데 자이언츠' },
   { id: 3, name: '삼성 라이온스' },
   { id: 4, name: 'KIA 타이거즈' },
   { id: 5, name: 'LG 트윈스' },
   { id: 6, name: '두산 베어스' },
   { id: 7, name: 'KT 위즈' },
   { id: 8, name: 'SSG 랜더스' },
-  { id: 9, name: '한화 이그루스' },
-  { id: 10, name: '키울 히어로즈' },
+  { id: 9, name: '한화 이글스' },
+  { id: 10, name: '키움 히어로즈' },
 ];
 
 const MyPage = () => {
@@ -126,17 +126,26 @@ const MyPage = () => {
   };
 
   const handleSaveInfo = () => {
+    const isTeamChanged = teamId !== user.teamId;
+
     axios.put(`/api/users/${user.userId}/update-info`, {
       nickname,
       email,
       teamId
     }).then(() => {
+      if (isTeamChanged) {
+        alert("응원 팀이 변경되어 로그아웃됩니다.");
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+        return;
+      }
+
       const updatedUser = {
         ...user,
         nickname,
         email,
         teamId,
-        hasChangedTeam: hasChangedTeam || teamId !== user.teamId
+        hasChangedTeam: hasChangedTeam || isTeamChanged
       };
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
