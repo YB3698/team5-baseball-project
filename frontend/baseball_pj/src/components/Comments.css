@@ -88,6 +88,10 @@
   align-items: flex-start;
   margin-bottom: 8px;
   margin-left: 16px; /* 대댓글 자체도 추가 들여쓰기 */
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  border-left: 3px solid #388e3c;
 }
 
 .reply-nickname {
@@ -163,4 +167,94 @@
   object-fit: contain;
   margin-right: 8px;
   vertical-align: middle;
+}
+
+/* 댓글 신고 관련 스타일 */
+.comment-actions-container,
+.reply-actions-container {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-top: 5px !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+.comment-report-link {
+  color: #ff6b6b !important;
+  cursor: pointer !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  padding: 2px 6px !important;
+  border-radius: 3px !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  border: 1px solid transparent !important;
+}
+
+.comment-report-link:hover {
+  background-color: #ff6b6b !important;
+  color: white !important;
+  border-color: #ff6b6b !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 4px rgba(255, 107, 107, 0.2) !important;
+}
+
+.comment-report-link:active {
+  transform: translateY(0) !important;
+}
+
+/* 기존 액션 링크들과의 균형 */
+.reply-action-links {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+/* 반응형 - 모바일에서 댓글 신고 버튼 */
+@media (max-width: 768px) {
+  .comment-actions-container,
+  .reply-actions-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .comment-report-link {
+    font-size: 0.75rem !important;
+    padding: 3px 8px !important;
+  }
+}
+
+/* 대댓글 메인 영역 스타일 */
+.reply-main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.reply-main .reply-nickname {
+  font-weight: bold;
+  color: #388e3c;
+  margin-bottom: 3px;
+  font-size: 0.9rem;
+}
+
+.reply-main .reply-content {
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-left: 0;
+}
+
+/* 대댓글 구분선 */
+.reply-item:not(:last-child) {
+  border-bottom: 1px solid #e9e9e9;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
 }

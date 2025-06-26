@@ -11,10 +11,35 @@ const Header = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const checkUser = () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        setUser(null);
+      }
+    };
+
+    // 초기 확인
+    checkUser();
+
+    // localStorage 변경 감지
+    const handleStorageChange = () => {
+      checkUser();
+    };
+
+    // 페이지 포커스 시 재확인 (뒤로가기 등)
+    const handleFocus = () => {
+      checkUser();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -45,10 +70,7 @@ const Header = () => {
 
   const handleBoardClick = () => {
     navigate('/postlist', { replace: true });
-    // 페이지 새로고침으로 상태 완전 초기화
-    setTimeout(() => {
-      window.location.reload();
-    }, 10);
+    // 페이지 새로고침 제거 - 상태 관리로 처리
   };
 
   return (

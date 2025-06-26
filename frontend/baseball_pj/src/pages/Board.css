@@ -333,6 +333,52 @@
   cursor: pointer;
 }
 
+/* 신고 버튼 스타일 */
+.report-btn {
+  background-color: #ff6b6b !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 6px 12px !important;
+  font-size: 0.85rem !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+.report-btn:hover {
+  background-color: #ff5252 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3) !important;
+}
+
+.report-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* 액션 컨테이너 스타일 */
+.actions-container {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-top: 20px !important;
+  padding: 15px 0 !important;
+  border-top: 1px solid #eee !important;
+}
+
+.report-section {
+  flex-shrink: 0 !important;
+}
+
+.actions.align-right {
+  display: flex !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+}
+
 /* 👁 게시판 진입 시 보여질 요소 제어 */
 .post-list > h2,
 .post-list > .post-controls,

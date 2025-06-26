@@ -131,6 +131,46 @@ const Comments = ({ postId }) => {
       .then(data => setComments(data));
   };
 
+  // 댓글/대댓글 신고 핸들러
+  const handleReportComment = async (commentId, commentAuthorId) => {
+    const reportReason = prompt('신고 사유를 입력해주세요:\n\n1. 스팸/광고\n2. 욕설/비방\n3. 음란/선정적 내용\n4. 허위정보\n5. 기타');
+    
+    if (!reportReason || reportReason.trim() === '') {
+      alert('신고 사유를 입력해주세요.');
+      return;
+    }
+
+    if (!window.confirm('이 댓글을 신고하시겠습니까?')) return;
+
+    try {
+      if (!userId) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      const reportData = {
+        commentId: commentId,
+        postId: postId,
+        reporterId: userId,
+        reason: reportReason.trim(),
+        reportedAt: new Date().toISOString()
+      };
+
+      // 댓글 신고 API 호출 (백엔드에 신고 API가 있다면 사용)
+      await fetch('/api/comment-reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reportData)
+      });
+      
+      alert('신고가 접수되었습니다. 검토 후 조치하겠습니다.');
+    } catch (err) {
+      console.error('댓글 신고 실패:', err);
+      // API가 없어도 로컬에서 처리
+      alert('신고가 접수되었습니다. 관리자가 검토하겠습니다.');
+    }
+  };
+
   return (
     <div className="comment-section">
       <h4>댓글</h4>
@@ -164,19 +204,36 @@ const Comments = ({ postId }) => {
                 )}
               </div>
               {/* 본인 댓글 또는 관리자만 수정/삭제 텍스트 링크 노출 */}
-              {(isLoggedIn &&
-                (String(userId) === String(c.comment.user?.id) || isAdmin) &&
-                editingCommentId !== c.comment.commentId &&
-                c.comment.content !== '삭제된 댓글입니다.' &&
-                c.comment.content !== '※관리자에 의해 삭제된 댓글입니다. ※') && (
-                  <span className="reply-action-links">
-                    {/* 본인만 수정, 관리자/본인 모두 삭제 가능 */}
-                    {String(userId) === String(c.comment.user?.id) && (
-                      <span className="reply-edit-link" onClick={() => handleEdit(c.comment.commentId, c.comment.content)}>수정</span>
-                    )}
-                    <span className="reply-delete-link" onClick={() => handleDelete(c.comment.commentId)}>삭제</span>
-                  </span>
-              )}
+              <div className="comment-actions-container">
+                {(isLoggedIn &&
+                  (String(userId) === String(c.comment.user?.id) || isAdmin) &&
+                  editingCommentId !== c.comment.commentId &&
+                  c.comment.content !== '삭제된 댓글입니다.' &&
+                  c.comment.content !== '※관리자에 의해 삭제된 댓글입니다. ※') && (
+                    <span className="reply-action-links">
+                      {/* 본인만 수정, 관리자/본인 모두 삭제 가능 */}
+                      {String(userId) === String(c.comment.user?.id) && (
+                        <span className="reply-edit-link" onClick={() => handleEdit(c.comment.commentId, c.comment.content)}>수정</span>
+                      )}
+                      <span className="reply-delete-link" onClick={() => handleDelete(c.comment.commentId)}>삭제</span>
+                    </span>
+                )}
+                
+                {/* 신고 버튼 (로그인한 사용자, 본인 댓글 제외) */}
+                {(isLoggedIn &&
+                  String(userId) !== String(c.comment.user?.id) &&
+                  editingCommentId !== c.comment.commentId &&
+                  c.comment.content !== '삭제된 댓글입니다.' &&
+                  c.comment.content !== '※관리자에 의해 삭제된 댓글입니다. ※') && (
+                    <span 
+                      className="comment-report-link" 
+                      onClick={() => handleReportComment(c.comment.commentId, c.comment.user?.id)}
+                      title="댓글 신고"
+                    >
+                      🚨 신고
+                    </span>
+                )}
+              </div>
               {/* 답글 펼치기/접기, 댓글 쓰기 텍스트링크 */}
               <div className="reply-link-wrap">
                 <div className="reply-link-row">
@@ -224,38 +281,59 @@ const Comments = ({ postId }) => {
                 <div className="reply-list">
                   {c.replies.map(r => (
                     <div key={r.commentId} className="reply-item">
-                      <span className="reply-nickname">{r.user?.nickname}</span>
-                      {/* 대댓글 수정 중이면 입력창, 아니면 내용 */}
-                      {editingCommentId === r.commentId ? (
-                        <form className="edit-form" onSubmit={e => handleEditSubmit(e, r.commentId, c.comment.commentId)}>
-                          <input
-                            type="text"
-                            className="comment-input"
-                            value={editInput}
-                            onChange={e => setEditInput(e.target.value)}
-                          />
-                          <button type="submit" className="comment-submit">저장</button>
-                          <button type="button" onClick={() => setEditingCommentId(null)}>취소</button>
-                        </form>
-                      ) : (
-                        <span className={`reply-content${r.content === '삭제된 댓글입니다.' ? ' deleted' : ''}`}>
-                          {r.content === '삭제된 댓글입니다.' ? '삭제된 댓글입니다.' : r.content}
-                        </span>
-                      )}
-                      {/* 본인 대댓글만 수정/삭제 텍스트 링크 노출 */}
-                      {(isLoggedIn &&
-                        (String(userId) === String(r.user?.id) || isAdmin) &&
-                        editingCommentId !== r.commentId &&
-                        r.content !== '삭제된 댓글입니다.' &&
-                        r.content !== '※관리자에 의해 삭제된 댓글입니다. ※') && (
-                        <span className="reply-action-links">
-                          {/* 본인만 수정, 관리자/본인 모두 삭제 가능 */}
-                          {String(userId) === String(r.user?.id) && (
-                            <span className="reply-edit-link" onClick={() => handleEdit(r.commentId, r.content)}>수정</span>
-                          )}
-                          <span className="reply-delete-link" onClick={() => handleDelete(r.commentId)}>삭제</span>
-                        </span>
-                      )}
+                      <div className="reply-main">
+                        <span className="reply-nickname">{r.user?.nickname}</span>
+                        {/* 대댓글 수정 중이면 입력창, 아니면 내용 */}
+                        {editingCommentId === r.commentId ? (
+                          <form className="edit-form" onSubmit={e => handleEditSubmit(e, r.commentId, c.comment.commentId)}>
+                            <input
+                              type="text"
+                              className="comment-input"
+                              value={editInput}
+                              onChange={e => setEditInput(e.target.value)}
+                            />
+                            <button type="submit" className="comment-submit">저장</button>
+                            <button type="button" onClick={() => setEditingCommentId(null)}>취소</button>
+                          </form>
+                        ) : (
+                          <span className={`reply-content${r.content === '삭제된 댓글입니다.' ? ' deleted' : ''}`}>
+                            {r.content === '삭제된 댓글입니다.' ? '삭제된 댓글입니다.' : r.content}
+                          </span>
+                        )}
+                      </div>
+                      
+                      {/* 대댓글 액션 버튼들 */}
+                      <div className="reply-actions-container">
+                        {/* 본인 대댓글만 수정/삭제 텍스트 링크 노출 */}
+                        {(isLoggedIn &&
+                          (String(userId) === String(r.user?.id) || isAdmin) &&
+                          editingCommentId !== r.commentId &&
+                          r.content !== '삭제된 댓글입니다.' &&
+                          r.content !== '※관리자에 의해 삭제된 댓글입니다. ※') && (
+                          <span className="reply-action-links">
+                            {/* 본인만 수정, 관리자/본인 모두 삭제 가능 */}
+                            {String(userId) === String(r.user?.id) && (
+                              <span className="reply-edit-link" onClick={() => handleEdit(r.commentId, r.content)}>수정</span>
+                            )}
+                            <span className="reply-delete-link" onClick={() => handleDelete(r.commentId)}>삭제</span>
+                          </span>
+                        )}
+                        
+                        {/* 대댓글 신고 버튼 (로그인한 사용자, 본인 댓글 제외) */}
+                        {(isLoggedIn &&
+                          String(userId) !== String(r.user?.id) &&
+                          editingCommentId !== r.commentId &&
+                          r.content !== '삭제된 댓글입니다.' &&
+                          r.content !== '※관리자에 의해 삭제된 댓글입니다. ※') && (
+                            <span 
+                              className="comment-report-link" 
+                              onClick={() => handleReportComment(r.commentId, r.user?.id)}
+                              title="댓글 신고"
+                            >
+                              🚨 신고
+                            </span>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

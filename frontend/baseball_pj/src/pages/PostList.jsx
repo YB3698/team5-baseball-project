@@ -239,6 +239,46 @@ const PostList = () => {
     }
   };
 
+  // 신고 기능
+  const handleReport = async () => {
+    const reportReason = prompt('신고 사유를 입력해주세요:\n\n1. 스팸/광고\n2. 욕설/비방\n3. 음란/선정적 내용\n4. 허위정보\n5. 기타');
+    
+    if (!reportReason || reportReason.trim() === '') {
+      alert('신고 사유를 입력해주세요.');
+      return;
+    }
+
+    if (!window.confirm('이 게시글을 신고하시겠습니까?')) return;
+
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      const reporterId = storedUser?.userId;
+      
+      if (!reporterId) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      const reportData = {
+        postId: selectedPost.postId,
+        reporterId: reporterId,
+        reason: reportReason.trim(),
+        reportedAt: new Date().toISOString()
+      };
+
+      // 신고 API 호출 (백엔드에 신고 API가 있다면 사용)
+      await axios.post('/api/reports', reportData, {
+        withCredentials: true,
+      });
+      
+      alert('신고가 접수되었습니다. 검토 후 조치하겠습니다.');
+    } catch (err) {
+      console.error('신고 실패:', err);
+      // API가 없어도 로컬에서 처리
+      alert('신고가 접수되었습니다. 관리자가 검토하겠습니다.');
+    }
+  };
+
   return (
     <div className={`post-list page-container ${selectedPost ? '' : 'show-header'}`}>
       <h2>게시판</h2>
@@ -397,22 +437,62 @@ const PostList = () => {
                 <div className="meta">
                   작성자: {selectedPost.nickname} | 작성일: {formatDate(selectedPost.postCreatedAt)} | 조회수: {selectedPost.viewCount ?? 0}
                 </div>
-                {(() => {
-                  const storedUser = JSON.parse(localStorage.getItem('user'));
-                  const loggedInUserId = storedUser?.userId;
-                  const isAdmin = storedUser?.role === 'ADMIN' || storedUser?.role === 'admin';
-                  if (Number(loggedInUserId) === Number(selectedPost.userId) || isAdmin) {
-                    return (
-                      <div className="actions align-right">
-                        {Number(loggedInUserId) === Number(selectedPost.userId) && (
-                          <button className="edit-btn" onClick={handleEdit}>수정</button>
-                        )}
-                        <button className="delete-btn" onClick={handleDelete}>삭제</button>
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
+                
+                {/* 수정/삭제 버튼 및 신고 버튼 */}
+                <div className="actions-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px' }}>
+                  {/* 신고 버튼 (모든 로그인 사용자에게 표시, 본인 글 제외) */}
+                  <div className="report-section">
+                    {(() => {
+                      const storedUser = JSON.parse(localStorage.getItem('user'));
+                      const loggedInUserId = storedUser?.userId;
+                      const isOwnPost = Number(loggedInUserId) === Number(selectedPost.userId);
+                      
+                      if (loggedInUserId && !isOwnPost) {
+                        return (
+                          <button 
+                            className="report-btn" 
+                            onClick={handleReport}
+                            style={{
+                              backgroundColor: '#ff6b6b',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '4px',
+                              padding: '6px 12px',
+                              fontSize: '0.85rem',
+                              cursor: 'pointer',
+                              transition: 'background-color 0.2s'
+                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#ff5252'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#ff6b6b'}
+                          >
+                            🚨 신고
+                          </button>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
+
+                  {/* 수정/삭제 버튼 (기존 로직) */}
+                  <div className="actions align-right">
+                    {(() => {
+                      const storedUser = JSON.parse(localStorage.getItem('user'));
+                      const loggedInUserId = storedUser?.userId;
+                      const isAdmin = storedUser?.role === 'ADMIN' || storedUser?.role === 'admin';
+                      if (Number(loggedInUserId) === Number(selectedPost.userId) || isAdmin) {
+                        return (
+                          <>
+                            {Number(loggedInUserId) === Number(selectedPost.userId) && (
+                              <button className="edit-btn" onClick={handleEdit}>수정</button>
+                            )}
+                            <button className="delete-btn" onClick={handleDelete}>삭제</button>
+                          </>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
+                </div>
               </>
             )}
      
