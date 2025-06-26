@@ -23,13 +23,16 @@ public class ChatBotService {
         headers.setBearerAuth(apiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        // 1번: 실제 API 키 값 로그로 출력 (운영 배포 시 반드시 삭제!)
+        System.out.println("[DEBUG] OpenAI API KEY: [" + apiKey + "]");
+
         List<Map<String, Object>> messages = List.of(
                 Map.of("role", "system", "content",
                         "너는 야구전문가야. 친절하게 이모티콘 적절하게 쓰면서 야구를 잘 모르는 사람에게 초등학생이 알 수 있을 정도로 쉽게 야구 규칙이나 정보에 대해서 자세하게 알려줘. 200자 이내로 정리해서 답해줘. "),
                 Map.of("role", "user", "content", prompt));
 
         Map<String, Object> body = Map.of(
-                "model", "gpt-4.1-nano", // gpt 모델 선정
+                "model", "gpt-3.5-turbo", // gpt 모델 선정
                 "messages", messages, // 메시지 입력
                 "temperature", 1, // 온도 설정 (0~2)
                 "max_tokens", 200, // 최대 토큰 수 (1~4096)
@@ -55,5 +58,3 @@ public class ChatBotService {
     }
 
 }
-
-//

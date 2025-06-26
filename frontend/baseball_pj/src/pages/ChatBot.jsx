@@ -1,12 +1,19 @@
 // src/components/ChatBot.jsx
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './ChatBot.css';
 
 function ChatBot() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]); // {role: 'user'|'bot', text: string}
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, loading]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -37,6 +44,7 @@ function ChatBot() {
           </div>
         ))}
         {loading && <div className="chatbot-loading">AI가 답변 중...</div>}
+        <div ref={messagesEndRef} />
       </div>
       <form onSubmit={sendMessage} className="chatbot-form">
         <input
