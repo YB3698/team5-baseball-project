@@ -10,6 +10,7 @@ import './Home.css';
 import homeImg from './img/home_img.png';
 import bot from './img/bot.png';
 import ChatBot from './ChatBot';
+import Talk from './Talk';
 
 function Home() {
   const [ranks, setRanks] = useState([]);
@@ -184,7 +185,10 @@ function Home() {
   return (
     <>
       <div className="home-root">
-        
+        {/* 왼쪽 고정 실시간 채팅 */}
+        <div style={{ position: 'fixed', left: 24, top: 100, zIndex: 1000 }}>
+          <Talk />
+        </div>
 
         {/* 4분할 레이아웃 */}
         <div className="home-grid-2x2">        {/* 1. 순위 차트 */}

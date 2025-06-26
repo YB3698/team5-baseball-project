@@ -72,6 +72,12 @@
         <version>2.5.0</version>
     </dependency>
 
+    <!-- Spring Boot Starter WebSocket (실시간 채팅/알림 등) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-websocket</artifactId>
+    </dependency>
+
 </dependencies>
 
 	<build>

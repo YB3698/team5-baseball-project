@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import mainlogoImg from './img/main_logo_blue.png'; // 로고 이미지 경로
 import './Header.css';
 
-const Header = () => {
+const Header = ({ setIsLoggedIn }) => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,6 +45,7 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem('user');
     setUser(null);
+    if (setIsLoggedIn) setIsLoggedIn(false); // 상태 즉시 반영
     navigate('/login');
   };
 

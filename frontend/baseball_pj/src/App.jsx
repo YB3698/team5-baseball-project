@@ -65,14 +65,15 @@ function AppRoutes() {
   }, []);
 
   useEffect(() => {
-    if (isLoggedIn && authPaths.includes(location.pathname)) {
-      navigate('/postlist', { replace: true });
+    // 로그인 상태에서 오직 /login에 있을 때만 홈으로 이동
+    if (isLoggedIn && location.pathname === '/login') {
+      navigate('/', { replace: true });
     }
   }, [isLoggedIn, location.pathname, navigate]);
 
   return (
     <>
-      <Header />
+      <Header setIsLoggedIn={setIsLoggedIn} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
