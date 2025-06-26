@@ -26,15 +26,15 @@ public class PostController {
     private com.baseball.baseball_pj.Post.repository.CommentRepository commentRepository;
 
     // 게시글 저장
-    @PostMapping("/posts")
-    public PostEntity createPost(@RequestBody PostEntity postEntity) {
-        try {
-            return postRepository.save(postEntity);
-        } catch (Exception e) {
-            e.printStackTrace(); // 콘솔에 에러 로그 출력
-            throw e; // 클라이언트에 에러 전달
-        }
-    }
+@PostMapping("/posts")
+public PostEntity createPost(@RequestBody PostEntity postEntity) {
+    var user = userRepository.findById(postEntity.getUserId())
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+    postEntity.setUser(user); // 연관관계 설정
+    return postRepository.save(postEntity);
+}
+
+
 
     // 전체 게시글 조회 (작성자 닉네임 포함)
     @GetMapping("/posts")

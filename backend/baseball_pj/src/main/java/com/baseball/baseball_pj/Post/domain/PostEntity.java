@@ -40,8 +40,12 @@ public class PostEntity {
     @Column(name = "VIEW_COUNT")
     private Long viewCount = 0L;
 
+    // 기존: insertable = false, updatable = false 제거
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", insertable = false, updatable = false)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private UserEntity user;
+
+
+
 }
