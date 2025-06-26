@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Login from './pages/Login';
@@ -42,42 +42,38 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-function App() {
+function AppRoutes() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const authPaths = ['/login', '/signup', '/register'];
 
-  // 컴포넌트 마운트 시와 로그인 상태 변경 감지
   useEffect(() => {
     const checkLoginStatus = () => {
       const user = localStorage.getItem('user');
       setIsLoggedIn(!!user);
     };
-
-    // 초기 로그인 상태 확인
     checkLoginStatus();
-
-    // localStorage 변경 감지 (다른 탭에서 로그인/로그아웃 시)
-    const handleStorageChange = () => {
-      checkLoginStatus();
-    };
-
+    const handleStorageChange = () => { checkLoginStatus(); };
     window.addEventListener('storage', handleStorageChange);
-
-    // 페이지 포커스 시 로그인 상태 재확인 (뒤로가기 등)
-    const handleFocus = () => {
-      checkLoginStatus();
-    };
-
+    const handleFocus = () => { checkLoginStatus(); };
     window.addEventListener('focus', handleFocus);
-
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('focus', handleFocus);
     };
   }, []);
 
+  useEffect(() => {
+    // 로그인 상태에서 오직 /login에 있을 때만 홈으로 이동
+    if (isLoggedIn && location.pathname === '/login') {
+      navigate('/', { replace: true });
+    }
+  }, [isLoggedIn, location.pathname, navigate]);
+
   return (
-    <Router>
-      <Header />
+    <>
+      <Header setIsLoggedIn={setIsLoggedIn} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -92,17 +88,16 @@ function App() {
         <Route path="/board/:postId" element={<PostList />} />
         <Route path="/polladmin" element={<PollAdmin />} />
         <Route path="/management" element={<Management />} /> 
-        
-        {/* ✅ 마이페이지는 로그인 상태일 때만 접근 가능 */}
-        <Route
-          path="/mypage"
-          element={
-            <ProtectedRoute>
-              <MyPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/mypage" element={<ProtectedRoute><MyPage /></ProtectedRoute>} />
       </Routes>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppRoutes />
     </Router>
   );
 }

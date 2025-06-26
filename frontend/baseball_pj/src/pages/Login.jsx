@@ -6,7 +6,8 @@ import './Login.css';
 // 공통 로그아웃 함수 (다른 컴포넌트에서도 재사용 가능)
 export const handleLogout = () => {
   localStorage.removeItem('user');
-  window.location.href = '/login';
+  window.location.href = '/'; // 로그아웃 시 홈으로 이동
+  window.location.reload();   // 상태 동기화 보장
 };
 
 const Login = () => {
@@ -24,10 +25,7 @@ const Login = () => {
       console.log(res.data);
 
       localStorage.setItem('user', JSON.stringify(res.data));
-      
-      // 이전 페이지로 돌아가거나 홈으로 이동
-      const from = location.state?.from?.pathname || '/';
-      navigate(from, { replace: true });
+      navigate('/'); // 로그인 후 홈으로 이동
     } catch (err) {
       alert('❌ 로그인 실패: ' + (err.response?.data || err.message));
     }
