@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import './Board.css';
 import axios from 'axios';
 import Comments from '../components/Comments';
 
 const PostList = () => {
+  const { postId } = useParams(); // URL 파라미터에서 postId 추출
   const [search, setSearch] = useState('');
   const [teamFilter, setTeamFilter] = useState('');
   const [selectedPost, setSelectedPost] = useState(null);
@@ -241,8 +242,32 @@ const PostList = () => {
 
   // 신고 기능
   const handleReport = async () => {
-    const reportReason = prompt('신고 사유를 입력해주세요:\n\n1. 스팸/광고\n2. 욕설/비방\n3. 음란/선정적 내용\n4. 허위정보\n5. 기타');
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const reporterId = storedUser?.userId;
+    if (!reporterId) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+    // 1. 이미 신고했는지 체크
+    try {
+      const checkRes = await fetch(`/api/reports/check?reportType=POST&targetId=${selectedPost.postId}&reporterId=${reporterId}`);
+      if (checkRes.ok) {
+        const { alreadyReported } = await checkRes.json();
+        if (alreadyReported) {
+          alert('이미 이 게시글을 신고하셨습니다.');
+          return;
+        }
+      }
+    } catch (e) {
+      // 체크 실패 시에도 신고 진행(네트워크 문제 등)
+    }
+    // prompt의 두 번째 인자를 ''로 지정하여 항상 빈 값으로 초기화
+    const reportReason = prompt('신고 사유를 입력해주세요:\n\n1. 스팸/광고\n2. 욕설/비방\n3. 음란/선정적 내용\n4. 허위정보\n5. 기타', '');
     
+    if (reportReason === null) {
+      // 취소 버튼을 누른 경우 아무 메시지도 띄우지 않고 종료
+      return;
+    }
     if (!reportReason || reportReason.trim() === '') {
       alert('신고 사유를 입력해주세요.');
       return;
@@ -251,33 +276,52 @@ const PostList = () => {
     if (!window.confirm('이 게시글을 신고하시겠습니까?')) return;
 
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user'));
-      const reporterId = storedUser?.userId;
-      
-      if (!reporterId) {
-        alert('로그인이 필요합니다.');
-        return;
-      }
-
       const reportData = {
-        postId: selectedPost.postId,
+        reportType: 'POST', // ← 반드시 추가!
+        targetId: selectedPost.postId, // 필드명 targetId로 맞춤
         reporterId: reporterId,
-        reason: reportReason.trim(),
-        reportedAt: new Date().toISOString()
+        reportReason: reportReason.trim(), // 필드명 reportReason으로 맞춤
       };
 
       // 신고 API 호출 (백엔드에 신고 API가 있다면 사용)
-      await axios.post('/api/reports', reportData, {
+      const res = await axios.post('/api/reports', reportData, {
         withCredentials: true,
+        validateStatus: () => true // 모든 status에서 catch로 빠지지 않게
       });
-      
-      alert('신고가 접수되었습니다. 검토 후 조치하겠습니다.');
+      if (res.status === 200 || res.status === 201) {
+        alert('신고가 접수되었습니다. 검토 후 조치하겠습니다.');
+      } else if (res.status === 409) {
+        alert('이미 신고하신 게시글입니다.');
+      } else if (res.status === 400) {
+        alert('잘못된 요청입니다.');
+      } else {
+        alert('신고 처리 중 서버 오류가 발생했습니다.');
+      }
     } catch (err) {
       console.error('신고 실패:', err);
-      // API가 없어도 로컬에서 처리
-      alert('신고가 접수되었습니다. 관리자가 검토하겠습니다.');
+      alert('신고 처리 중 서버 오류가 발생했습니다.');
     }
   };
+
+  // 게시글 상세 진입 시 postId가 있으면 해당 게시글을 자동으로 fetch
+  useEffect(() => {
+    if (postId) {
+      // 상세 진입 시 게시글 fetch
+      fetch(`/api/posts/${postId}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data) {
+            setSelectedPost(data);
+            setIsEditing(false);
+          } else {
+            setSelectedPost(null);
+          }
+        })
+        .catch(() => setSelectedPost(null));
+    } else {
+      setSelectedPost(null);
+    }
+  }, [postId]);
 
   return (
     <div className={`post-list page-container ${selectedPost ? '' : 'show-header'}`}>

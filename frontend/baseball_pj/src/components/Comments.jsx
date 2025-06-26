@@ -133,8 +133,30 @@ const Comments = ({ postId }) => {
 
   // 댓글/대댓글 신고 핸들러
   const handleReportComment = async (commentId, commentAuthorId) => {
-    const reportReason = prompt('신고 사유를 입력해주세요:\n\n1. 스팸/광고\n2. 욕설/비방\n3. 음란/선정적 내용\n4. 허위정보\n5. 기타');
+    if (!userId) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+    // 1. 먼저 이미 신고했는지 체크
+    try {
+      const checkRes = await fetch(`/api/reports/check?reportType=COMMENT&targetId=${commentId}&reporterId=${userId}`);
+      if (checkRes.ok) {
+        const { alreadyReported } = await checkRes.json();
+        if (alreadyReported) {
+          alert('이미 이 댓글을 신고하셨습니다.');
+          return;
+        }
+      }
+    } catch (e) {
+      // 체크 실패 시에도 신고 진행(네트워크 문제 등)
+    }
+    // prompt의 두 번째 인자를 ''로 지정하여 항상 빈 값으로 초기화
+    const reportReason = prompt('신고 사유를 입력해주세요:\n\n1. 스팸/광고\n2. 욕설/비방\n3. 음란/선정적 내용\n4. 허위정보\n5. 기타', '');
     
+    if (reportReason === null) {
+      // 취소 버튼을 누른 경우 아무 메시지도 띄우지 않고 종료
+      return;
+    }
     if (!reportReason || reportReason.trim() === '') {
       alert('신고 사유를 입력해주세요.');
       return;
@@ -143,31 +165,31 @@ const Comments = ({ postId }) => {
     if (!window.confirm('이 댓글을 신고하시겠습니까?')) return;
 
     try {
-      if (!userId) {
-        alert('로그인이 필요합니다.');
-        return;
-      }
-
       const reportData = {
-        commentId: commentId,
-        postId: postId,
+        reportType: 'COMMENT', // 댓글 신고임을 명시
+        targetId: commentId,   // 댓글 id
         reporterId: userId,
-        reason: reportReason.trim(),
-        reportedAt: new Date().toISOString()
+        reportReason: reportReason.trim(),
       };
 
-      // 댓글 신고 API 호출 (백엔드에 신고 API가 있다면 사용)
-      await fetch('/api/comment-reports', {
+      // 댓글 신고도 /api/reports로 통일
+      const res = await fetch('/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reportData)
       });
-      
-      alert('신고가 접수되었습니다. 검토 후 조치하겠습니다.');
+      if (res.ok) {
+        alert('신고가 접수되었습니다. 검토 후 조치하겠습니다.');
+      } else if (res.status === 409) {
+        alert('이미 신고하신 게시글/댓글입니다.');
+      } else if (res.status === 400) {
+        alert('잘못된 요청입니다.');
+      } else {
+        alert('신고 처리 중 서버 오류가 발생했습니다.');
+      }
     } catch (err) {
       console.error('댓글 신고 실패:', err);
-      // API가 없어도 로컬에서 처리
-      alert('신고가 접수되었습니다. 관리자가 검토하겠습니다.');
+      alert('신고 처리 중 서버 오류가 발생했습니다.');
     }
   };
 
@@ -181,7 +203,7 @@ const Comments = ({ postId }) => {
           <li className="comment-item">아직 댓글이 없습니다.</li>
         ) : (
           comments.slice(0, visibleCount).map((c) => (
-            <li key={c.comment.commentId} className="comment-item">
+            <li key={c.comment.commentId} className="comment-item" id={`comment-${c.comment.commentId}`}>
               {/* 댓글 닉네임/내용 세로 정렬 */}
               <div className="comment-main">
                 <span className="comment-nickname">{c.comment.user?.nickname}</span>

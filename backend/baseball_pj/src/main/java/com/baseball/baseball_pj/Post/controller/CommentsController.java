@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.baseball.baseball_pj.Post.DTO.UserCommentDto;
 import com.baseball.baseball_pj.Post.domain.CommentEntity;
 import com.baseball.baseball_pj.Post.service.CommentService;
 
@@ -77,7 +78,7 @@ public class CommentsController {
 
     @GetMapping("/user-comments")
     public ResponseEntity<?> getUserComments(@RequestParam Long userId) {
-        List<CommentEntity> comments = commentService.getCommentsByUserId(userId);
+        List<UserCommentDto> comments = commentService.getUserCommentsWithPostId(userId);
         return ResponseEntity.ok(comments);
     }
 
