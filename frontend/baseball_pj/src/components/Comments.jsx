@@ -260,7 +260,7 @@ const Comments = ({ postId }) => {
                         setReplyingTo(c.comment.commentId);
                       }
                     }}
-                  >댓글 쓰기</span>
+                  >대댓글 쓰기</span>
                 </div>
                 {/* 대댓글 입력창 (토글) */}
                 {replyingTo === c.comment.commentId && (
