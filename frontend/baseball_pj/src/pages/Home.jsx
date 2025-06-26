@@ -9,6 +9,7 @@ import {
 import './Home.css';
 import homeImg from './img/home_img.png';
 import bot from './img/bot.png';
+import ChatBot from './ChatBot';
 
 function Home() {
   const [ranks, setRanks] = useState([]);
@@ -22,10 +23,8 @@ function Home() {
   const [endedPoll, setEndedPoll] = useState(null); // 종료된 투표 항목
   const [teamDist, setTeamDist] = useState([]);
   const [showChat, setShowChat] = useState(false); // 챗봇 채팅창 상태
-  const [botPos, setBotPos] = useState({ x: window.innerWidth - 120, y: window.innerHeight - 120 });
+  const [botPos, setBotPos] = useState({ x: window.innerWidth - 210, y: window.innerHeight - 120 });
   const [dragging, setDragging] = useState(false);
-  const draggingRef = useRef(false); // 추가
-  const dragOffset = useRef({ x: 0, y: 0 });
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.userId;
@@ -347,9 +346,9 @@ function Home() {
           left: botPos.x - 130,
           top: botPos.y - 450
         }}>
-          <div className="bot-chat-header">AI 야구봇 채팅 <button className="bot-chat-close" onClick={() => setShowChat(false)}>×</button></div>
+          <div className="bot-chat-header">HEYJ_Bot <button className="bot-chat-close" onClick={() => setShowChat(false)}>×</button></div>
           <div className="bot-chat-body">
-            <p>여기에 채팅 UI를 구현하세요!</p>
+            <ChatBot />
           </div>
         </div>
       )}

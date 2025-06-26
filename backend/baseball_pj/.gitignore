@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### 민감한 설정 파일들 ###
+config/application-local.properties
+config/*.properties
+.env
+*.env
