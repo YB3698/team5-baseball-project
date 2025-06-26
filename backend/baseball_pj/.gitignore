@@ -35,5 +35,6 @@ build/
 ### 민감한 설정 파일들 ###
 config/application-local.properties
 config/*.properties
+src/main/resources/application-local.properties
 .env
 *.env
