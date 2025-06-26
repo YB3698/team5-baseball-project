@@ -15,16 +15,18 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ChatBotService {
 
-    @Value("${openai.api.key}")
+    @Value("${openai.api.key:}")
     private String apiKey;
 
     public String ask(String prompt) {
+        // API 키가 없거나 비어있으면 오류 메시지 반환
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            return "⚠️ OpenAI API 키가 설정되지 않았습니다. config/application-local.properties 파일을 확인해주세요.";
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(apiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // 1번: 실제 API 키 값 로그로 출력 (운영 배포 시 반드시 삭제!)
-        System.out.println("[DEBUG] OpenAI API KEY: [" + apiKey + "]");
 
         List<Map<String, Object>> messages = List.of(
                 Map.of("role", "system", "content",
@@ -32,7 +34,7 @@ public class ChatBotService {
                 Map.of("role", "user", "content", prompt));
 
         Map<String, Object> body = Map.of(
-                "model", "gpt-3.5-turbo", // gpt 모델 선정
+                "model", "gpt-4.1-nano", // gpt 모델 선정
                 "messages", messages, // 메시지 입력
                 "temperature", 1, // 온도 설정 (0~2)
                 "max_tokens", 200, // 최대 토큰 수 (1~4096)
