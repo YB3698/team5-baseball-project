@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css';
 
@@ -11,6 +12,8 @@ export const handleLogout = () => {
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,7 +24,10 @@ const Login = () => {
       console.log(res.data);
 
       localStorage.setItem('user', JSON.stringify(res.data));
-      window.location.href = '/';
+      
+      // 이전 페이지로 돌아가거나 홈으로 이동
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
     } catch (err) {
       alert('❌ 로그인 실패: ' + (err.response?.data || err.message));
     }

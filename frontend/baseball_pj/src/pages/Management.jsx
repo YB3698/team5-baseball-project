@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import UserManagement from './UserManagement';
 import PollAdmin from './admin/PollAdmin';
 import PlayerManagement from './PlayerManagement';
+import ReportManagement from './ReportManagement';
 import './Management.css';
 
 const Management = () => {
@@ -15,6 +16,8 @@ const Management = () => {
         return <PollAdmin />;
       case 'player':
         return <PlayerManagement />; // player case 추가
+      case 'report':
+        return <ReportManagement />; // 신고 관리 추가
       default:
         return null;
     }
@@ -41,6 +44,12 @@ const Management = () => {
           onClick={() => setActiveTab('player')}
         >
           선수 관리
+        </button>
+        <button
+          className={activeTab === 'report' ? 'active' : ''}
+          onClick={() => setActiveTab('report')}
+        >
+          신고 관리
         </button>
       </div>
       <div className="management-content">
