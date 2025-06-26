@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.baseball.baseball_pj.Report.service.ReportsService;
 import com.baseball.baseball_pj.Report.domain.ReportsEntity;
+import com.baseball.baseball_pj.Report.dto.ReportWithPostIdDto;
 
 import java.util.List;
 
@@ -17,13 +18,13 @@ public class ReportsController {
     }
 
     @GetMapping("/posts")
-    public List<ReportsEntity> getPostReports() {
-        return reportsService.getReportsByType("POST");
+    public List<ReportWithPostIdDto> getPostReports() {
+        return reportsService.getPostReportsWithNickname();
     }
 
     @GetMapping("/comments")
-    public List<ReportsEntity> getCommentReports() {
-        return reportsService.getReportsByType("COMMENT");
+    public List<ReportWithPostIdDto> getCommentReports() {
+        return reportsService.getCommentReportsWithPostId();
     }
 
     @PostMapping

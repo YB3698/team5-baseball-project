@@ -36,6 +36,8 @@ const MyPage = () => {
   const [editCommentId, setEditCommentId] = useState(null);
   const [editCommentContent, setEditCommentContent] = useState('');
 
+  const [deletedPosts, setDeletedPosts] = useState({}); // postId: true(삭제됨)
+
   useEffect(() => {
     const stored = localStorage.getItem('user');
     if (stored) {
@@ -55,25 +57,25 @@ const MyPage = () => {
         });
 
       axios.get(`/api/user-comments?userId=${u.userId}`)
-        .then(res => {
+        .then(async res => {
           const sorted = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           setMyComments(sorted);
+          // 게시글 존재 여부 체크
+          const postIds = Array.from(new Set(sorted.map(c => c.postId).filter(Boolean)));
+          const deleted = {};
+          await Promise.all(postIds.map(async pid => {
+            try {
+              await axios.get(`/api/posts/${pid}`);
+            } catch {
+              deleted[pid] = true;
+            }
+          }));
+          setDeletedPosts(deleted);
         });
     }
   }, []);
 
-  const handleDeletePost = (postId) => {
-    if (!window.confirm('정말로 삭제하시겠습니까?')) return;
-    axios.delete(`/api/posts/${postId}`).then(() => {
-      setMyPosts(myPosts.filter(p => p.postId !== postId));
-    });
-  };
 
-  const handleStartEditPost = (post) => {
-    setEditPostId(post.postId);
-    setEditPostTitle(post.postTitle);
-    setEditPostContent(post.postContent);
-  };
 
   const handleSavePost = () => {
     axios.put(`/api/posts/${editPostId}`, {
@@ -89,19 +91,6 @@ const MyPage = () => {
     });
   };
 
-  const handleDeleteComment = (commentId) => {
-    if (!window.confirm('댓글을 삭제하시겠습니까?')) return;
-    axios.delete(`/api/comments/${commentId}`, {
-      data: { userId: user.userId }
-    }).then(() => {
-      setMyComments(myComments.filter(c => c.commentId !== commentId));
-    });
-  };
-
-  const handleStartEditComment = (comment) => {
-    setEditCommentId(comment.commentId);
-    setEditCommentContent(comment.content);
-  };
 
   const handleSaveComment = () => {
     axios.put(`/api/comments/${editCommentId}`, {
@@ -145,17 +134,30 @@ const MyPage = () => {
         nickname,
         email,
         teamId,
-        hasChangedTeam: hasChangedTeam || isTeamChanged
+        hasChangedTeam: hasChangedTeam // 기존 값 유지 (팀 변경이 실제로 일어난 경우만 true)
       };
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
       setIsEditing(false);
-      setHasChangedTeam(true);
       alert("정보가 수정되었습니다.");
     }).catch(() => {
       alert("수정에 실패했습니다.");
     });
   };
+
+  // 대댓글(postId 없고 parentId만 있는 경우)도 postId를 찾아서 board/{postId}#comment-{commentId}로 이동 (재귀 추적)
+  function getBoardLink(comment, allComments) {
+    let current = comment;
+    let depth = 0;
+    while (current && !current.postId && current.parentId && depth < 10) {
+      current = allComments.find(c2 => c2.commentId === current.parentId);
+      depth++;
+    }
+    if (current && current.postId) {
+      return { link: `/board/${current.postId}#comment-${comment.commentId}`, canMove: true, postIdUsed: current.postId };
+    }
+    return { link: '', canMove: false, postIdUsed: null };
+  }
 
   if (!user) return null;
 
@@ -194,11 +196,11 @@ const MyPage = () => {
                 <>
                   <div className="mypage-info-item">
                     <div className="mypage-info-label">닉네임</div>
-                    <input value={nickname} onChange={(e) => setNickname(e.target.value)} />
+                    <input value={nickname} disabled style={{ background: '#f5f5f5', color: '#888' }} />
                   </div>
                   <div className="mypage-info-item">
                     <div className="mypage-info-label">이메일</div>
-                    <input value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <input value={email} disabled style={{ background: '#f5f5f5', color: '#888' }} />
                   </div>
                   <div className="mypage-info-item">
                     <div className="mypage-info-label">응원 팀</div>
@@ -207,7 +209,7 @@ const MyPage = () => {
                         <option key={team.id} value={team.id}>{team.name}</option>
                       ))}
                     </select>
-                    {hasChangedTeam && <p className="notice-text">* 응원 팀은 한 번만 변경할 수 있습니다.</p>}
+                    <p className="notice-text" style={{ color: '#d32f2f', margin: '6px 0 0 0', fontWeight: 500 }}>* 응원팀 변경은 1회만 가능합니다.</p>
                   </div>
                   <div>
                     <button className="save" onClick={handleSaveInfo}>저장</button>
@@ -241,13 +243,13 @@ const MyPage = () => {
                           </div>
                         ) : (
                           <>
-                            <strong>{p.postTitle}</strong>
+                            <strong>
+                              <a href={`/board/${p.postId}`} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2', textDecoration: 'underline' }}>
+                                {p.postTitle}
+                              </a>
+                            </strong>
                             <div>{p.postContent}</div>
                             <div>작성일: {new Date(p.postCreatedAt).toLocaleString()}</div>
-                            <div>
-                              <button className="edit" onClick={() => handleStartEditPost(p)}>수정</button>
-                              <button className="delete" onClick={() => handleDeletePost(p.postId)}>삭제</button>
-                            </div>
                           </>
                         )}
                       </li>
@@ -258,28 +260,36 @@ const MyPage = () => {
               {subTab === 'comments' && (
                 <ul className="mypage-post-list">
                   {myComments.length === 0 ? <p>작성한 댓글이 없습니다.</p> :
-                    myComments.map(c => (
-                      <li key={c.commentId}>
-                        {editCommentId === c.commentId ? (
-                          <div className="mypage-comment-edit-box">
-                            <textarea value={editCommentContent} onChange={e => setEditCommentContent(e.target.value)} />
-                            <div>
-                              <button className="save" onClick={handleSaveComment}>저장</button>
-                              <button className="cancel" onClick={() => setEditCommentId(null)}>취소</button>
+                    myComments.map(c => {
+                      const { link: boardLink, canMove, postIdUsed } = getBoardLink(c, myComments);
+                      const isDeleted = postIdUsed && deletedPosts[postIdUsed];
+                      return (
+                        <li key={c.commentId}>
+                          {editCommentId === c.commentId ? (
+                            <div className="mypage-comment-edit-box">
+                              <textarea value={editCommentContent} onChange={e => setEditCommentContent(e.target.value)} />
+                              <div>
+                                <button className="save" onClick={handleSaveComment}>저장</button>
+                                <button className="cancel" onClick={() => setEditCommentId(null)}>취소</button>
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <>
-                            <div>{c.content}</div>
-                            <div>작성일: {new Date(c.createdAt).toLocaleString()}</div>
-                            <div>
-                              <button className="edit" onClick={() => handleStartEditComment(c)}>수정</button>
-                              <button className="delete" onClick={() => handleDeleteComment(c.commentId)}>삭제</button>
-                            </div>
-                          </>
-                        )}
-                      </li>
-                    ))}
+                          ) : (
+                            <>
+                              <div
+                                className="comment-content-link"
+                                style={{ cursor: canMove && !isDeleted ? 'pointer' : 'not-allowed', textDecoration: canMove && !isDeleted ? 'underline' : 'none', color: canMove && !isDeleted ? '#1976d2' : '#aaa' }}
+                                onClick={() => canMove && !isDeleted && window.open(boardLink, '_blank', 'noopener,noreferrer')}
+                              >
+                                {c.content}
+                              </div>
+                              <div>작성일: {new Date(c.createdAt).toLocaleString()}</div>
+                              {!canMove && <div style={{ color: '#f00', fontSize: '0.9em' }}>* 게시글 정보가 없어 이동할 수 없습니다.</div>}
+                              {isDeleted && <div style={{ color: '#f00', fontSize: '0.9em' }}>* 이미 삭제된 게시물입니다.</div>}
+                            </>
+                          )}
+                        </li>
+                      );
+                    })}
                 </ul>
               )}
             </div>

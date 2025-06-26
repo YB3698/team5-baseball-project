@@ -203,7 +203,7 @@ const Comments = ({ postId }) => {
           <li className="comment-item">아직 댓글이 없습니다.</li>
         ) : (
           comments.slice(0, visibleCount).map((c) => (
-            <li key={c.comment.commentId} className="comment-item">
+            <li key={c.comment.commentId} className="comment-item" id={`comment-${c.comment.commentId}`}>
               {/* 댓글 닉네임/내용 세로 정렬 */}
               <div className="comment-main">
                 <span className="comment-nickname">{c.comment.user?.nickname}</span>

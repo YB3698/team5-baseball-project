@@ -1,10 +1,12 @@
 package com.baseball.baseball_pj.Post.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baseball.baseball_pj.Post.DTO.UserCommentDto;
 import com.baseball.baseball_pj.Post.domain.CommentEntity;
 import com.baseball.baseball_pj.Post.repository.CommentRepository;
 
@@ -86,8 +88,36 @@ public class CommentService {
         return commentRepository.findByPost_PostIdAndParentIsNullOrderByCreatedAt(postId);
     }
 
-    public List<CommentEntity> getCommentsByUserId(Long userId) {
-        return commentRepository.findByUser_IdOrderByCreatedAtDesc(userId);
+    // 특정 댓글의 최상위 postId를 재귀적으로 찾는 메서드
+    private Long findRootPostId(CommentEntity comment) {
+        if (comment == null) return null;
+        if (comment.getPost() != null && comment.getPost().getPostId() != null) {
+            return comment.getPost().getPostId();
+        }
+        if (comment.getParent() != null) {
+            // parent가 프록시일 수 있으므로 DB에서 다시 조회
+            CommentEntity parent = commentRepository.findById(comment.getParent().getCommentId()).orElse(null);
+            return findRootPostId(parent);
+        }
+        return null;
+    }
+
+    // userId로 내가 쓴 댓글 + postId 항상 포함해서 반환
+    public List<UserCommentDto> getUserCommentsWithPostId(Long userId) {
+        List<CommentEntity> comments = commentRepository.findByUser_IdOrderByCreatedAtDesc(userId);
+        List<UserCommentDto> dtos = new ArrayList<>();
+        for (CommentEntity c : comments) {
+            Long postId = findRootPostId(c);
+            dtos.add(new UserCommentDto(
+                c.getCommentId(),
+                c.getContent(),
+                c.getCreatedAt(),
+                postId,
+                c.getParent() != null ? c.getParent().getCommentId() : null,
+                c.getUser() != null ? c.getUser().getId() : null
+            ));
+        }
+        return dtos;
     }
 
 }

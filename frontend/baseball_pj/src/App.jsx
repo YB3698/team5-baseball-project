@@ -13,6 +13,7 @@ import PostForm from './pages/PostForm';
 import PostList from './pages/PostList';
 import PollAdmin from './pages/admin/PollAdmin';
 import Management from './pages/Management';
+import PostDetail from './pages/PostDetail'; // PostDetail 컴포넌트 임포트
 
 // 보호된 라우트 컴포넌트
 const ProtectedRoute = ({ children }) => {
@@ -87,6 +88,8 @@ function App() {
         <Route path="/playerstats" element={<PlayerStats />} />
         <Route path="/postform" element={<PostForm />} />
         <Route path="/postlist" element={<PostList />} />
+        <Route path="/posts/:postId" element={<PostDetail />} /> {/* 게시글 상세 페이지 라우트 추가 */}
+        <Route path="/board/:postId" element={<PostList />} />
         <Route path="/polladmin" element={<PollAdmin />} />
         <Route path="/management" element={<Management />} /> 
         

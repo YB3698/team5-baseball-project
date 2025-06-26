@@ -5,15 +5,29 @@ import './ChatBot.css';
 
 function ChatBot() {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]); // {role: 'user'|'bot', text: string}
+  const [messages, setMessages] = useState(() => {
+    const saved = sessionStorage.getItem('chatbot-messages');
+    return saved ? JSON.parse(saved) : [];
+  }); // {role: 'user'|'bot', text: string}
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    sessionStorage.setItem('chatbot-messages', JSON.stringify(messages));
+  }, [messages]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, loading]);
+
+  useEffect(() => {
+    if (!loading && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [loading]);
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -22,6 +36,7 @@ function ChatBot() {
     setMessages(msgs => [...msgs, userMsg]);
     setInput('');
     setLoading(true);
+    if (inputRef.current) inputRef.current.focus();
     try {
       const res = await axios.post('/api/chatbot', { message: userMsg.text });
       setMessages(msgs => [...msgs, { role: 'bot', text: res.data.reply }]);
@@ -29,6 +44,7 @@ function ChatBot() {
       setMessages(msgs => [...msgs, { role: 'bot', text: '서버 오류가 발생했습니다.' }]);
     } finally {
       setLoading(false);
+      if (inputRef.current) inputRef.current.focus();
     }
   };
 
@@ -54,6 +70,7 @@ function ChatBot() {
           placeholder="메시지를 입력하세요..."
           className="chatbot-input"
           disabled={loading}
+          ref={inputRef}
         />
         <button
           type="submit"

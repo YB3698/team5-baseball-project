@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import './Board.css';
 import axios from 'axios';
 import Comments from '../components/Comments';
 
 const PostList = () => {
+  const { postId } = useParams(); // URL 파라미터에서 postId 추출
   const [search, setSearch] = useState('');
   const [teamFilter, setTeamFilter] = useState('');
   const [selectedPost, setSelectedPost] = useState(null);
@@ -301,6 +302,26 @@ const PostList = () => {
       alert('신고 처리 중 서버 오류가 발생했습니다.');
     }
   };
+
+  // 게시글 상세 진입 시 postId가 있으면 해당 게시글을 자동으로 fetch
+  useEffect(() => {
+    if (postId) {
+      // 상세 진입 시 게시글 fetch
+      fetch(`/api/posts/${postId}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data) {
+            setSelectedPost(data);
+            setIsEditing(false);
+          } else {
+            setSelectedPost(null);
+          }
+        })
+        .catch(() => setSelectedPost(null));
+    } else {
+      setSelectedPost(null);
+    }
+  }, [postId]);
 
   return (
     <div className={`post-list page-container ${selectedPost ? '' : 'show-header'}`}>

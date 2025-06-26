@@ -145,6 +145,7 @@ const ReportManagement = () => {
                   <th>작성자(ID)</th>
                   <th>신고 사유</th>
                   <th>상태</th>
+                  <th>신고대상ID</th>
                   <th>관리</th>
                 </tr>
               </thead>
@@ -153,9 +154,22 @@ const ReportManagement = () => {
                   <tr key={report.reportId}>
                     <td>{formatDate(report.reportCreatedAt)}</td>
                     <td>{report.reporterId}</td>
-                    <td>{report.targetId}</td>
+                    <td>{report.nickname ? `${report.nickname} (${report.targetId})` : report.targetId}</td>
                     <td>{report.reportReason}</td>
                     <td>{getStatusBadge(report.reportStatus)}</td>
+                    <td>
+                      {/* 게시글 신고: postId(=targetId)로 이동, 댓글 신고: commentId(=targetId)로 이동 */}
+                      {report.reportType === 'POST' ? (
+                        <a href={`/board/${report.targetId}`} target="_blank" rel="noopener noreferrer">{report.targetId}</a>
+                      ) : (
+                        // 댓글 신고: postId가 있으면 해당 게시글 내 commentId로 이동(anchor)
+                        report.postId ? (
+                          <a href={`/board/${report.postId}#comment-${report.targetId}`} target="_blank" rel="noopener noreferrer">{report.targetId}</a>
+                        ) : (
+                          <span>{report.targetId}</span>
+                        )
+                      )}
+                    </td>
                     <td>
                       {report.reportStatus === 'PENDING' ? (
                         <div className="action-buttons">
