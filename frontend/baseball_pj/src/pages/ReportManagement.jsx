@@ -6,114 +6,70 @@ const ReportManagement = () => {
   const [activeReportTab, setActiveReportTab] = useState('post'); // 'post' 또는 'comment'
   const [loading, setLoading] = useState(false);
 
-  // 더미 데이터 (실제 API 구현 시 삭제)
-  const dummyPostReports = [
-    {
-      reportId: 1,
-      reportType: 'POST',
-      targetId: 101,
-      targetTitle: '야구 경기 결과 예측',
-      targetAuthor: '야구팬123',
-      reporterNickname: '신고자1',
-      reportReason: '스팸/광고',
-      reportStatus: 'PENDING',
-      reportCreatedAt: '2025-06-25T10:30:00',
-    },
-    {
-      reportId: 2,
-      reportType: 'POST',
-      targetId: 102,
-      targetTitle: '선수 이적설 관련 정보',
-      targetAuthor: '베이스볼러',
-      reporterNickname: '신고자2',
-      reportReason: '허위정보',
-      reportStatus: 'APPROVED',
-      reportCreatedAt: '2025-06-24T15:20:00',
-    }
-  ];
-
-  const dummyCommentReports = [
-    {
-      reportId: 3,
-      reportType: 'COMMENT',
-      targetId: 201,
-      targetTitle: '경기 정말 재미있었네요...',
-      targetAuthor: '댓글러',
-      reporterNickname: '신고자3',
-      reportReason: '욕설/비방',
-      reportStatus: 'PENDING',
-      reportCreatedAt: '2025-06-25T09:15:00',
-    }
-  ];
-
-  // 신고 목록 조회
+  // 실제 신고 목록 조회
   const fetchReports = async () => {
     setLoading(true);
     try {
-      // 실제 API 호출 (백엔드 구현 시 활성화)
-      /*
       const endpoint = activeReportTab === 'post' ? '/api/reports/posts' : '/api/reports/comments';
-      const response = await fetch(endpoint, {
-        credentials: 'include'
-      });
+      const response = await fetch(endpoint, { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
-        setReports(data);
-      }
-      */
-      
-      // 더미 데이터 사용 (임시)
-      if (activeReportTab === 'post') {
-        setReports(dummyPostReports);
+        // 최신 날짜순(신고일시 내림차순) 정렬
+        const sorted = data.sort((a, b) => new Date(b.reportCreatedAt) - new Date(a.reportCreatedAt));
+        setReports(sorted);
       } else {
-        setReports(dummyCommentReports);
+        setReports([]);
       }
     } catch (error) {
       console.error('신고 목록 조회 실패:', error);
-      // 에러 시 더미 데이터 사용
-      if (activeReportTab === 'post') {
-        setReports(dummyPostReports);
-      } else {
-        setReports(dummyCommentReports);
-      }
+      setReports([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // 신고 처리 (승인/거부/삭제)
-  const handleReportAction = async (reportId, action, adminNote = '') => {
+  // 신고 처리 (승인/거부)
+  const handleReportAction = async (report, action, adminNote = '') => {
     try {
-      // 실제 API 호출 (백엔드 구현 시 활성화)
-      /*
-      const response = await fetch(`/api/reports/${reportId}/status`, {
-        method: 'PUT',
-        headers: {
+      const storedUser = JSON.parse(localStorage.getItem('user'));
+      const adminId = storedUser?.userId;
+      const adminRole = storedUser?.role;
+      if (action === 'APPROVED') {
+        // 게시글/댓글 삭제 API 호출
+        const headers = {
           'Content-Type': 'application/json',
-        },
+          'X-USER-ID': adminId,
+          'X-USER-ROLE': adminRole,
+        };
+        if (report.reportType === 'POST') {
+          await fetch(`/api/posts/${report.targetId}`, {
+            method: 'DELETE',
+            headers: headers,
+            credentials: 'include',
+            body: JSON.stringify({ userId: adminId, role: adminRole })
+          });
+        } else if (report.reportType === 'COMMENT') {
+          await fetch(`/api/comments/${report.targetId}`, {
+            method: 'DELETE',
+            headers: headers,
+            credentials: 'include',
+            body: JSON.stringify({ userId: adminId, role: adminRole })
+          });
+        }
+      }
+      // 신고 상태 변경
+      const response = await fetch(`/api/reports/${report.reportId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          status: action,
-          adminNote: adminNote
-        })
+        body: JSON.stringify({ status: action, adminNote: adminNote })
       });
-      
       if (response.ok) {
         alert(`신고가 ${getActionText(action)}되었습니다.`);
         fetchReports(); // 목록 새로고침
+      } else {
+        alert('신고 처리에 실패했습니다.');
       }
-      */
-      
-      // 더미 처리 (임시)
-      setReports(prevReports => 
-        prevReports.map(report => 
-          report.reportId === reportId 
-            ? { ...report, reportStatus: action, processedAt: new Date().toISOString() }
-            : report
-        )
-      );
-      alert(`신고가 ${getActionText(action)}되었습니다.`);
-      
     } catch (error) {
       console.error('신고 처리 실패:', error);
       alert('신고 처리에 실패했습니다.');
@@ -185,9 +141,8 @@ const ReportManagement = () => {
               <thead>
                 <tr>
                   <th>신고일시</th>
-                  <th>신고자</th>
-                  <th>신고 대상</th>
-                  <th>작성자</th>
+                  <th>신고자(ID)</th>
+                  <th>작성자(ID)</th>
                   <th>신고 사유</th>
                   <th>상태</th>
                   <th>관리</th>
@@ -197,16 +152,8 @@ const ReportManagement = () => {
                 {reports.map((report) => (
                   <tr key={report.reportId}>
                     <td>{formatDate(report.reportCreatedAt)}</td>
-                    <td>{report.reporterNickname}</td>
-                    <td className="target-content">
-                      <div className="target-title">
-                        {report.targetTitle}
-                      </div>
-                      <div className="target-id">
-                        ID: {report.targetId}
-                      </div>
-                    </td>
-                    <td>{report.targetAuthor}</td>
+                    <td>{report.reporterId}</td>
+                    <td>{report.targetId}</td>
                     <td>{report.reportReason}</td>
                     <td>{getStatusBadge(report.reportStatus)}</td>
                     <td>
@@ -214,28 +161,17 @@ const ReportManagement = () => {
                         <div className="action-buttons">
                           <button
                             className="btn-approve"
-                            onClick={() => handleReportAction(report.reportId, 'APPROVED')}
-                            title="신고를 승인하고 해당 게시글/댓글을 처리합니다"
+                            onClick={() => handleReportAction(report, 'APPROVED')}
+                            title="신고를 승인하고 해당 게시글/댓글을 삭제합니다"
                           >
                             승인
                           </button>
                           <button
                             className="btn-reject"
-                            onClick={() => handleReportAction(report.reportId, 'REJECTED')}
+                            onClick={() => handleReportAction(report, 'REJECTED')}
                             title="신고를 거부합니다"
                           >
                             거부
-                          </button>
-                          <button
-                            className="btn-delete"
-                            onClick={() => {
-                              if (window.confirm('정말로 해당 게시글/댓글을 삭제하시겠습니까?')) {
-                                handleReportAction(report.reportId, 'DELETED');
-                              }
-                            }}
-                            title="해당 게시글/댓글을 삭제합니다"
-                          >
-                            삭제
                           </button>
                         </div>
                       ) : (

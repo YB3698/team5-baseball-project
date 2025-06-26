@@ -15,10 +15,15 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ChatBotService {
 
-    @Value("${openai.api.key}")
+    @Value("${openai.api.key:}")
     private String apiKey;
 
     public String ask(String prompt) {
+        // API 키가 없거나 비어있으면 오류 메시지 반환
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            return "⚠️ OpenAI API 키가 설정되지 않았습니다. config/application-local.properties 파일을 확인해주세요.";
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(apiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
