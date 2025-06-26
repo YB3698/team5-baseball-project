@@ -379,3 +379,22 @@
 .pyth-tooltip-icon:focus .pyth-tooltip-text {
   display: block !important;
 }
+
+@media (prefers-color-scheme: dark) {
+  .home-root,
+  .home-title,
+  .home-chart-box,
+  .home-vote-box,
+  .vote-image-text,
+  .vote-title,
+  .vote-options,
+  .vote-options li,
+  .vote-option-label,
+  .vote-result-box,
+  .vote-result-title,
+  .vote-result-list,
+  .no-vote-result,
+  .no-vote-result p {
+    color: #111 !important;
+  }
+}

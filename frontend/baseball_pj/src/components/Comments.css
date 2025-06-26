@@ -258,3 +258,27 @@
   padding-bottom: 8px;
   margin-bottom: 8px;
 }
+
+@media (prefers-color-scheme: dark) {
+  .comment-section,
+  .comment-section h4,
+  .comment-list,
+  .comment-item,
+  .comment-nickname,
+  .reply-nickname,
+  .reply-list,
+  .reply-item,
+  .reply-content,
+  .comment-content,
+  .reply-link,
+  .reply-toggle-link,
+  .reply-form,
+  .comment-main,
+  .reply-action-links,
+  .reply-edit-link, .reply-delete-link,
+  .comment-actions-container,
+  .reply-actions-container,
+  .comment-report-link {
+    color: #111 !important;
+  }
+}

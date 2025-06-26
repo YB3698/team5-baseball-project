@@ -276,3 +276,23 @@ body {
   max-width: 100%;
   box-sizing: border-box;
 }
+
+/* ====== 다크 모드 색상 설정 ====== */
+@media (prefers-color-scheme: dark) {
+  .header-wrapper,
+  .header-container,
+  .logo-wrap,
+  .nav-menu,
+  .header-spacer,
+  .nav-link,
+  .nav-link.active,
+  .top-bar,
+  .top-bar a,
+  .header,
+  .baseball-icon,
+  .logo-text,
+  .logo-link,
+  .nav-menu a {
+    color: #111 !important;
+  }
+}

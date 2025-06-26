@@ -92,3 +92,18 @@
 .delete-btn:hover {
   background-color: #d32f2f;
 }
+
+@media (prefers-color-scheme: dark) {
+  .vote-management-container,
+  .vote-title,
+  .vote-table,
+  .vote-table th,
+  .vote-table td,
+  .vote-edit-form,
+  .vote-edit-form input,
+  .save-btn,
+  .delete-btn,
+  .edit-btn {
+    color: #111 !important;
+  }
+}

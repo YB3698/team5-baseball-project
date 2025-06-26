@@ -169,3 +169,17 @@
     min-width: 600px;
   }
 }
+
+/* 다크 모드 색상 조정 */
+@media (prefers-color-scheme: dark) {
+  .playerlist-container,
+  .playerlist-title,
+  .playerlist-card,
+  .playerlist-table,
+  .playerlist-table th,
+  .playerlist-table td,
+  .pagination,
+  .pagination button {
+    color: #111 !important;
+  }
+}

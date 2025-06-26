@@ -157,3 +157,18 @@
 }
 
 /* PlayerManagement.css에 추가 */
+
+@media (prefers-color-scheme: dark) {
+  .player-management-container,
+  .player-management-title,
+  .player-management-table,
+  .player-management-table th,
+  .player-management-table td,
+  .player-edit-form,
+  .player-edit-form input,
+  .save-btn,
+  .delete-btn,
+  .add-btn {
+    color: #111 !important;
+  }
+}
