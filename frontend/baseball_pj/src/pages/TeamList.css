@@ -78,3 +78,14 @@
 .team-table td a[title] {
   cursor: pointer;
 }
+
+@media (prefers-color-scheme: dark) {
+  .team-page-container,
+  .team-title,
+  .team-card-box,
+  .team-table,
+  .team-table th,
+  .team-table td {
+    color: #111 !important;
+  }
+}

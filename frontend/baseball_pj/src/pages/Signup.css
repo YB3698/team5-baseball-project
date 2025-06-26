@@ -130,3 +130,20 @@ select.signup-input {
   font-size: 0.85rem;
   margin-top: 6px;
 }
+
+@media (prefers-color-scheme: dark) {
+  body,
+  .signup-container,
+  .signup-title,
+  .signup-label,
+  .signup-input,
+  .signup-input-row input,
+  .signup-input-row select,
+  .signup-input-row textarea,
+  select.signup-input,
+  .signup-btn,
+  .signup-error,
+  .signup-success {
+    color: #111 !important;
+  }
+}

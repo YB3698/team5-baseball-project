@@ -540,3 +540,72 @@
     font-size: 14px;
   }
 }
+
+/* 🌙 다크 모드 - 기본 색상 조정 */
+@media (prefers-color-scheme: dark) {
+  .page-container,
+  .page-container > h2,
+  .form-card,
+  .wider-form,
+  .search-input,
+  .search-btn,
+  .post-actions,
+  .write-btn,
+  .post-box,
+  .post-count,
+  .post-table,
+  .post-table th,
+  .post-table td,
+  .hoverable-row,
+  .post-form,
+  .post-form label,
+  .post-form input,
+  .post-form textarea,
+  .post-form select,
+  .post-form button,
+  .form-btns,
+  .back-btn,
+  .edit-btn,
+  .submit-btn,
+  .post-detail,
+  .detail-actions,
+  .post-detail h3,
+  .post-content,
+  .post-detail .meta,
+  .comment-box,
+  .comment-box h4,
+  .comment-box textarea,
+  .comment-box button,
+  .actions,
+  .actions button,
+  .report-btn,
+  .actions-container,
+  .report-section,
+  .team-filter-container,
+  .team-logos,
+  .team-logo-item,
+  .team-logo-img,
+  .all-teams,
+  .team-name-fallback,
+  .pagination,
+  .page-btn,
+  .page-btn-arrow {
+    color: #111 !important;
+  }
+  
+  .edit-btn,
+  .delete-btn,
+  .back-btn {
+    color: #fff !important;
+  }
+
+  .not-logged-in button {
+    color: #fff !important;
+  }
+
+  .post-form input,
+  .post-form textarea,
+  .back-btn {
+    color: #fff !important;
+  }
+}

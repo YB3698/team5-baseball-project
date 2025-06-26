@@ -111,3 +111,18 @@
 .search-btn:hover {
   background-color: #1e5cc0;
 }
+
+@media (prefers-color-scheme: dark) {
+  .user-management-container,
+  .user-management-title,
+  .user-management-table,
+  .user-management-table th,
+  .user-management-table td,
+  .user-edit-form,
+  .user-edit-form input,
+  .save-btn,
+  .delete-btn,
+  .search-btn {
+    color: #111 !important;
+  }
+}

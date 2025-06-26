@@ -94,3 +94,15 @@
   color: black;
 }
 
+@media (prefers-color-scheme: dark) {
+  .schedule-container,
+  .schedule-card,
+  .schedule-title,
+  .schedule-table,
+  .schedule-table th,
+  .schedule-table td,
+  .date-cell {
+    color: #111 !important;
+  }
+}
+

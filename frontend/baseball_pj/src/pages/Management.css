@@ -250,3 +250,39 @@
     max-width: 150px;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .management-container,
+  .management-title,
+  .management-tabs,
+  .management-tabs button,
+  .management-tabs button.active,
+  .management-content,
+  .report-management,
+  .report-tabs,
+  .report-tabs button,
+  .report-tabs button.active,
+  .report-table-container,
+  .report-table,
+  .report-table th,
+  .report-table td,
+  .target-content,
+  .target-title,
+  .target-id,
+  .status-badge,
+  .status-pending,
+  .status-approved,
+  .status-rejected,
+  .status-deleted,
+  .action-buttons,
+  .action-buttons button,
+  .btn-approve,
+  .btn-reject,
+  .btn-delete,
+  .processed,
+  .loading, .no-reports,
+  .report-actions,
+  .refresh-btn {
+    color: #111 !important;
+  }
+}

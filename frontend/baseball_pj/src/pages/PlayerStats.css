@@ -86,3 +86,14 @@
   background-color: #f0f8ff;
   transition: background 0.2s ease-in-out;
 }
+
+@media (prefers-color-scheme: dark) {
+  .playerstats-container,
+  .playerstats-title,
+  .playerstats-card,
+  .playerstats-table,
+  .playerstats-table th,
+  .playerstats-table td {
+    color: #111 !important;
+  }
+}

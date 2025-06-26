@@ -190,3 +190,25 @@ button.cancel { background: #999; color: white; }
   border: 1px solid #ccc;
   margin-top: 6px;
 }
+
+@media (prefers-color-scheme: dark) {
+  .mypage-container,
+  .mypage-title,
+  .mypage-card,
+  .mypage-info-label,
+  .mypage-info-value,
+  .mypage-subtitle,
+  .mypage-tab,
+  .mypage-tab.active,
+  .mypage-info-item,
+  .mypage-content,
+  .mypage-post-list,
+  .mypage-post-list li,
+  .mypage-comment-edit-box,
+  .mypage-info-item input,
+  .mypage-info-item select,
+  .subtab,
+  .subtab.active {
+    color: #111 !important;
+  }
+}

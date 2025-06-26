@@ -1,31 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './VoteManagement.css';
 
-const dummyVotes = [
-  {
-    id: 1,
-    question: '올해의 MVP는 누구?',
-    options: ['선수A', '선수B', '선수C'],
-    totalVotes: 120,
-    createdAt: '2025-06-01',
-  },
-  {
-    id: 2,
-    question: '가장 멋진 홈런 세리머니는?',
-    options: ['선수D', '선수E'],
-    totalVotes: 85,
-    createdAt: '2025-06-15',
-  },
-];
-
 const VoteManagement = () => {
   const [votes, setVotes] = useState([]);
   const [selectedVote, setSelectedVote] = useState(null);
-
-  useEffect(() => {
-    // 실제 API로 바꿔 연결 가능
-    setVotes(dummyVotes);
-  }, []);
 
   const handleEdit = (vote) => setSelectedVote(vote);
   const handleDelete = (id) => {

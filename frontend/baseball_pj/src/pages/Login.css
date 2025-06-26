@@ -82,3 +82,16 @@
   text-decoration: underline;
   color: #2c74d8;
 }
+
+@media (prefers-color-scheme: dark) {
+  .login-container,
+  .login-title,
+  .login-label,
+  .login-input,
+  .login-btn,
+  .login-error,
+  .login-bottom-links,
+  .login-link {
+    color: #111 !important;
+  }
+}
