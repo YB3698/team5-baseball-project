@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { fetchTodayRanks } from '../api/rankApi';
 import {
@@ -8,6 +8,7 @@ import {
 } from 'recharts';
 import './Home.css';
 import homeImg from './img/home_img.png';
+import bot from './img/bot.png';
 
 function Home() {
   const [ranks, setRanks] = useState([]);
@@ -20,6 +21,11 @@ function Home() {
   const [results, setResults] = useState([]);
   const [endedPoll, setEndedPoll] = useState(null); // 종료된 투표 항목
   const [teamDist, setTeamDist] = useState([]);
+  const [showChat, setShowChat] = useState(false); // 챗봇 채팅창 상태
+  const [botPos, setBotPos] = useState({ x: window.innerWidth - 120, y: window.innerHeight - 120 });
+  const [dragging, setDragging] = useState(false);
+  const draggingRef = useRef(false); // 추가
+  const dragOffset = useRef({ x: 0, y: 0 });
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.userId;
@@ -108,175 +114,246 @@ function Home() {
     '키움 히어로즈': '#6e2639' // 버건디
   };
 
-  return (
-    <div className="home-root">
+  // 봇 드래그 핸들러
+  const handleBotMouseDown = (e) => {
+    // 왼쪽 버튼만 동작
+    if (e.button !== 0) return;
+    
+    e.preventDefault(); // 기본 동작 방지
+    
+    const startX = e.clientX; 
+    const startY = e.clientY;
+    const startBotX = botPos.x;
+    const startBotY = botPos.y;
+    
+    document.body.style.userSelect = 'none';
+    setDragging(true);
+    
+    // 마우스 이동 핸들러
+    const handleMouseMove = (moveEvent) => {
+      const deltaX = moveEvent.clientX - startX;
+      const deltaY = moveEvent.clientY - startY;
       
+      setBotPos({
+        x: startBotX + deltaX,
+        y: startBotY + deltaY
+      });
+    };
+    
+    // 마우스 업 핸들러
+    const handleMouseUp = () => {
+      // 마우스 떼는 순간 이벤트 리스너 제거
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      
+      // 상태 정리
+      document.body.style.userSelect = '';
+      setDragging(false);
+    };
+    
+    // 이벤트 리스너 추가
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+  
+  return (
+    <>
+      <div className="home-root">
+        
 
-      {/* 4분할 레이아웃 */}
-      <div className="home-grid-2x2">        {/* 1. 순위 차트 */}
-        <div className="home-chart-box">
-          <div className="pythagorean-header" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h3>📊 피타고리안 순위 vs 실제 순위</h3>
-            <div
-              className="pyth-tooltip-icon"
-              style={{ cursor: 'pointer', position: 'relative', display: 'inline-block' }}
-              tabIndex={0}
-            >
-              <span
-                style={{
-                  display: 'inline-block',
-                  width: 20,
-                  height: 20,
-                  borderRadius: '50%',
-                  background: '#eee',
-                  color: '#333',
-                  textAlign: 'center',
-                  lineHeight: '20px',
-                  fontWeight: 'bold',
-                  fontSize: 14,
-                  border: '1px solid #ccc',
-                  marginLeft: 4
-                }}
-              >?</span>
-              <div className="pyth-tooltip-text" style={{
-                display: 'none',
-                position: 'absolute',
-                top: 28,
-                left: 0,
-                zIndex: 10,
-                background: '#fff',
-                border: '1px solid #ccc',
-                borderRadius: 6,
-                padding: '10px 14px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                width: 260,
-                fontSize: 14,
-                color: '#222',
-                fontWeight: 400
-              }}>
-                피타고리안 승률은 팀의 득점과 실점을 바탕으로 이론적으로 기대되는 승률을 계산한 값입니다.<br/>
-                <b>공식:</b> (득점²) / (득점² + 실점²)<br/>
-                실제 순위와 비교해 팀의 운이나 경기력의 효율성을 평가할 수 있습니다.
-              </div>
-            </div>
-          </div>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={ranks}>
-              <XAxis dataKey="teamName" />
-              <YAxis reversed={true} />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="realRank" name="실제 순위" stroke="#8884d8" strokeWidth={2} />
-              <Line type="monotone" dataKey="pythRank" name="피타고리안 순위" stroke="#82ca9d" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>        {/* 2. 투표 박스 */}
-        <div className="home-vote-box">
-          <div className="vote-content">
-            <div className="vote-left">
-              <h2 className="vote-title">🗳️ 투표하기</h2>
-              <select
-                className="vote-select"
-                value={selectedPollId}
-                onChange={(e) => {
-                  const pollId = e.target.value;
-                  setSelectedPollId(pollId);
-                  fetchOptions(pollId);
-                  setResults([]);
-                  setSelectedOptionId(null);
-                }}
+        {/* 4분할 레이아웃 */}
+        <div className="home-grid-2x2">        {/* 1. 순위 차트 */}
+          <div className="home-chart-box">
+            <div className="pythagorean-header" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3>📊 피타고리안 순위 vs 실제 순위</h3>
+              <div
+                className="pyth-tooltip-icon"
+                style={{ cursor: 'pointer', position: 'relative', display: 'inline-block' }}
+                tabIndex={0}
               >
-                <option value="">-- 투표 항목 선택 --</option>
-                {polls.map(p => (
-                  <option key={p.pollId} value={p.pollId}>
-                    {p.pollTitle} {p.isActive === 'N' && '(종료됨)'}
-                  </option>
-                ))}
-              </select>
-              <ul className="vote-options">
-                {options.map(o => (
-                  <li key={o.optionId}>
-                    <label className="vote-option-label">
-                      <input
-                        type="radio"
-                        name="voteOption"
-                        value={o.optionId}
-                        checked={selectedOptionId === o.optionId}
-                        onChange={() => setSelectedOptionId(o.optionId)}
-                      />
-                      <span>{o.description}</span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
-              <div className="vote-btn-row">
-                <button onClick={handleVote} disabled={!selectedOptionId} className="vote-btn">투표하기</button>
-                <button onClick={() => handleResultView(selectedPollId)} className="result-btn">결과보기</button>
-              </div>
-            </div>            <div className="vote-right">
-              <div className="vote-image-container">
-                <img 
-                  src={homeImg} 
-                  alt="투표 이미지" 
-                  className="vote-image"
-                />
-                <div className="vote-image-text">
-                  
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: 20,
+                    height: 20,
+                    borderRadius: '50%',
+                    background: '#eee',
+                    color: '#333',
+                    textAlign: 'center',
+                    lineHeight: '20px',
+                    fontWeight: 'bold',
+                    fontSize: 14,
+                    border: '1px solid #ccc',
+                    marginLeft: 4
+                  }}
+                >?</span>
+                <div className="pyth-tooltip-text" style={{
+                  display: 'none',
+                  position: 'absolute',
+                  top: 28,
+                  left: 0,
+                  zIndex: 10,
+                  background: '#fff',
+                  border: '1px solid #ccc',
+                  borderRadius: 6,
+                  padding: '10px 14px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  width: 260,
+                  fontSize: 14,
+                  color: '#222',
+                  fontWeight: 400
+                }}>
+                  피타고리안 승률은 팀의 득점과 실점을 바탕으로 이론적으로 기대되는 승률을 계산한 값입니다.<br/>
+                  <b>공식:</b> (득점²) / (득점² + 실점²)<br/>
+                  실제 순위와 비교해 팀의 운이나 경기력의 효율성을 평가할 수 있습니다.
                 </div>
               </div>
             </div>
-          </div>
-        </div>{/* 3. 유저 팀 분포 */}
-        <div className="home-chart-box">
-          <h3>👥 유저 팀 분포</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={teamDist}>
-              <XAxis dataKey="teamName" tick={false} />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="userCount" name="유저 수">
-                {teamDist.map((entry, idx) => (
-                  <Cell key={entry.teamName} fill={teamColorMap[entry.teamName] || '#8884d8'} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>        {/* 4. 투표 결과 */}
-        <div className="home-chart-box">
-          <div className="vote-result-box">
-            <h4 className="vote-result-title">
-              📈 투표 결과
-              {endedPoll?.pollTitle && ` (${endedPoll.pollTitle})`}
-            </h4>
-            {results.length > 0 ? (
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={results}
-                    dataKey="voteCount"
-                    nameKey="description"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    label={({ percent }) => `${(percent * 100).toFixed(1)}%`}
-                  >
-                    {results.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={["#8884d8", "#ffc658", "#ff7f7f", "#82ca9d"][index % 4]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value, name, props) => [`${value}표`, props.payload.description]} />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="no-vote-result">
-                <p>투표를 진행하면 결과가 표시됩니다.</p>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={ranks}>
+                <XAxis dataKey="teamName" />
+                <YAxis reversed={true} />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="realRank" name="실제 순위" stroke="#8884d8" strokeWidth={2} />
+                <Line type="monotone" dataKey="pythRank" name="피타고리안 순위" stroke="#82ca9d" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>        {/* 2. 투표 박스 */}
+          <div className="home-vote-box">
+            <div className="vote-content">
+              <div className="vote-left">
+                <h2 className="vote-title">🗳️ 투표하기</h2>
+                <select
+                  className="vote-select"
+                  value={selectedPollId}
+                  onChange={(e) => {
+                    const pollId = e.target.value;
+                    setSelectedPollId(pollId);
+                    fetchOptions(pollId);
+                    setResults([]);
+                    setSelectedOptionId(null);
+                  }}
+                >
+                  <option value="">-- 투표 항목 선택 --</option>
+                  {polls.map(p => (
+                    <option key={p.pollId} value={p.pollId}>
+                      {p.pollTitle} {p.isActive === 'N' && '(종료됨)'}
+                    </option>
+                  ))}
+                </select>
+                <ul className="vote-options">
+                  {options.map(o => (
+                    <li key={o.optionId}>
+                      <label className="vote-option-label">
+                        <input
+                          type="radio"
+                          name="voteOption"
+                          value={o.optionId}
+                          checked={selectedOptionId === o.optionId}
+                          onChange={() => setSelectedOptionId(o.optionId)}
+                        />
+                        <span>{o.description}</span>
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+                <div className="vote-btn-row">
+                  <button onClick={handleVote} disabled={!selectedOptionId} className="vote-btn">투표하기</button>
+                  <button onClick={() => handleResultView(selectedPollId)} className="result-btn">결과보기</button>
+                </div>
+              </div>            <div className="vote-right">
+                <div className="vote-image-container">
+                  <img 
+                    src={homeImg} 
+                    alt="투표 이미지" 
+                    className="vote-image"
+                  />
+                  <div className="vote-image-text">
+                    
+                  </div>
+                </div>
               </div>
-            )}
+            </div>
+          </div>{/* 3. 유저 팀 분포 */}
+          <div className="home-chart-box">
+            <h3>👥 유저 팀 분포</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={teamDist}>
+                <XAxis dataKey="teamName" tick={false} />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="userCount" name="유저 수">
+                  {teamDist.map((entry, idx) => (
+                    <Cell key={entry.teamName} fill={teamColorMap[entry.teamName] || '#8884d8'} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>        {/* 4. 투표 결과 */}
+          <div className="home-chart-box">
+            <div className="vote-result-box">
+              <h4 className="vote-result-title">
+                📈 투표 결과
+                {endedPoll?.pollTitle && ` (${endedPoll.pollTitle})`}
+              </h4>
+              {results.length > 0 ? (
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={results}
+                      dataKey="voteCount"
+                      nameKey="description"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      label={({ percent }) => `${(percent * 100).toFixed(1)}%`}
+                    >
+                      {results.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={["#8884d8", "#ffc658", "#ff7f7f", "#82ca9d"][index % 4]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value, name, props) => [`${value}표`, props.payload.description]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="no-vote-result">
+                  <p>투표를 진행하면 결과가 표시됩니다.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      {/* 오른쪽 하단 봇 버튼 (드래그 가능) */}
+      <button
+        className="bot-fab"
+        onClick={() => setShowChat(v => !v)}
+        onMouseDown={handleBotMouseDown}
+        style={{
+          position: 'absolute',
+          left: botPos.x,
+          top: botPos.y, 
+          cursor: dragging ? 'grabbing' : 'grab', // 드래그 중일 때 커서 변경
+          zIndex: 1000 // 헤더보다 위로
+        }}
+      >
+        <img src={bot} alt="Bot" />
+      </button>
+      {showChat && (
+        <div className="bot-chat-popup" style={{
+          position: 'absolute',
+          left: botPos.x - 130,
+          top: botPos.y - 450
+        }}>
+          <div className="bot-chat-header">AI 야구봇 채팅 <button className="bot-chat-close" onClick={() => setShowChat(false)}>×</button></div>
+          <div className="bot-chat-body">
+            <p>여기에 채팅 UI를 구현하세요!</p>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
