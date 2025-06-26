@@ -380,68 +380,101 @@
   display: block !important;
 }
 
-/* 봇 버튼 스타일 */
+/* 성능 최적화 - GPU 가속 */
 .bot-fab {
-  position: absolute;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  cursor: pointer;
-  padding: 0;
-  width: 80px;
-  background: transparent; /* 배경 투명 */
   border: none;
+  background: #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  /* transition: transform 0.1s ease, box-shadow 0.2s ease; */
   display: flex;
   align-items: center;
   justify-content: center;
-  /* left: 100px;
-  top: auto; */
+  padding: 0;
+  user-select: none;
+  /* GPU 가속 활성화 */
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
+.bot-fab:hover {
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+  transform: translate3d(0, 0, 0) scale(1.05);
+}
+
+.bot-fab:active {
+  transform: translate3d(0, 0, 0) scale(0.95);
+}
+
+/* 봇 이미지 크기 고정 및 최적화 */
 .bot-fab img {
-  border-radius: 50%;
+  width: 40px !important;
+  height: 40px !important;
+  object-fit: contain;
+  pointer-events: none;
+  /* 이미지 렌더링 최적화 */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
-/* 봇 채팅 팝업 스타일 */
+/* 챗봇 팝업 최적화 */
 .bot-chat-popup {
-  position: fixed;
-  right: 32px;
-  bottom: 120px;
-  width: 340px;
-  height: 420px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-  z-index: 2100;
+  width: 300px;
+  height: 400px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 999;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1.5px solid #e0e0e0;
+  /* 애니메이션 최적화 */
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
 .bot-chat-header {
-  background: #0066e3;
-  color: #fff;
+  background: #007bff;
+  color: white;
+  padding: 12px 16px;
   font-weight: bold;
-  padding: 14px 16px;
-  font-size: 1.1rem;
   display: flex;
-  align-items: center;
+  
   justify-content: space-between;
+  align-items: center;
 }
 
 .bot-chat-close {
   background: none;
   border: none;
-  color: #fff;
-  font-size: 1.5rem;
+  color: white;
+  font-size: 20px;
   cursor: pointer;
-  margin-left: 8px;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.bot-chat-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
 }
 
 .bot-chat-body {
   flex: 1;
-  padding: 18px 16px;
-  background: #f7f7fa;
-  overflow-y: auto;
-  font-size: 1rem;
-  color: #222;
+  overflow: hidden;
+}
+
+/* 차트 컨테이너 최적화 */
+.home-chart-box {
+  /* GPU 가속 활성화 */
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
 }
