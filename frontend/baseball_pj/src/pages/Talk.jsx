@@ -93,7 +93,7 @@ const ChatRoom = () => {
   if (!open) {
     return (
       <div className="talk-toggle-btn" onClick={() => setOpen(true)} title="채팅 열기">
-        <img src={talk} alt="talk" style={{ width: 48, height: 48, objectFit: 'contain', display: 'block' }} />
+        <img src={talk} alt="talk"  />
       </div>
     );
   }
