@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import './Talk.css';
+import talk from './img/talk.png';
 
 const ChatRoom = () => {
   const [client, setClient] = useState(null);
@@ -92,7 +93,7 @@ const ChatRoom = () => {
   if (!open) {
     return (
       <div className="talk-toggle-btn" onClick={() => setOpen(true)} title="채팅 열기">
-        💬
+        <img src={talk} alt="talk" style={{ width: 48, height: 48, objectFit: 'contain', display: 'block' }} />
       </div>
     );
   }

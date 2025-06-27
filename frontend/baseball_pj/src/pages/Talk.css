@@ -135,7 +135,7 @@
   color: #d32f2f;
 }
 .talk-toggle-btn {
-  position: fixed;
+  /* position: fixed;
   left: 24px;
   top: 100px;
   z-index: 1000;
@@ -151,7 +151,7 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
   cursor: pointer;
   border: none;
-  transition: background 0.2s;
+  transition: background 0.2s; */
 }
 .talk-toggle-btn:hover {
   background: #1741a6;
