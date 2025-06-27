@@ -61,8 +61,8 @@
 }
 .talk-fixed-container {
   position: fixed;
-  left: 24px;
-  top: 100px;
+  left: 35px;
+  top: 220px;
   z-index: 1000;
 }
 
@@ -135,26 +135,16 @@
   color: #d32f2f;
 }
 .talk-toggle-btn {
-  /* position: fixed;
-  left: 24px;
-  top: 100px;
-  z-index: 1000;
-  width: 60px;
-  height: 60px;
-  background: #2563eb;
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.2rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  cursor: pointer;
-  border: none;
-  transition: background 0.2s; */
+  width: 85px !important;
+  display: 'block' !important ;
+  
+
 }
 .talk-toggle-btn:hover {
-  background: #1741a6;
+  border-radius: 20%;
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+  transform: translate3d(0, 0, 0) scale(1.05);
+  
 }
 .talk-message-me, .talk-message-other {
   min-width: 40px;

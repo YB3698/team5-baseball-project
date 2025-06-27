@@ -186,7 +186,7 @@ function Home() {
     <>
       <div className="home-root">
         {/* 왼쪽 고정 실시간 채팅 */}
-        <div style={{ position: 'fixed', left: 24, top: 100, zIndex: 1000 }}>
+        <div style={{ position: 'fixed', left: 20, top: 125, zIndex: 1000 }}>
           <Talk />
         </div>
 
