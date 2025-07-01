@@ -1,6 +1,6 @@
 # ⚾ 야~! 모여 : AI 기반 야구 통계 & 커뮤니티 플랫폼
 
-> **개발 기간**: 2025.06.13 ~ 2025.06.25  
+> **개발 기간**: 2025.06.16 ~ 2025.06.27  
 > **팀 구성**: 김정현, 양은지, 황혜미, 박유빈
 
 ---
@@ -21,7 +21,7 @@ KBO 데이터를 활용한 선수/팀 통계 제공, 팬 투표, 응원팀 게�
 | Database | Oracle XE (Docker), SQL |
 | Crawling | Python, BeautifulSoup, pandas |
 | Real-time | WebSocket, SockJS, STOMP.js |
-| 협업 도구 | GitHub, KakaoTalk, Google Sheets |
+| 협업 도구 | GitHub, KakaoTalk, Google Sheets, OpenAI API |
 
 ---
 
@@ -68,32 +68,6 @@ KBO 데이터를 활용한 선수/팀 통계 제공, 팬 투표, 응원팀 게�
 
 ---
 
-## 주요 작업 화면 예시
-
-### 📁 Spring Boot 프로젝트 디렉토리 구조
-
-```
-com.baseball.baseball_pj
-├── controller
-├── repository
-└── domain
-```
-
-### 🛠 Oracle 연동 테스트
-
-```sql
-SELECT * FROM USERS;
-```
-
-### 🖼 React 디렉토리 구조 예시
-
-```
-/src
-├── pages
-└── assets
-```
-
----
 
 ## 🔧 문제 및 해결사항
 
@@ -139,17 +113,6 @@ SELECT * FROM USERS;
 - [x] 2002년 - 2025년 타자/투수 기록 수집 (KBO 기준)
 - [x] KBO 경기 일정 페이지에서 날짜, 팀 정보 크롤링
 - [ ] 경기 결과, MVP 등 추가 정보는 추후 구현 예정
-
----
-
-## 사용 기술 및 도구
-
-| 영역 | 기술 스택 |
-|------|-----------|
-| 백엔드 | Spring Boot, JPA, Oracle |
-| 프론트엔드 | React, Vite, Axios |
-| 데이터 수집 | Python, BeautifulSoup, pandas |
-| 협업 도구 | GitHub, Notion, KakaoTalk, Google Sheets |
 
 ---
 
@@ -222,7 +185,6 @@ SELECT * FROM USERS;
 | 문제 | 해결 방안 |
 |------|-----------|
 | 프론트에서 CORS 오류 발생 | Spring Boot `@CrossOrigin` 또는 `WebMvcConfigurer`로 허용 설정 |
-| 일부 날짜 데이터 포맷 오류 | Python에서 날짜 포맷을 `datetime.strptime()`으로 명확히 지정하여 해결 |
 | Oracle insert 중 한글 깨짐 | `utf-8` 인코딩으로 CSV 저장 및 DB Character Set 확인 |
 
 ---
@@ -263,7 +225,7 @@ SELECT * FROM USERS;
 ### 👤 마이페이지
 
 - 로그인한 유저의 정보(닉네임, 응원팀 등) 표시
-- 응원팀은 최초 1회만 설정 가능 (변경 제한 기능 포함)
+- 응원팀은 최초 1회만 설정 가능(미구현) (변경 제한 기능 포함)
 - 사용자 정보 조회: `GET /api/user`
 - 응원팀 변경: `PUT /api/user/team` 구현 예정
 
@@ -414,7 +376,7 @@ SELECT * FROM USERS;
 
 #### 🤖 챗봇 초기화
 - React 컴포넌트 UI 구성
-- 키워드 기반 응답 (예: "룰북", "MVP", "순위")
+- 키워드 기반 응답 (예: "야구", "안타", "KBO")
 
 ### ✅ 내일 목표 (Day 9)
 - 챗봇 응답 고도화 및 백엔드 API 연동
@@ -430,7 +392,7 @@ SELECT * FROM USERS;
 
 | 항목 | 내용 |
 |------|------|
-| ✅ 챗봇 기능 완성 | 룰북/응원가/MVP 추천 등 키워드 응답 기능 강화 |
+| ✅ 챗봇 기능 완성 | 야구/선수이름/안타 등 키워드 응답 기능 강화 |
 | ✅ 실시간 채팅 기능 구현 | WebSocket 기반 채팅 구현 및 채널 생성 |
 | ✅ 전체 UI 통일 | 스타일 정리 및 색상, 폰트 통일 |
 | ✅ 발표자료 초안 작성 | 프로젝트 소개, 기능, 기술 요약 정리 시작 |
@@ -438,8 +400,7 @@ SELECT * FROM USERS;
 ### 주요 작업 상세
 
 #### 🤖 AI 야구 챗봇
-- 키워드 매칭 → 정적 응답 + 일부 DB 기반 응답
-- 룰북 링크 제공, 인기글/MVP 추천, 팀별 정보 제공 등
+- 야구 용어 설명, 팀별 정보 제공 등
 
 #### 💬 실시간 채팅 기능
 - `SockJS`, `STOMP.js` 기반 WebSocket 구현
@@ -479,12 +440,3 @@ SELECT * FROM USERS;
 4. 구현 중 이슈 및 해결 사례  
 5. 실시간 시연 영상 or 실습  
 6. Q&A  
-
-### 팀 회고 및 마무리
-
-| 이름 | 소감 |
-|------|------|
-| 김정현 |  |
-| 양은지 |  |
-| 황혜미 |  |
-| 박유빈 |  |
